@@ -268,8 +268,12 @@ export default function ScopeDashboard() {
           </div>
         )}
 
-        <div className="mt-8 text-center text-[11px] text-neutral-700 font-body">
-          Données d'exemple — maquette Scope, phase 1
+        <div className="mt-8 flex flex-col items-center gap-2 text-[11px] text-neutral-700 font-body">
+          <div className="flex gap-4">
+            <a href="/cgu.html" className="hover:text-yellow transition-colors">CGU</a>
+            <a href="/confidentialite.html" className="hover:text-yellow transition-colors">Politique de confidentialité</a>
+          </div>
+          <div>Données d'exemple — maquette Scope, phase 1</div>
         </div>
       </div>
     </div>
