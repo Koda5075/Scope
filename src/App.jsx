@@ -169,7 +169,7 @@ export default function ScopeDashboard() {
                   </div>
                   <div>
                     <div className="text-[11px] text-neutral-500 font-body mb-1">Bilan</div>
-                    <div className="font-mono text-xl text-yellow">5V \u2013 2D</div>
+                    <div className="font-mono text-xl text-yellow">5V – 2D</div>
                   </div>
                   <div>
                     <div className="text-[11px] text-neutral-500 font-body mb-1">Meilleure</div>
@@ -269,7 +269,7 @@ export default function ScopeDashboard() {
         )}
 
         <div className="mt-8 text-center text-[11px] text-neutral-700 font-body">
-          Données d'exemple \u2014 maquette Scope, phase 1
+          Données d'exemple — maquette Scope, phase 1
         </div>
       </div>
     </div>
