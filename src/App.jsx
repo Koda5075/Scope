@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Users, Flame, TrendingUp, Swords, Lock, Crosshair, Target, ChevronRight } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Lock, Crosshair, Target, ChevronRight, Zap, Skull } from 'lucide-react';
 
 const rrHistory = [
   { s: 'S1', rr: 38 },
@@ -13,10 +13,10 @@ const rrHistory = [
 ];
 
 const badges = [
-  { icon: Users, label: 'Team Player', sub: '50 parties coordonnées', color: 'cyan' },
-  { icon: Swords, label: 'Ace x3', sub: 'Exploit solo', color: 'coral' },
-  { icon: Flame, label: '5 jours d\u2019affilée', sub: 'Régularité', color: 'gold' },
-  { icon: TrendingUp, label: 'Nouveau palier', sub: 'Diamond atteint', color: 'cyan' },
+  { icon: Users, label: 'Team Player', sub: '50 parties coordonnées' },
+  { icon: Swords, label: 'Ace x3', sub: 'Exploit solo' },
+  { icon: Flame, label: '5 jours d\u2019affilée', sub: 'Régularité' },
+  { icon: TrendingUp, label: 'Nouveau palier', sub: 'Diamond atteint' },
 ];
 
 const agentStats = [
@@ -25,123 +25,105 @@ const agentStats = [
   { name: 'Sova', games: 6, wr: 50 },
 ];
 
-function TacCard({ children, className = '' }) {
-  return (
-    <div className={`tac-card ${className}`}>
-      <div className="tac-card-inner">{children}</div>
-    </div>
-  );
+function Card({ children, className = '' }) {
+  return <div className={`sc-card ${className}`}>{children}</div>;
 }
 
 function StatReadout({ label, value, unit, Icon }) {
   return (
-    <TacCard className="flex-1">
+    <Card>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[11px] tracking-[0.15em] uppercase text-slate-400 font-body">{label}</span>
-        <Icon size={15} className="text-cyan-glow" />
+        <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">{label}</span>
+        <Icon size={14} className="text-yellow" />
       </div>
       <div className="flex items-baseline gap-1">
-        <span className="font-mono text-3xl font-bold text-white">{value}</span>
-        {unit && <span className="font-mono text-sm text-slate-400">{unit}</span>}
+        <span className="font-display text-2xl font-bold text-white">{value}</span>
+        {unit && <span className="font-mono text-xs text-neutral-500">{unit}</span>}
       </div>
-    </TacCard>
+    </Card>
   );
 }
 
-export default function ValoTrackDashboard() {
+export default function ScopeDashboard() {
   const [tab, setTab] = useState('overview');
   const rrCurrent = 67;
   const rrGoal = 100;
 
   return (
-    <div className="min-h-screen w-full bg-app text-slate-100 font-body">
+    <div className="min-h-screen w-full bg-black text-neutral-100 font-body">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
 
         .font-display { font-family: 'Rajdhani', sans-serif; }
         .font-body { font-family: 'Inter', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .text-yellow { color: #FFC300; }
 
-        .bg-app {
-          background:
-            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(53,240,208,0.10), transparent 60%),
-            radial-gradient(ellipse 700px 500px at 100% 0%, rgba(255,92,114,0.08), transparent 55%),
-            #090c11;
+        .sc-card {
+          background: #0F0F0F;
+          border: 1px solid #262626;
+          border-left: 3px solid #FFC300;
+          padding: 16px 18px;
         }
 
-        .tac-card {
-          background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00));
-          border: 1px solid #212a36;
-          clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-          background-color: #10151d;
-        }
-        .tac-card-inner { padding: 16px 18px; }
+        .sc-track { background: #1A1A1A; border: 1px solid #2A2A2A; }
+        .sc-fill { background: #FFC300; box-shadow: 0 0 8px rgba(255,195,0,0.4); }
 
-        .text-cyan-glow { color: #35f0d0; filter: drop-shadow(0 0 6px rgba(53,240,208,0.5)); }
-        .text-coral-glow { color: #ff5c72; filter: drop-shadow(0 0 6px rgba(255,92,114,0.5)); }
-        .text-gold-glow { color: #ffb94d; filter: drop-shadow(0 0 6px rgba(255,185,77,0.45)); }
-
-        .rank-badge {
-          clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-          background: linear-gradient(135deg, rgba(53,240,208,0.18), rgba(53,240,208,0.02));
-          border: 1px solid rgba(53,240,208,0.35);
+        .sc-badge {
+          background: #0F0F0F;
+          border: 1px solid #262626;
+          border-left: 2px solid #FFC300;
         }
 
-        .rr-track { background: #171e28; border: 1px solid #232c38; }
-        .rr-fill {
-          background: linear-gradient(90deg, #1fb8a3, #35f0d0);
-          box-shadow: 0 0 12px rgba(53,240,208,0.55);
-        }
-
-        .badge-chip {
-          clip-path: polygon(0 8px, 8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
-          background: #10151d;
-          border: 1px solid #212a36;
-        }
-
-        .locked-overlay {
-          backdrop-filter: blur(3px);
-          background: rgba(9,12,17,0.55);
-        }
+        .locked-overlay { backdrop-filter: blur(3px); background: rgba(0,0,0,0.65); }
       `}</style>
 
       <div className="max-w-5xl mx-auto px-5 py-8">
 
+        {/* Wordmark */}
+        <div className="mb-6">
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-3xl font-bold tracking-wide text-white">SCOPE</span>
+            <span className="w-2 h-2 bg-yellow inline-block" />
+          </div>
+          <div className="h-[2px] w-14 bg-yellow mt-1" />
+        </div>
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-7">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-display font-bold text-lg text-cyan-glow">
+            <div className="w-12 h-12 bg-neutral-900 border border-neutral-700 flex items-center justify-center font-display font-bold text-lg text-yellow">
               K
             </div>
             <div>
-              <div className="font-display text-xl font-semibold tracking-wide text-white">KAITO<span className="text-slate-500">#EUW1</span></div>
-              <div className="text-xs text-slate-500 font-body">Dernière session : aujourd'hui, 21h04</div>
+              <div className="font-display text-xl font-semibold tracking-wide text-white">KAITO<span className="text-neutral-600">#EUW1</span></div>
+              <div className="text-xs text-neutral-500 font-body">Dernière session : aujourd'hui, 21h04</div>
             </div>
           </div>
 
-          <div className="rank-badge px-5 py-3 min-w-[220px]">
+          <div className="border border-neutral-800 bg-neutral-950 px-5 py-3 min-w-[220px]">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-body">Rang actuel</span>
-              <span className="font-display text-xs font-semibold text-cyan-glow">DIAMOND 2</span>
+              <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-body">Rang actuel</span>
+              <span className="font-display text-xs font-bold text-yellow">DIAMOND 2</span>
             </div>
-            <div className="rr-track h-2 w-full rounded-sm overflow-hidden">
-              <div className="rr-fill h-full rounded-sm" style={{ width: `${rrCurrent}%` }} />
+            <div className="sc-track h-2 w-full overflow-hidden">
+              <div className="sc-fill h-full" style={{ width: `${rrCurrent}%` }} />
             </div>
             <div className="flex justify-between mt-1">
-              <span className="font-mono text-[11px] text-slate-400">{rrCurrent} RR</span>
-              <span className="font-mono text-[11px] text-slate-500">/ {rrGoal}</span>
+              <span className="font-mono text-[11px] text-neutral-300">{rrCurrent} RR</span>
+              <span className="font-mono text-[11px] text-neutral-600">/ {rrGoal}</span>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 border-b border-slate-800">
+        <div className="flex gap-1 mb-6 border-b border-neutral-800">
           {['overview', 'agents', 'badges'].map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`font-display text-sm tracking-wide px-4 py-2 uppercase transition-colors ${
-                tab === t ? 'text-cyan-glow border-b-2 border-cyan-400' : 'text-slate-500 hover:text-slate-300'
+                tab === t ? 'text-yellow border-b-2 border-yellow' : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
               {t === 'overview' ? 'Vue d\u2019ensemble' : t === 'agents' ? 'Agents & cartes' : 'Badges'}
@@ -151,143 +133,143 @@ export default function ValoTrackDashboard() {
 
         {tab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left / main column */}
             <div className="lg:col-span-2 flex flex-col gap-4">
-              <TacCard>
+              <Card>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-display text-sm tracking-wide uppercase text-slate-300">Évolution du RR</span>
-                  <span className="text-[11px] font-mono text-cyan-glow">+29 sur 7 sessions</span>
+                  <span className="font-display text-sm tracking-wide uppercase text-neutral-300">Évolution du RR</span>
+                  <span className="text-[11px] font-mono text-yellow">+29 sur 7 sessions</span>
                 </div>
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={rrHistory} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="rrGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#35f0d0" stopOpacity={0.35} />
-                          <stop offset="100%" stopColor="#35f0d0" stopOpacity={0} />
+                          <stop offset="0%" stopColor="#FFC300" stopOpacity={0.3} />
+                          <stop offset="100%" stopColor="#FFC300" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="s" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={{ stroke: '#232c38' }} tickLine={false} />
+                      <XAxis dataKey="s" tick={{ fill: '#737373', fontSize: 11 }} axisLine={{ stroke: '#262626' }} tickLine={false} />
                       <YAxis hide domain={['dataMin - 10', 'dataMax + 10']} />
                       <Tooltip
-                        contentStyle={{ background: '#10151d', border: '1px solid #232c38', fontSize: 12, fontFamily: 'JetBrains Mono' }}
-                        labelStyle={{ color: '#94a3b8' }}
+                        contentStyle={{ background: '#0F0F0F', border: '1px solid #262626', fontSize: 12, fontFamily: 'JetBrains Mono' }}
+                        labelStyle={{ color: '#a3a3a3' }}
                       />
-                      <Area type="monotone" dataKey="rr" stroke="#35f0d0" strokeWidth={2} fill="url(#rrGrad)" />
+                      <Area type="monotone" dataKey="rr" stroke="#FFC300" strokeWidth={2} fill="url(#rrGrad)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </TacCard>
+              </Card>
 
-              <TacCard>
-                <span className="font-display text-sm tracking-wide uppercase text-slate-300 mb-3 block">Résumé de session</span>
+              <Card>
+                <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">Résumé de session</span>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
-                    <div className="text-[11px] text-slate-500 font-body mb-1">Parties</div>
+                    <div className="text-[11px] text-neutral-500 font-body mb-1">Parties</div>
                     <div className="font-mono text-xl text-white">7</div>
                   </div>
                   <div>
-                    <div className="text-[11px] text-slate-500 font-body mb-1">Bilan</div>
-                    <div className="font-mono text-xl text-cyan-glow">5V \u2013 2D</div>
+                    <div className="text-[11px] text-neutral-500 font-body mb-1">Bilan</div>
+                    <div className="font-mono text-xl text-yellow">5V \u2013 2D</div>
                   </div>
                   <div>
-                    <div className="text-[11px] text-slate-500 font-body mb-1">Meilleure</div>
+                    <div className="text-[11px] text-neutral-500 font-body mb-1">Meilleure</div>
                     <div className="font-mono text-xl text-white">24/9</div>
                   </div>
                   <div>
-                    <div className="text-[11px] text-slate-500 font-body mb-1">Pire</div>
-                    <div className="font-mono text-xl text-coral-glow">8/17</div>
+                    <div className="text-[11px] text-neutral-500 font-body mb-1">Pire</div>
+                    <div className="font-mono text-xl text-neutral-400">8/17</div>
                   </div>
                 </div>
-              </TacCard>
+              </Card>
 
-              {/* Coaching teaser - locked */}
               <div className="relative">
-                <TacCard>
-                  <span className="font-display text-sm tracking-wide uppercase text-slate-300 mb-3 block">Analyse & coaching</span>
-                  <div className="space-y-2 opacity-40 select-none">
-                    <div className="h-3 bg-slate-700 rounded w-5/6" />
-                    <div className="h-3 bg-slate-700 rounded w-2/3" />
-                    <div className="h-3 bg-slate-700 rounded w-4/5" />
+                <Card>
+                  <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">Analyse & coaching</span>
+                  <div className="space-y-2 opacity-30 select-none">
+                    <div className="h-3 bg-neutral-700 w-5/6" />
+                    <div className="h-3 bg-neutral-700 w-2/3" />
+                    <div className="h-3 bg-neutral-700 w-4/5" />
                   </div>
-                </TacCard>
-                <div className="absolute inset-0 locked-overlay flex flex-col items-center justify-center gap-2 rounded">
-                  <Lock size={18} className="text-gold-glow" />
-                  <span className="font-display text-xs tracking-wide uppercase text-slate-200">Débloquer avec l'abonnement</span>
-                  <button className="mt-1 flex items-center gap-1 text-[11px] font-body text-cyan-glow hover:underline">
+                </Card>
+                <div className="absolute inset-0 locked-overlay flex flex-col items-center justify-center gap-2">
+                  <Lock size={18} className="text-yellow" />
+                  <span className="font-display text-xs tracking-wide uppercase text-neutral-100">Débloquer avec l'abonnement</span>
+                  <button className="mt-1 flex items-center gap-1 text-[11px] font-body text-yellow hover:underline">
                     Voir les offres <ChevronRight size={12} />
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Right column */}
             <div className="flex flex-col gap-4">
-              <StatReadout label="KDA" value="1.42" Icon={Swords} />
-              <StatReadout label="Précision" value="24" unit="%" Icon={Crosshair} />
-              <StatReadout label="Headshots" value="31" unit="%" Icon={Target} />
+              <div className="grid grid-cols-2 gap-3">
+                <StatReadout label="KDA" value="1.42" Icon={Swords} />
+                <StatReadout label="Précision" value="24" unit="%" Icon={Crosshair} />
+                <StatReadout label="Headshots" value="31" unit="%" Icon={Target} />
+                <StatReadout label="ACS" value="238" Icon={Zap} />
+                <StatReadout label="First Bloods" value="9" Icon={Skull} />
+                <StatReadout label="Clutchs" value="3" unit="/5" Icon={Flame} />
+              </div>
 
-              <TacCard>
-                <span className="font-display text-sm tracking-wide uppercase text-slate-300 mb-3 block">Derniers badges</span>
+              <Card>
+                <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">Derniers badges</span>
                 <div className="flex flex-col gap-2">
                   {badges.slice(0, 3).map((b, i) => {
                     const Icon = b.icon;
-                    const colorClass = b.color === 'cyan' ? 'text-cyan-glow' : b.color === 'coral' ? 'text-coral-glow' : 'text-gold-glow';
                     return (
-                      <div key={i} className="badge-chip px-3 py-2 flex items-center gap-2.5">
-                        <Icon size={14} className={colorClass} />
-                        <span className="text-xs font-body text-slate-300">{b.label}</span>
+                      <div key={i} className="sc-badge px-3 py-2 flex items-center gap-2.5">
+                        <Icon size={14} className="text-yellow" />
+                        <span className="text-xs font-body text-neutral-300">{b.label}</span>
                       </div>
                     );
                   })}
                 </div>
-              </TacCard>
+              </Card>
             </div>
           </div>
         )}
 
         {tab === 'agents' && (
-          <TacCard>
-            <span className="font-display text-sm tracking-wide uppercase text-slate-300 mb-4 block">Performance par agent</span>
+          <Card>
+            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">Performance par agent</span>
             <div className="flex flex-col gap-3">
               {agentStats.map((a) => (
                 <div key={a.name} className="flex items-center gap-4">
                   <span className="font-display text-sm text-white w-16">{a.name}</span>
-                  <div className="flex-1 rr-track h-2 rounded-sm overflow-hidden">
-                    <div className="rr-fill h-full rounded-sm" style={{ width: `${a.wr}%` }} />
+                  <div className="flex-1 sc-track h-2 overflow-hidden">
+                    <div className="sc-fill h-full" style={{ width: `${a.wr}%` }} />
                   </div>
-                  <span className="font-mono text-xs text-slate-400 w-16 text-right">{a.games} parties</span>
-                  <span className="font-mono text-xs text-cyan-glow w-12 text-right">{a.wr}%</span>
+                  <span className="font-mono text-xs text-neutral-500 w-16 text-right">{a.games} parties</span>
+                  <span className="font-mono text-xs text-yellow w-12 text-right">{a.wr}%</span>
                 </div>
               ))}
             </div>
-          </TacCard>
+          </Card>
         )}
 
         {tab === 'badges' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {badges.map((b, i) => {
               const Icon = b.icon;
-              const colorClass = b.color === 'cyan' ? 'text-cyan-glow' : b.color === 'coral' ? 'text-coral-glow' : 'text-gold-glow';
               return (
-                <TacCard key={i}>
+                <Card key={i}>
                   <div className="flex items-center gap-3">
-                    <div className="badge-chip w-10 h-10 flex items-center justify-center shrink-0">
-                      <Icon size={18} className={colorClass} />
+                    <div className="sc-badge w-10 h-10 flex items-center justify-center shrink-0">
+                      <Icon size={18} className="text-yellow" />
                     </div>
                     <div>
                       <div className="font-display text-sm text-white">{b.label}</div>
-                      <div className="text-[11px] text-slate-500 font-body">{b.sub}</div>
+                      <div className="text-[11px] text-neutral-500 font-body">{b.sub}</div>
                     </div>
                   </div>
-                </TacCard>
+                </Card>
               );
             })}
           </div>
         )}
 
-        <div className="mt-8 text-center text-[11px] text-slate-600 font-body">
-          Données d'exemple \u2014 maquette ValoTrack, phase 1
+        <div className="mt-8 text-center text-[11px] text-neutral-700 font-body">
+          Données d'exemple \u2014 maquette Scope, phase 1
         </div>
       </div>
     </div>
