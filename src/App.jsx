@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   Users, Flame, TrendingUp, Swords, Lock, Crosshair, Target, ChevronRight,
-  Zap, Skull, Trophy, Share2, Settings, Check,
+  Zap, Skull, Trophy, Share2, Settings, Check, LogIn,
 } from 'lucide-react';
 
 const THEMES = {
@@ -41,6 +41,11 @@ const T = {
     sampleData: "Données d'exemple — maquette Scope, phase 1",
     cgu: 'CGU', privacy: 'Politique de confidentialité',
     language: 'Langue', appearance: 'Apparence',
+    loginTitle: 'Suis ta progression. Comprends ton jeu. Progresse.',
+    loginSub: 'Connecte ton compte Riot pour voir tes statistiques VALORANT.',
+    loginBtn: 'Se connecter avec mon compte Riot',
+    loginConsent: "Scope accédera à ton rang, ton historique de parties et tes statistiques, uniquement avec ton accord explicite. Tu peux révoquer cet accès à tout moment.",
+    loginDemo: '(Démo — la connexion réelle sera activée une fois la clé de production approuvée)',
     badges: {
       teamPlayer: { label: 'Team Player', sub: '50 parties coordonnées' },
       aceX3: { label: 'Ace x3', sub: 'Exploit solo' },
@@ -78,6 +83,11 @@ const T = {
     sampleData: 'Sample data — Scope mockup, phase 1',
     cgu: 'Terms', privacy: 'Privacy Policy',
     language: 'Language', appearance: 'Appearance',
+    loginTitle: 'Track your progress. Understand your game. Improve.',
+    loginSub: 'Connect your Riot account to see your VALORANT stats.',
+    loginBtn: 'Sign in with my Riot account',
+    loginConsent: 'Scope will access your rank, match history, and stats, only with your explicit consent. You can revoke access at any time.',
+    loginDemo: '(Demo — real sign-in will be enabled once the production key is approved)',
     badges: {
       teamPlayer: { label: 'Team Player', sub: '50 coordinated games' },
       aceX3: { label: 'Ace x3', sub: 'Solo highlight' },
@@ -140,6 +150,7 @@ function CompareRow({ label, value, max, tone }) {
 }
 
 export default function ScopeDashboard() {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [tab, setTab] = useState('overview');
   const [lang, setLang] = useState('fr');
   const [theme, setTheme] = useState('yellow');
@@ -196,14 +207,24 @@ export default function ScopeDashboard() {
         {/* Wordmark + settings */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Scope" className="w-9 h-9" />
+            <img src="/logo.png" alt="Scope" className="w-10 h-10 object-contain" />
             <div>
               <span className="font-display text-3xl font-bold tracking-wide text-white">SCOPE</span>
               <div className="h-[2px] w-14 bg-accent mt-1" />
             </div>
           </div>
 
-          <div className="relative">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLoggedIn((s) => !s)}
+              className="w-9 h-9 flex items-center justify-center bg-black border border-accent text-accent hover:opacity-80 transition-opacity"
+              aria-label={loggedIn ? 'Se déconnecter' : 'Se connecter avec Riot'}
+              title={loggedIn ? 'KAITO#EUW1 — connecté' : t.loginBtn}
+            >
+              <LogIn size={16} />
+            </button>
+
+            <div className="relative">
             <button
               onClick={() => setShowSettings((s) => !s)}
               className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
@@ -250,8 +271,25 @@ export default function ScopeDashboard() {
               </div>
             )}
           </div>
+          </div>
         </div>
 
+        {!loggedIn ? (
+          <div className="flex flex-col items-center text-center py-20 px-4">
+            <img src="/logo.png" alt="Scope" className="w-16 h-16 object-contain mb-6" />
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white max-w-md mb-3">{t.loginTitle}</h1>
+            <p className="text-sm text-neutral-400 font-body max-w-sm mb-8">{t.loginSub}</p>
+            <button
+              onClick={() => setLoggedIn(true)}
+              className="flex items-center gap-2 bg-accent text-black font-display font-bold uppercase text-sm tracking-wide px-6 py-3 hover:opacity-90 transition-opacity"
+            >
+              <LogIn size={16} /> {t.loginBtn}
+            </button>
+            <p className="text-[11px] text-neutral-600 font-body max-w-xs mt-5 leading-relaxed">{t.loginConsent}</p>
+            <p className="text-[10px] text-neutral-700 font-body mt-2 italic">{t.loginDemo}</p>
+          </div>
+        ) : (
+        <>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-7">
           <div className="flex items-center gap-4">
@@ -477,6 +515,9 @@ export default function ScopeDashboard() {
               );
             })}
           </div>
+        )}
+
+        </>
         )}
 
         <div className="mt-10 flex flex-col items-center gap-3 text-[11px] text-neutral-700 font-body">
