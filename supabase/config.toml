@@ -1,0 +1,11 @@
+# Run `supabase link --project-ref <your-project-ref>` once, then this file
+# is used by `supabase db push` / `supabase functions deploy`.
+project_id = "scope"
+
+# rso-login and rso-callback are hit via direct browser redirect (no Supabase
+# JWT on the request), so JWT verification must stay off for both.
+[functions.rso-login]
+verify_jwt = false
+
+[functions.rso-callback]
+verify_jwt = false
