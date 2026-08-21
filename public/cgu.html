@@ -1,51 +1,179 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conditions Générales d'Utilisation — Scope</title>
+  <title id="pageTitle">Terms of Service — Scope</title>
   <style>
     body {
       background: #0A0A0A;
       color: #e5e5e5;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
       max-width: 720px;
       margin: 0 auto;
       padding: 48px 24px 80px;
       line-height: 1.6;
     }
     h1 { color: #fff; font-size: 28px; margin-bottom: 4px; }
-    .updated { color: #737373; font-size: 13px; margin-bottom: 40px; }
+    .updated { color: #737373; font-size: 13px; margin-bottom: 24px; }
     h2 { color: #FFC300; font-size: 17px; margin-top: 36px; margin-bottom: 10px; }
-    p, li { color: #d4d4d4; font-size: 14.5px; }
+    p { color: #d4d4d4; font-size: 14.5px; }
     a { color: #FFC300; }
-    .back { display: inline-block; margin-bottom: 32px; color: #737373; text-decoration: none; font-size: 13px; }
+    .back { display: inline-block; margin-bottom: 20px; color: #737373; text-decoration: none; font-size: 13px; }
+    .lang-switch { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+    .lang-btn {
+      background: #0F0F0F; border: 1px solid #262626; color: #737373;
+      font-size: 12px; padding: 5px 10px; cursor: pointer; text-transform: uppercase;
+      font-family: inherit;
+    }
+    .lang-btn.active { border-color: #FFC300; color: #FFC300; }
   </style>
 </head>
 <body>
-  <a href="/" class="back">← Retour à Scope</a>
-  <h1>Conditions Générales d'Utilisation</h1>
-  <div class="updated">Dernière mise à jour : à compléter avant publication</div>
+  <a href="/" class="back" id="backLink">← Back to Scope</a>
+  <div class="lang-switch" id="langSwitch"></div>
+  <h1 id="title"></h1>
+  <div class="updated" id="updated"></div>
+  <div id="sections"></div>
 
-  <h2>1. Présentation du service</h2>
-  <p>Scope est une application indépendante qui affiche des statistiques de progression pour le jeu VALORANT, à partir des données rendues disponibles par l'API officielle de Riot Games. Scope n'est ni développé, ni approuvé, ni sponsorisé par Riot Games.</p>
+  <script>
+    const CONTENT = {
+      en: {
+        title: "Terms of Service",
+        updated: "Last updated: to be completed before publishing",
+        back: "← Back to Scope",
+        sections: [
+          { h: "1. About the service", p: "Scope is an independent application that displays progression statistics for the game VALORANT, based on data made available through Riot Games' official API. Scope is not developed, endorsed, or sponsored by Riot Games." },
+          { h: "2. Access to the service", p: "A free version gives access to basic statistics (rank, recent match history, agent and map performance). An optional paid subscription unlocks additional analysis and coaching features." },
+          { h: "3. Linking your Riot account", p: "Using Scope requires linking your Riot account through the official authentication system (RSO). You explicitly authorize Scope to access your public game data under this process. This authorization can be revoked at any time." },
+          { h: "4. Subscription and payment", p: "The premium subscription is billed monthly. It can be cancelled at any time; cancellation takes effect at the end of the period already paid for. Payments are processed by a third-party provider (Stripe); Scope does not store any banking information." },
+          { h: "5. Fair use", p: "Using Scope to cheat, manipulate rankings, or engage in any activity that violates Riot Games' rules is prohibited. Scope reserves the right to suspend access in case of abuse." },
+          { h: "6. Service availability", p: "Scope depends on the availability of the Riot Games API and cannot guarantee continuous, uninterrupted access. The service is provided \"as is\", with no guarantee of results regarding player progression." },
+          { h: "7. Contact", p: "For any question regarding these terms: <a href=\"mailto:contact@exemple.com\">contact@exemple.com</a> (address to be replaced)" },
+        ],
+      },
+      fr: {
+        title: "Conditions Générales d'Utilisation",
+        updated: "Dernière mise à jour : à compléter avant publication",
+        back: "← Retour à Scope",
+        sections: [
+          { h: "1. Présentation du service", p: "Scope est une application indépendante qui affiche des statistiques de progression pour le jeu VALORANT, à partir des données rendues disponibles par l'API officielle de Riot Games. Scope n'est ni développé, ni approuvé, ni sponsorisé par Riot Games." },
+          { h: "2. Accès au service", p: "Une version gratuite donne accès aux statistiques de base (rang, historique récent, performance par agent et par carte). Un abonnement payant optionnel donne accès à des fonctionnalités additionnelles d'analyse et de coaching." },
+          { h: "3. Connexion du compte Riot", p: "L'utilisation de Scope nécessite de lier son compte Riot via le système officiel d'authentification (RSO). L'utilisateur autorise explicitement Scope à accéder à ses données de jeu publiques dans ce cadre. Cette autorisation peut être révoquée à tout moment." },
+          { h: "4. Abonnement et paiement", p: "L'abonnement premium est facturé mensuellement. Il peut être résilié à tout moment ; la résiliation prend effet à la fin de la période déjà payée. Les paiements sont traités par un prestataire tiers (Stripe) ; Scope ne stocke aucune donnée bancaire." },
+          { h: "5. Usage raisonnable", p: "Il est interdit d'utiliser Scope à des fins de triche, de manipulation du classement, ou de toute activité contraire aux règles de Riot Games. Scope se réserve le droit de suspendre l'accès en cas d'usage abusif." },
+          { h: "6. Disponibilité du service", p: "Scope dépend de la disponibilité de l'API Riot Games et ne peut garantir un accès continu et sans interruption. Le service est fourni \"en l'état\", sans garantie de résultat sur la progression du joueur." },
+          { h: "7. Contact", p: "Pour toute question relative à ces conditions : <a href=\"mailto:contact@exemple.com\">contact@exemple.com</a> (adresse à remplacer)" },
+        ],
+      },
+      de: {
+        title: "Allgemeine Geschäftsbedingungen",
+        updated: "Letzte Aktualisierung: vor Veröffentlichung zu vervollständigen",
+        back: "← Zurück zu Scope",
+        sections: [
+          { h: "1. Über den Dienst", p: "Scope ist eine unabhängige Anwendung, die Fortschrittsstatistiken für das Spiel VALORANT anzeigt, basierend auf Daten, die über die offizielle API von Riot Games bereitgestellt werden. Scope wird nicht von Riot Games entwickelt, unterstützt oder gesponsert." },
+          { h: "2. Zugang zum Dienst", p: "Eine kostenlose Version bietet Zugang zu grundlegenden Statistiken (Rang, letzte Spielverläufe, Leistung nach Agent und Karte). Ein optionales kostenpflichtiges Abo schaltet zusätzliche Analyse- und Coaching-Funktionen frei." },
+          { h: "3. Verknüpfung des Riot-Kontos", p: "Die Nutzung von Scope erfordert die Verknüpfung deines Riot-Kontos über das offizielle Authentifizierungssystem (RSO). Du autorisierst Scope damit ausdrücklich, auf deine öffentlichen Spieldaten zuzugreifen. Diese Autorisierung kann jederzeit widerrufen werden." },
+          { h: "4. Abo und Zahlung", p: "Das Premium-Abo wird monatlich abgerechnet. Es kann jederzeit gekündigt werden; die Kündigung wird zum Ende des bereits bezahlten Zeitraums wirksam. Zahlungen werden von einem Drittanbieter (Stripe) abgewickelt; Scope speichert keine Bankdaten." },
+          { h: "5. Angemessene Nutzung", p: "Die Nutzung von Scope zum Betrügen, zur Manipulation von Ranglisten oder für Aktivitäten, die gegen die Regeln von Riot Games verstoßen, ist untersagt. Scope behält sich das Recht vor, den Zugang bei Missbrauch zu sperren." },
+          { h: "6. Verfügbarkeit des Dienstes", p: "Scope ist von der Verfügbarkeit der Riot Games API abhängig und kann keinen durchgehenden, unterbrechungsfreien Zugang garantieren. Der Dienst wird \"wie besehen\" bereitgestellt, ohne Garantie für den spielerischen Fortschritt." },
+          { h: "7. Kontakt", p: "Bei Fragen zu diesen Bedingungen: <a href=\"mailto:contact@exemple.com\">contact@exemple.com</a> (Adresse noch zu ersetzen)" },
+        ],
+      },
+      es: {
+        title: "Términos y Condiciones",
+        updated: "Última actualización: por completar antes de la publicación",
+        back: "← Volver a Scope",
+        sections: [
+          { h: "1. Presentación del servicio", p: "Scope es una aplicación independiente que muestra estadísticas de progresión para el juego VALORANT, a partir de datos proporcionados por la API oficial de Riot Games. Scope no está desarrollado, respaldado ni patrocinado por Riot Games." },
+          { h: "2. Acceso al servicio", p: "Una versión gratuita da acceso a estadísticas básicas (rango, historial reciente, rendimiento por agente y mapa). Una suscripción de pago opcional desbloquea funciones adicionales de análisis y coaching." },
+          { h: "3. Conexión de la cuenta Riot", p: "Usar Scope requiere vincular tu cuenta de Riot mediante el sistema oficial de autenticación (RSO). Autorizas explícitamente a Scope a acceder a tus datos públicos de juego en este marco. Esta autorización puede revocarse en cualquier momento." },
+          { h: "4. Suscripción y pago", p: "La suscripción premium se factura mensualmente. Puede cancelarse en cualquier momento; la cancelación surte efecto al final del periodo ya pagado. Los pagos son procesados por un proveedor externo (Stripe); Scope no almacena ningún dato bancario." },
+          { h: "5. Uso razonable", p: "Está prohibido usar Scope para hacer trampas, manipular clasificaciones o realizar cualquier actividad contraria a las reglas de Riot Games. Scope se reserva el derecho de suspender el acceso en caso de uso abusivo." },
+          { h: "6. Disponibilidad del servicio", p: "Scope depende de la disponibilidad de la API de Riot Games y no puede garantizar un acceso continuo e ininterrumpido. El servicio se ofrece \"tal cual\", sin garantía de resultados sobre la progresión del jugador." },
+          { h: "7. Contacto", p: "Para cualquier pregunta sobre estos términos: <a href=\"mailto:contact@exemple.com\">contact@exemple.com</a> (dirección a sustituir)" },
+        ],
+      },
+      it: {
+        title: "Termini e Condizioni",
+        updated: "Ultimo aggiornamento: da completare prima della pubblicazione",
+        back: "← Torna a Scope",
+        sections: [
+          { h: "1. Presentazione del servizio", p: "Scope è un'applicazione indipendente che mostra statistiche di progressione per il gioco VALORANT, a partire dai dati resi disponibili tramite l'API ufficiale di Riot Games. Scope non è sviluppato, approvato né sponsorizzato da Riot Games." },
+          { h: "2. Accesso al servizio", p: "Una versione gratuita dà accesso alle statistiche di base (rango, cronologia recente, prestazioni per agente e mappa). Un abbonamento a pagamento opzionale sblocca funzionalità aggiuntive di analisi e coaching." },
+          { h: "3. Collegamento dell'account Riot", p: "L'utilizzo di Scope richiede il collegamento del tuo account Riot tramite il sistema di autenticazione ufficiale (RSO). Autorizzi esplicitamente Scope ad accedere ai tuoi dati di gioco pubblici in questo contesto. Questa autorizzazione può essere revocata in qualsiasi momento." },
+          { h: "4. Abbonamento e pagamento", p: "L'abbonamento premium viene fatturato mensilmente. Può essere annullato in qualsiasi momento; la disdetta ha effetto alla fine del periodo già pagato. I pagamenti sono elaborati da un fornitore terzo (Stripe); Scope non memorizza alcun dato bancario." },
+          { h: "5. Uso corretto", p: "È vietato utilizzare Scope per barare, manipolare le classifiche o svolgere qualsiasi attività contraria alle regole di Riot Games. Scope si riserva il diritto di sospendere l'accesso in caso di uso improprio." },
+          { h: "6. Disponibilità del servizio", p: "Scope dipende dalla disponibilità dell'API di Riot Games e non può garantire un accesso continuo e ininterrotto. Il servizio è fornito \"così com'è\", senza garanzia di risultati sulla progressione del giocatore." },
+          { h: "7. Contatto", p: "Per qualsiasi domanda relativa a questi termini: <a href=\"mailto:contact@exemple.com\">contact@exemple.com</a> (indirizzo da sostituire)" },
+        ],
+      },
+      pt: {
+        title: "Termos de Utilização",
+        updated: "Última atualização: a completar antes da publicação",
+        back: "← Voltar à Scope",
+        sections: [
+          { h: "1. Apresentação do serviço", p: "Scope é uma aplicação independente que apresenta estatísticas de progressão para o jogo VALORANT, com base em dados disponibilizados através da API oficial da Riot Games. A Scope não é desenvolvida, aprovada nem patrocinada pela Riot Games." },
+          { h: "2. Acesso ao serviço", p: "Uma versão gratuita dá acesso a estatísticas básicas (rank, histórico recente, desempenho por agente e mapa). Uma subscrição paga opcional desbloqueia funcionalidades adicionais de análise e coaching." },
+          { h: "3. Ligação da conta Riot", p: "Usar a Scope requer ligar a tua conta Riot através do sistema oficial de autenticação (RSO). Autorizas explicitamente a Scope a aceder aos teus dados públicos de jogo neste contexto. Esta autorização pode ser revogada a qualquer momento." },
+          { h: "4. Subscrição e pagamento", p: "A subscrição premium é faturada mensalmente. Pode ser cancelada a qualquer momento; o cancelamento produz efeitos no final do período já pago. Os pagamentos são processados por um fornecedor terceiro (Stripe); a Scope não armazena quaisquer dados bancários." },
+          { h: "5. Utilização razoável", p: "É proibido usar a Scope para batota, manipulação de classificações, ou qualquer atividade contrária às regras da Riot Games. A Scope reserva-se o direito de suspender o acesso em caso de utilização abusiva." },
+          { h: "6. Disponibilidade do serviço", p: "A Scope depende da disponibilidade da API da Riot Games e não pode garantir um acesso contínuo e sem interrupções. O serviço é fornecido \"tal como está\", sem garantia de resultados quanto à progressão do jogador." },
+          { h: "7. Contacto", p: "Para qualquer questão relativa a estes termos: <a href=\"mailto:contact@exemple.com\">contact@exemple.com</a> (endereço a substituir)" },
+        ],
+      },
+    };
 
-  <h2>2. Accès au service</h2>
-  <p>Une version gratuite donne accès aux statistiques de base (rang, historique récent, performance par agent et par carte). Un abonnement payant optionnel donne accès à des fonctionnalités additionnelles d'analyse et de coaching.</p>
+    const LANGS = ['en', 'fr', 'de', 'es', 'it', 'pt'];
 
-  <h2>3. Connexion du compte Riot</h2>
-  <p>L'utilisation de Scope nécessite de lier son compte Riot via le système officiel d'authentification (RSO). L'utilisateur autorise explicitement Scope à accéder à ses données de jeu publiques dans ce cadre. Cette autorisation peut être révoquée à tout moment.</p>
+    function getLang() {
+      const params = new URLSearchParams(window.location.search);
+      const l = params.get('lang');
+      return LANGS.includes(l) ? l : 'en';
+    }
 
-  <h2>4. Abonnement et paiement</h2>
-  <p>L'abonnement premium est facturé mensuellement. Il peut être résilié à tout moment ; la résiliation prend effet à la fin de la période déjà payée. Les paiements sont traités par un prestataire tiers (Stripe) ; Scope ne stocke aucune donnée bancaire.</p>
+    function render(lang) {
+      const c = CONTENT[lang];
+      document.getElementById('pageTitle').textContent = c.title + ' — Scope';
+      document.getElementById('title').textContent = c.title;
+      document.getElementById('updated').textContent = c.updated;
+      document.getElementById('backLink').textContent = c.back;
+      document.documentElement.lang = lang;
 
-  <h2>5. Usage raisonnable</h2>
-  <p>Il est interdit d'utiliser Scope à des fins de triche, de manipulation du classement, ou de toute activité contraire aux règles de Riot Games. Scope se réserve le droit de suspendre l'accès en cas d'usage abusif.</p>
+      const container = document.getElementById('sections');
+      container.innerHTML = '';
+      c.sections.forEach((s) => {
+        const h2 = document.createElement('h2');
+        h2.textContent = s.h;
+        const p = document.createElement('p');
+        p.innerHTML = s.p;
+        container.appendChild(h2);
+        container.appendChild(p);
+      });
 
-  <h2>6. Disponibilité du service</h2>
-  <p>Scope dépend de la disponibilité de l'API Riot Games et ne peut garantir un accès continu et sans interruption. Le service est fourni "en l'état", sans garantie de résultat sur la progression du joueur.</p>
+      document.querySelectorAll('.lang-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
 
-  <h2>7. Contact</h2>
-  <p>Pour toute question relative à ces conditions : <a href="mailto:contact@exemple.com">contact@exemple.com</a> (adresse à remplacer)</p>
+      const url = new URL(window.location);
+      url.searchParams.set('lang', lang);
+      window.history.replaceState({}, '', url);
+    }
+
+    function buildSwitcher() {
+      const el = document.getElementById('langSwitch');
+      LANGS.forEach((l) => {
+        const btn = document.createElement('button');
+        btn.className = 'lang-btn';
+        btn.dataset.lang = l;
+        btn.textContent = l.toUpperCase();
+        btn.onclick = () => render(l);
+        el.appendChild(btn);
+      });
+    }
+
+    buildSwitcher();
+    render(getLang());
+  </script>
 </body>
 </html>

@@ -690,8 +690,8 @@ export default function ScopeDashboard() {
 
         <div className="mt-10 flex flex-col items-center gap-3 text-[11px] text-neutral-700 font-body">
           <div className="flex gap-4">
-            <a href="/cgu.html" className="hover:text-accent transition-colors">{t.cgu}</a>
-            <a href="/confidentialite.html" className="hover:text-accent transition-colors">{t.privacy}</a>
+            <a href={`/cgu.html?lang=${lang}`} className="hover:text-accent transition-colors">{t.cgu}</a>
+            <a href={`/confidentialite.html?lang=${lang}`} className="hover:text-accent transition-colors">{t.privacy}</a>
           </div>
           <div>{t.sampleData}</div>
           <div className="max-w-md text-center text-neutral-800 leading-relaxed">
