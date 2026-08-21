@@ -195,12 +195,12 @@ export default function ScopeDashboard() {
 
         {/* Wordmark + settings */}
         <div className="flex items-start justify-between mb-6">
-          <div>
-            <div className="flex items-baseline gap-2">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Scope" className="w-9 h-9" />
+            <div>
               <span className="font-display text-3xl font-bold tracking-wide text-white">SCOPE</span>
-              <span className="w-2 h-2 bg-accent inline-block" />
+              <div className="h-[2px] w-14 bg-accent mt-1" />
             </div>
-            <div className="h-[2px] w-14 bg-accent mt-1" />
           </div>
 
           <div className="relative">
