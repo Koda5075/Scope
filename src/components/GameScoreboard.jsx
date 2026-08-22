@@ -7,8 +7,8 @@ export default function GameScoreboard({ match, t }) {
   return (
     <div>
       {mapImage && (
-        <div className="relative -mx-5 -mt-5 mb-4 h-24 overflow-hidden">
-          <img src={mapImage.splash} alt="" className="val-asset w-full h-full object-cover" />
+        <div className="relative -mx-5 -mt-5 mb-4 h-28 overflow-hidden">
+          <img src={mapImage.splash} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent" />
         </div>
       )}
@@ -26,8 +26,8 @@ export default function GameScoreboard({ match, t }) {
             <div className="flex items-center gap-3 min-w-0">
               <span className="font-mono text-[10px] text-neutral-600 w-4 shrink-0">{p.team}</span>
               <span className={`font-body text-xs truncate ${p.isYou ? 'text-accent' : 'text-neutral-300'}`}>{p.name}</span>
-              <span className="flex items-center gap-1 text-[10px] font-mono text-neutral-600 shrink-0">
-                {getAgentIcon(p.agent) && <img src={getAgentIcon(p.agent)} alt="" className="val-asset w-4 h-4 rounded-full object-cover" />}
+              <span className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-600 shrink-0">
+                {getAgentIcon(p.agent) && <img src={getAgentIcon(p.agent)} alt="" className="val-icon w-8 h-8 rounded-full object-cover" />}
                 {p.agent}
               </span>
             </div>

@@ -13,8 +13,8 @@ export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite
             {player.name}
             <span className="text-neutral-600">#{player.tag}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-body mt-1">
-            {rankIcon && <img src={rankIcon} alt="" className="val-asset w-4 h-4 object-contain" />}
+          <div className="flex items-center gap-2 text-xs text-neutral-500 font-body mt-1.5">
+            {rankIcon && <img src={rankIcon} alt="" className="val-icon w-6 h-6" />}
             {player.rank} · {t.peakRankLabel} {player.peakRank}
           </div>
         </div>

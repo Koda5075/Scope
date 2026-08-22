@@ -19,12 +19,12 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank }) {
       </div>
 
       <div className="border border-neutral-800 bg-neutral-950 px-5 py-3 min-w-[220px]">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-body">{t.rank}</span>
-          <span className="flex items-center gap-1.5 font-display text-xs font-bold text-accent">
-            {rankIcon && <img src={rankIcon} alt="" className="val-asset w-4 h-4 object-contain" />}
-            {CURRENT_RANK}
-          </span>
+        <div className="flex items-center gap-3 mb-2">
+          {rankIcon && <img src={rankIcon} alt="" className="val-icon w-10 h-10 shrink-0" />}
+          <div className="min-w-0">
+            <div className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-body">{t.rank}</div>
+            <div className="font-display text-sm font-bold text-accent">{CURRENT_RANK}</div>
+          </div>
         </div>
         <div className="sc-track h-2 w-full overflow-hidden">
           <div className="sc-fill h-full" style={{ width: `${rrCurrent}%` }} />
@@ -33,9 +33,9 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank }) {
           <span className="font-mono text-[11px] text-neutral-300">{rrCurrent} RR</span>
           <span className="font-mono text-[11px] text-neutral-600">/ {rrGoal}</span>
         </div>
-        <div className="flex items-center gap-1 text-[10px] font-mono text-neutral-600 mt-1.5">
+        <div className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-600 mt-1.5">
           {t.peakRankLabel}
-          {peakRankIcon && <img src={peakRankIcon} alt="" className="val-asset w-3.5 h-3.5 object-contain" />}
+          {peakRankIcon && <img src={peakRankIcon} alt="" className="val-icon w-5 h-5" />}
           <span className="text-neutral-400">{peakRank}</span>
         </div>
       </div>

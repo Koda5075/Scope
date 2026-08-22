@@ -11,8 +11,8 @@ export default function AgentsTab({ t }) {
         <div className="flex flex-col gap-3">
           {agentStats.map((a) => (
             <div key={a.name} className="flex items-center gap-4">
-              <span className="font-display text-sm text-white w-24 flex items-center gap-1.5">
-                {getAgentIcon(a.name) && <img src={getAgentIcon(a.name)} alt="" className="val-asset w-5 h-5 rounded-full object-cover shrink-0" />}
+              <span className="font-display text-sm text-white w-32 shrink-0 flex items-center gap-2">
+                {getAgentIcon(a.name) && <img src={getAgentIcon(a.name)} alt="" className="val-icon w-11 h-11 rounded-full object-cover shrink-0" />}
                 {a.name}
               </span>
               <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr}%` }} /></div>
@@ -28,8 +28,8 @@ export default function AgentsTab({ t }) {
         <div className="flex flex-col gap-3">
           {mapStats.map((m) => (
             <div key={m.name} className="flex items-center gap-4">
-              <span className="font-display text-sm text-white w-24 flex items-center gap-1.5">
-                {getMapImage(m.name) && <img src={getMapImage(m.name).icon} alt="" className="val-asset w-5 h-5 rounded-sm object-cover shrink-0" />}
+              <span className="font-display text-sm text-white w-32 shrink-0 flex items-center gap-2">
+                {getMapImage(m.name) && <img src={getMapImage(m.name).icon} alt="" className="val-icon w-11 h-11 rounded object-cover shrink-0" />}
                 {m.name}
               </span>
               <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr}%` }} /></div>

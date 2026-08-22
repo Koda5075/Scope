@@ -57,13 +57,7 @@ export default function PublicProfilePage({ slug }) {
         .bg-accent { background: var(--accent); }
         .sc-card { background: #0F0F0F; border: 1px solid #262626; border-left: 3px solid var(--accent); padding: 16px 18px; }
         .sc-badge { background: #0F0F0F; border: 1px solid #262626; border-left: 2px solid var(--accent); }
-        .val-asset { filter: grayscale(1); transition: filter 0.25s ease; }
-        @media (hover: hover) and (pointer: fine) {
-          .val-asset:hover { filter: grayscale(0); }
-        }
-        @media (hover: none), (pointer: coarse) {
-          .val-asset { filter: grayscale(0); }
-        }
+        .val-icon { border: 1.5px solid var(--accent); background: #0F0F0F; padding: 2px; }
       `}</style>
 
       <div className="max-w-2xl mx-auto px-5 py-10">
@@ -78,8 +72,8 @@ export default function PublicProfilePage({ slug }) {
               <div className="font-display text-2xl font-semibold text-white">
                 KAITO<span className="text-neutral-600">#EUW1</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-body mt-1">
-                {getRankIcon(CURRENT_RANK) && <img src={getRankIcon(CURRENT_RANK)} alt="" className="val-asset w-4 h-4 object-contain" />}
+              <div className="flex items-center gap-2 text-xs text-neutral-500 font-body mt-1.5">
+                {getRankIcon(CURRENT_RANK) && <img src={getRankIcon(CURRENT_RANK)} alt="" className="val-icon w-6 h-6" />}
                 {CURRENT_RANK} · {t.peakRankLabel} {peakRank}
               </div>
             </div>

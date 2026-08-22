@@ -92,8 +92,8 @@ export default function OverviewTab({ t, accent }) {
                   <div className="flex items-center gap-3 min-w-0">
                     <span className={`w-1.5 h-1.5 shrink-0 ${g.result === 'win' ? 'bg-accent' : 'bg-neutral-600'}`} />
                     <span className="font-body text-xs text-neutral-300 truncate">{g.map}</span>
-                    <span className="flex items-center gap-1 font-mono text-[10px] text-neutral-600 shrink-0">
-                      {getAgentIcon(g.agent) && <img src={getAgentIcon(g.agent)} alt="" className="val-asset w-4 h-4 rounded-full object-cover" />}
+                    <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 shrink-0">
+                      {getAgentIcon(g.agent) && <img src={getAgentIcon(g.agent)} alt="" className="val-icon w-8 h-8 rounded-full object-cover" />}
                       {g.agent}
                     </span>
                   </div>
