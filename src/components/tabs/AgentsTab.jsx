@@ -25,16 +25,20 @@ export default function AgentsTab({ t }) {
 
       <Card>
         <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.mapPerf}</span>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {mapStats.map((m) => (
             <div key={m.name} className="flex items-center gap-4">
-              <span className="font-display text-sm text-white w-32 shrink-0 flex items-center gap-2">
-                {getMapImage(m.name) && <img src={getMapImage(m.name).icon} alt="" className="val-icon w-11 h-11 rounded object-cover shrink-0" />}
-                {m.name}
-              </span>
-              <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr}%` }} /></div>
-              <span className="font-mono text-xs text-neutral-500 w-20 text-right">{m.games} {t.gamesShort}</span>
-              <span className="font-mono text-xs text-accent w-12 text-right">{m.wr}%</span>
+              {getMapImage(m.name) && (
+                <img src={getMapImage(m.name).splash} alt="" className="val-icon w-28 h-16 rounded object-cover shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="font-display text-sm text-white mb-1.5">{m.name}</div>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr}%` }} /></div>
+                  <span className="font-mono text-xs text-neutral-500 w-20 text-right shrink-0">{m.games} {t.gamesShort}</span>
+                  <span className="font-mono text-xs text-accent w-12 text-right shrink-0">{m.wr}%</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>

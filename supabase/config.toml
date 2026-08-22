@@ -9,3 +9,12 @@ verify_jwt = false
 
 [functions.rso-callback]
 verify_jwt = false
+
+# Same situation as above: no real Supabase session exists yet (RSO isn't wired to a
+# real login), so these can't require a JWT either. Revisit once real auth lands —
+# both should require a valid session at that point, not stay open indefinitely.
+[functions.moderate-avatar]
+verify_jwt = false
+
+[functions.report-photo]
+verify_jwt = false

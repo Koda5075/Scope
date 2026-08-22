@@ -5,15 +5,58 @@ export const rrHistory = [
   { s: 'S5', rr: 57 }, { s: 'S6', rr: 74 }, { s: 'S7', rr: 67 },
 ];
 
+// Tier ladder shared by every progressive badge (kept in English — same convention as
+// rank names, which stay untranslated across all 6 locales already).
+export const TIER_NAMES = ['Bronze', 'Silver', 'Gold', 'Diamond'];
+export const TIER_COLORS = ['#CD7F32', '#C0C4C9', '#F2C94C', '#7DD3E8'];
+
+// Badges with a natural cumulative counter get a 4-tier progression (tiers = thresholds,
+// value = current count). One-off or snapshot-style achievements (Comeback, Marathon,
+// Explorer, time-of-day patterns, current percentile/rank-tier reached) keep the simple
+// single-state display — forcing 4 levels on those wouldn't mean anything.
 export const badgeDefs = [
-  { id: 'teamPlayer', icon: Users }, { id: 'aceX3', icon: Swords },
-  { id: 'headshots200', icon: Target }, { id: 'streak5', icon: Flame },
-  { id: 'newTier', icon: TrendingUp }, { id: 'top15', icon: Trophy },
-  { id: 'comeback', icon: RotateCcw }, { id: 'nightOwl', icon: Moon },
-  { id: 'earlyBird', icon: Sunrise }, { id: 'marathon', icon: Hourglass },
-  { id: 'supportStar', icon: HeartHandshake }, { id: 'rivalSlayer', icon: Crosshair },
-  { id: 'explorer', icon: Compass }, { id: 'versatile', icon: Shuffle },
+  { id: 'teamPlayer', icon: Users, tiers: [10, 25, 50, 100], value: 38 },
+  { id: 'aceX3', icon: Swords, tiers: [1, 3, 10, 25], value: 7 },
+  { id: 'headshots200', icon: Target, tiers: [100, 500, 1000, 2500], value: 640 },
+  { id: 'streak5', icon: Flame, tiers: [3, 5, 10, 30], value: 8 },
+  { id: 'newTier', icon: TrendingUp },
+  { id: 'top15', icon: Trophy },
+  { id: 'comeback', icon: RotateCcw },
+  { id: 'nightOwl', icon: Moon },
+  { id: 'earlyBird', icon: Sunrise },
+  { id: 'marathon', icon: Hourglass },
+  { id: 'supportStar', icon: HeartHandshake, tiers: [200, 500, 1000, 2000], value: 740 },
+  { id: 'rivalSlayer', icon: Crosshair, tiers: [1, 5, 15, 30], value: 4 },
+  { id: 'explorer', icon: Compass },
+  { id: 'versatile', icon: Shuffle, tiers: [3, 6, 10, 15], value: 7 },
 ];
+
+// Returns null for single-state badges (no `tiers`/`value`). Otherwise the current tier
+// reached and progress toward the next one (100% + isMaxed once Diamond is reached).
+export function getBadgeProgress(badge) {
+  if (!badge.tiers || badge.value === undefined) return null;
+
+  const { tiers, value } = badge;
+  let tierIndex = -1;
+  for (let i = 0; i < tiers.length; i++) {
+    if (value >= tiers[i]) tierIndex = i;
+  }
+
+  const isMaxed = tierIndex === tiers.length - 1;
+  const floor = tierIndex >= 0 ? tiers[tierIndex] : 0;
+  const nextThreshold = isMaxed ? null : tiers[tierIndex + 1];
+  const progressPct = isMaxed ? 100 : Math.min(100, Math.round(((value - floor) / (nextThreshold - floor)) * 100));
+
+  return {
+    tierIndex,
+    tierName: tierIndex >= 0 ? TIER_NAMES[tierIndex] : null,
+    tierColor: tierIndex >= 0 ? TIER_COLORS[tierIndex] : '#525252',
+    value,
+    nextThreshold,
+    progressPct,
+    isMaxed,
+  };
+}
 
 export const agentStats = [
   { name: 'Jett', games: 14, wr: 64 },

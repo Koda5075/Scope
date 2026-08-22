@@ -6,6 +6,8 @@ import TopBar from './components/TopBar.jsx';
 import LoginScreen from './components/LoginScreen.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
 import PlayerSearchBar from './components/PlayerSearchBar.jsx';
+import Modal from './components/Modal.jsx';
+import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
 import TabNav from './components/TabNav.jsx';
 import Footer from './components/Footer.jsx';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
@@ -22,6 +24,8 @@ export default function ScopeDashboard() {
   const [showSettings, setShowSettings] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState(['p2']);
   const [publicVisible, setPublicVisible] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
@@ -37,10 +41,12 @@ export default function ScopeDashboard() {
       const savedTheme = localStorage.getItem('scope-theme');
       const savedFavorites = localStorage.getItem('scope-favorites');
       const savedPublicVisible = localStorage.getItem('scope-public-visible');
+      const savedAvatar = localStorage.getItem('scope-avatar');
       if (savedLang && T[savedLang]) setLang(savedLang);
       if (savedTheme && THEMES[savedTheme]) setTheme(savedTheme);
       if (savedFavorites) setFavoriteIds(JSON.parse(savedFavorites));
       if (savedPublicVisible !== null) setPublicVisible(savedPublicVisible === 'true');
+      if (savedAvatar) setAvatarUrl(savedAvatar);
     } catch (e) { /* ignore */ }
   }, []);
 
@@ -50,8 +56,10 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-theme', theme);
       localStorage.setItem('scope-favorites', JSON.stringify(favoriteIds));
       localStorage.setItem('scope-public-visible', String(publicVisible));
+      if (avatarUrl) localStorage.setItem('scope-avatar', avatarUrl);
+      else localStorage.removeItem('scope-avatar');
     } catch (e) { /* ignore */ }
-  }, [lang, theme, favoriteIds, publicVisible]);
+  }, [lang, theme, favoriteIds, publicVisible, avatarUrl]);
 
   return (
     <div
@@ -103,7 +111,14 @@ export default function ScopeDashboard() {
           <LoginScreen t={t} setLoggedIn={setLoggedIn} />
         ) : (
           <>
-            <PlayerHeader t={t} rrCurrent={rrCurrent} rrGoal={rrGoal} peakRank={mockPeakRank} />
+            <PlayerHeader
+              t={t}
+              rrCurrent={rrCurrent}
+              rrGoal={rrGoal}
+              peakRank={mockPeakRank}
+              avatarUrl={avatarUrl}
+              onAvatarClick={() => setShowProfileModal(true)}
+            />
             <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
             <TabNav tab={tab} setTab={setTab} t={t} />
 
@@ -116,6 +131,12 @@ export default function ScopeDashboard() {
         )}
 
         <Footer t={t} lang={lang} />
+
+        {showProfileModal && (
+          <Modal onClose={() => setShowProfileModal(false)} closeLabel={t.close}>
+            <ProfileCustomizationModal avatarUrl={avatarUrl} onAvatarChange={setAvatarUrl} t={t} />
+          </Modal>
+        )}
       </div>
     </div>
   );
