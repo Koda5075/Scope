@@ -1,7 +1,8 @@
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Lock, ChevronRight } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
+import PremiumLock from '../PremiumLock.jsx';
 import { rrHistory, badgeDefs, performanceScore } from '../../data/mockData.js';
 
 export default function OverviewTab({ t, accent }) {
@@ -46,10 +47,10 @@ export default function OverviewTab({ t, accent }) {
           </div>
         </Card>
 
-        <div className="relative">
+        <PremiumLock title={t.unlock} description={t.perfDesc} ctaLabel={t.seePlans}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.scopePerformance}</span>
-            <div className="grid grid-cols-2 gap-3 opacity-40 select-none">
+            <div className="grid grid-cols-2 gap-3">
               {performanceScore.map((p) => (
                 <div key={p.label}>
                   <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{p.label}</span><span>{p.value}</span></div>
@@ -58,15 +59,7 @@ export default function OverviewTab({ t, accent }) {
               ))}
             </div>
           </Card>
-          <div className="absolute inset-0 locked-overlay flex flex-col items-center justify-center gap-2">
-            <Lock size={18} className="text-accent" />
-            <span className="font-display text-xs tracking-wide uppercase text-neutral-100">{t.unlock}</span>
-            <span className="text-[10px] text-neutral-400 font-body text-center max-w-[220px]">{t.perfDesc}</span>
-            <button className="mt-1 flex items-center gap-1 text-[11px] font-body text-accent hover:underline">
-              {t.seePlans} <ChevronRight size={12} />
-            </button>
-          </div>
-        </div>
+        </PremiumLock>
       </div>
 
       <div className="flex flex-col gap-4">
