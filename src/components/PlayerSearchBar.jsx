@@ -32,6 +32,7 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t.searchPlaceholder}
+          aria-label={t.searchPlaceholder}
           className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-9 pr-3 py-2.5 text-sm font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
         />
         {query.trim() && (

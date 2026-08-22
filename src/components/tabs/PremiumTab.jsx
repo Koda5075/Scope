@@ -42,6 +42,7 @@ export default function PremiumTab({ t, accent }) {
             <select
               value={metric}
               onChange={(e) => setMetric(e.target.value)}
+              aria-label={t.perfHistoryTitle}
               className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1 focus:border-accent outline-none"
             >
               {METRICS.map((m) => (
@@ -98,15 +99,16 @@ export default function PremiumTab({ t, accent }) {
         <Card>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.alertsTitle}</span>
           <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-3">
-            <input type="checkbox" defaultChecked readOnly /> {t.alertDerankLabel}
+            <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertDerankLabel}
           </label>
           <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-3">
-            <input type="checkbox" defaultChecked readOnly /> {t.alertGoalLabel}
+            <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertGoalLabel}
           </label>
           <div className="flex items-center gap-2">
             <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.alertGoalRankLabel}</span>
             <select
               defaultValue="Diamond 3"
+              aria-label={t.alertGoalRankLabel}
               className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1 focus:border-accent outline-none"
             >
               <option>Platinum 1</option>

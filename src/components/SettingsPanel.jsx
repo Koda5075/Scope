@@ -55,7 +55,7 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
       <div>
         <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.publicProfileSection}</div>
         <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-2">
-          <input type="checkbox" checked={publicVisible} onChange={(e) => setPublicVisible(e.target.checked)} />
+          <input type="checkbox" checked={publicVisible} onChange={(e) => setPublicVisible(e.target.checked)} className="accent-[var(--accent)]" />
           {t.publicVisibilityLabel}
         </label>
         <button onClick={handleCopyLink} className="text-[11px] font-body text-accent hover:underline">

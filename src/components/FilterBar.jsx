@@ -6,6 +6,7 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod }) {
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value)}
+          aria-label={t.filterMode}
           className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1.5 focus:border-accent outline-none"
         >
           <option value="all">{t.modeAll}</option>
@@ -19,6 +20,7 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod }) {
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
+          aria-label={t.filterPeriod}
           className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1.5 focus:border-accent outline-none"
         >
           <option value="7d">{t.period7}</option>
