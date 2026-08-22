@@ -1,7 +1,7 @@
 import { LogIn, Settings } from 'lucide-react';
 import SettingsPanel from './SettingsPanel.jsx';
 
-export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme }) {
+export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible }) {
   return (
     <div className="flex items-start justify-between mb-6">
       <div className="flex items-center gap-3">
@@ -32,7 +32,15 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
           </button>
 
           {showSettings && (
-            <SettingsPanel t={t} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
+            <SettingsPanel
+              t={t}
+              lang={lang}
+              setLang={setLang}
+              theme={theme}
+              setTheme={setTheme}
+              publicVisible={publicVisible}
+              setPublicVisible={setPublicVisible}
+            />
           )}
         </div>
       </div>

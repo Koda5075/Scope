@@ -1,4 +1,4 @@
-export default function PlayerHeader({ t, rrCurrent, rrGoal }) {
+export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-7">
       <div className="flex items-center gap-4">
@@ -22,6 +22,9 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal }) {
         <div className="flex justify-between mt-1">
           <span className="font-mono text-[11px] text-neutral-300">{rrCurrent} RR</span>
           <span className="font-mono text-[11px] text-neutral-600">/ {rrGoal}</span>
+        </div>
+        <div className="text-[10px] font-mono text-neutral-600 mt-1.5">
+          {t.peakRankLabel} <span className="text-neutral-400">{peakRank}</span>
         </div>
       </div>
     </div>

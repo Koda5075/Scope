@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { T } from './i18n/translations.js';
 import { THEMES } from './data/themes.js';
+import { peakRank as mockPeakRank } from './data/mockData.js';
 import TopBar from './components/TopBar.jsx';
 import LoginScreen from './components/LoginScreen.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
+import PlayerSearchBar from './components/PlayerSearchBar.jsx';
 import TabNav from './components/TabNav.jsx';
 import Footer from './components/Footer.jsx';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
@@ -17,17 +19,27 @@ export default function ScopeDashboard() {
   const [lang, setLang] = useState('en');
   const [theme, setTheme] = useState('yellow');
   const [showSettings, setShowSettings] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState(['p2']);
+  const [publicVisible, setPublicVisible] = useState(true);
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
   const accent = THEMES[theme].accent;
 
+  function toggleFavorite(puuid) {
+    setFavoriteIds((ids) => (ids.includes(puuid) ? ids.filter((id) => id !== puuid) : [...ids, puuid]));
+  }
+
   useEffect(() => {
     try {
       const savedLang = localStorage.getItem('scope-lang');
       const savedTheme = localStorage.getItem('scope-theme');
+      const savedFavorites = localStorage.getItem('scope-favorites');
+      const savedPublicVisible = localStorage.getItem('scope-public-visible');
       if (savedLang && T[savedLang]) setLang(savedLang);
       if (savedTheme && THEMES[savedTheme]) setTheme(savedTheme);
+      if (savedFavorites) setFavoriteIds(JSON.parse(savedFavorites));
+      if (savedPublicVisible !== null) setPublicVisible(savedPublicVisible === 'true');
     } catch (e) { /* ignore */ }
   }, []);
 
@@ -35,8 +47,10 @@ export default function ScopeDashboard() {
     try {
       localStorage.setItem('scope-lang', lang);
       localStorage.setItem('scope-theme', theme);
+      localStorage.setItem('scope-favorites', JSON.stringify(favoriteIds));
+      localStorage.setItem('scope-public-visible', String(publicVisible));
     } catch (e) { /* ignore */ }
-  }, [lang, theme]);
+  }, [lang, theme, favoriteIds, publicVisible]);
 
   return (
     <div
@@ -75,13 +89,16 @@ export default function ScopeDashboard() {
           setLang={setLang}
           theme={theme}
           setTheme={setTheme}
+          publicVisible={publicVisible}
+          setPublicVisible={setPublicVisible}
         />
 
         {!loggedIn ? (
           <LoginScreen t={t} setLoggedIn={setLoggedIn} />
         ) : (
           <>
-            <PlayerHeader t={t} rrCurrent={rrCurrent} rrGoal={rrGoal} />
+            <PlayerHeader t={t} rrCurrent={rrCurrent} rrGoal={rrGoal} peakRank={mockPeakRank} />
+            <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
             <TabNav tab={tab} setTab={setTab} t={t} />
 
             {tab === 'overview' && <OverviewTab t={t} accent={accent} />}

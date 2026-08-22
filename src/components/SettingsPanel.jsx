@@ -1,7 +1,22 @@
+import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { THEMES } from '../data/themes.js';
 
-export default function SettingsPanel({ t, lang, setLang, theme, setTheme }) {
+const MOCK_PUBLIC_SLUG = 'kaito-euw1';
+
+export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/u/${MOCK_PUBLIC_SLUG}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* ignore — clipboard unavailable */
+    }
+  }
+
   return (
     <div className="settings-panel absolute right-0 top-11 w-64 p-4 z-10">
       <div className="mb-4">
@@ -20,7 +35,7 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme }) {
           ))}
         </div>
       </div>
-      <div>
+      <div className="mb-4">
         <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.appearance}</div>
         <div className="flex gap-2.5">
           {Object.entries(THEMES).map(([key, val]) => (
@@ -36,6 +51,16 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme }) {
             </button>
           ))}
         </div>
+      </div>
+      <div>
+        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.publicProfileSection}</div>
+        <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-2">
+          <input type="checkbox" checked={publicVisible} onChange={(e) => setPublicVisible(e.target.checked)} />
+          {t.publicVisibilityLabel}
+        </label>
+        <button onClick={handleCopyLink} className="text-[11px] font-body text-accent hover:underline">
+          {copied ? t.linkCopied : t.copyLink}
+        </button>
       </div>
     </div>
   );
