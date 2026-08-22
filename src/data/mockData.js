@@ -1,4 +1,4 @@
-import { Users, Flame, TrendingUp, Swords, Target, Trophy } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle } from 'lucide-react';
 
 export const rrHistory = [
   { s: 'S1', rr: 38 }, { s: 'S2', rr: 52 }, { s: 'S3', rr: 45 }, { s: 'S4', rr: 61 },
@@ -9,6 +9,10 @@ export const badgeDefs = [
   { id: 'teamPlayer', icon: Users }, { id: 'aceX3', icon: Swords },
   { id: 'headshots200', icon: Target }, { id: 'streak5', icon: Flame },
   { id: 'newTier', icon: TrendingUp }, { id: 'top15', icon: Trophy },
+  { id: 'comeback', icon: RotateCcw }, { id: 'nightOwl', icon: Moon },
+  { id: 'earlyBird', icon: Sunrise }, { id: 'marathon', icon: Hourglass },
+  { id: 'supportStar', icon: HeartHandshake }, { id: 'rivalSlayer', icon: Crosshair },
+  { id: 'explorer', icon: Compass }, { id: 'versatile', icon: Shuffle },
 ];
 
 export const agentStats = [
@@ -126,4 +130,32 @@ export function getMatchScoreboard(gameId) {
   const players = [you, ...fillers].sort((a, b) => b.acs - a.acs);
 
   return { ...game, players };
+}
+
+// Last entry matches performanceScore exactly, so the "current" snapshot is the latest
+// point of the history line rather than a disconnected number.
+export const performanceHistory = [
+  { s: 'S1', aim: 68, consistency: 60, impact: 71, clutch: 40 },
+  { s: 'S2', aim: 72, consistency: 65, impact: 75, clutch: 48 },
+  { s: 'S3', aim: 70, consistency: 68, impact: 78, clutch: 52 },
+  { s: 'S4', aim: 76, consistency: 70, impact: 80, clutch: 55 },
+  { s: 'S5', aim: 79, consistency: 72, impact: 82, clutch: 58 },
+  { s: 'S6', aim: 84, consistency: 76, impact: 85, clutch: 63 },
+  { s: 'S7', aim: 82, consistency: 74, impact: 86, clutch: 61 },
+];
+
+export const teammates = [
+  { name: 'Nova#EUW1', gamesTogether: 14, winRate: 71 },
+  { name: 'Miro#EUW1', gamesTogether: 9, winRate: 44 },
+  { name: 'Shade#EUW1', gamesTogether: 6, winRate: 33 },
+];
+
+export function buildGamesCSV() {
+  const header = ['date', 'mode', 'map', 'result', 'score', 'agent', 'kda', 'acs'];
+  const rows = recentGames.map((g) => {
+    const date = new Date();
+    date.setDate(date.getDate() - g.daysAgo);
+    return [date.toISOString().slice(0, 10), g.mode, g.map, g.result, g.score, g.agent, g.kda, g.acs];
+  });
+  return [header, ...rows].map((row) => row.join(',')).join('\n');
 }

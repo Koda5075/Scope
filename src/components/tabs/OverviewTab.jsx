@@ -3,12 +3,11 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
-import PremiumLock from '../PremiumLock.jsx';
 import FilterBar from '../FilterBar.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
 import Modal from '../Modal.jsx';
 import GameScoreboard from '../GameScoreboard.jsx';
-import { rrHistory, badgeDefs, performanceScore, recentGames, getMatchScoreboard } from '../../data/mockData.js';
+import { rrHistory, badgeDefs, recentGames, getMatchScoreboard } from '../../data/mockData.js';
 
 const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, act: 59, all: Infinity };
 
@@ -107,20 +106,6 @@ export default function OverviewTab({ t, accent }) {
         <Card>
           <ActivityCalendar t={t} />
         </Card>
-
-        <PremiumLock title={t.unlock} description={t.perfDesc} ctaLabel={t.seePlans}>
-          <Card>
-            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.scopePerformance}</span>
-            <div className="grid grid-cols-2 gap-3">
-              {performanceScore.map((p) => (
-                <div key={p.label}>
-                  <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{p.label}</span><span>{p.value}</span></div>
-                  <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${p.value}%` }} /></div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </PremiumLock>
       </div>
 
       <div className="flex flex-col gap-4">

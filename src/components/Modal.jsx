@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 export default function Modal({ onClose, children, closeLabel = 'Close' }) {
+  const closeButtonRef = useRef(null);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
+    closeButtonRef.current?.focus();
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
@@ -19,6 +22,7 @@ export default function Modal({ onClose, children, closeLabel = 'Close' }) {
         aria-modal="true"
       >
         <button
+          ref={closeButtonRef}
           onClick={onClose}
           className="absolute top-3 right-3 text-neutral-500 hover:text-accent transition-colors"
           aria-label={closeLabel}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, Star } from 'lucide-react';
+import { Search, Star, X } from 'lucide-react';
 import Modal from './Modal.jsx';
 import PlayerProfileCard from './PlayerProfileCard.jsx';
 import PlayerCompareView from './PlayerCompareView.jsx';
@@ -61,14 +61,23 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite }) {
         <div className="flex flex-wrap items-center gap-2 mt-3">
           <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.favoritesTitle}</span>
           {favorites.map((p) => (
-            <button
+            <div
               key={p.puuid}
-              onClick={() => openPlayer(p)}
-              className="flex items-center gap-1.5 border border-neutral-800 hover:border-accent px-2.5 py-1 text-xs font-body text-neutral-300 transition-colors"
+              className="group flex items-center gap-1.5 border border-neutral-800 hover:border-accent pl-2.5 pr-1.5 py-1 text-xs font-body text-neutral-300 transition-colors"
             >
-              <Star size={10} className="text-accent" fill="currentColor" />
-              {p.name}
-            </button>
+              <button onClick={() => openPlayer(p)} className="flex items-center gap-1.5">
+                <Star size={10} className="text-accent" fill="currentColor" />
+                {p.name}
+              </button>
+              <button
+                onClick={() => onToggleFavorite(p.puuid)}
+                className="text-neutral-700 hover:text-accent transition-colors"
+                aria-label={t.removeFavorite}
+                title={t.removeFavorite}
+              >
+                <X size={10} />
+              </button>
+            </div>
           ))}
         </div>
       )}

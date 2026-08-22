@@ -12,6 +12,7 @@ import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
 import BadgesTab from './components/tabs/BadgesTab.jsx';
+import PremiumTab from './components/tabs/PremiumTab.jsx';
 
 export default function ScopeDashboard() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -105,6 +106,7 @@ export default function ScopeDashboard() {
             {tab === 'agents' && <AgentsTab t={t} />}
             {tab === 'compare' && <CompareTab t={t} theme={theme} />}
             {tab === 'badges' && <BadgesTab t={t} />}
+            {tab === 'premium' && <PremiumTab t={t} accent={accent} />}
           </>
         )}
 
