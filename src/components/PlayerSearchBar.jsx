@@ -1,62 +1,108 @@
-import { useMemo, useState } from 'react';
-import { Search, Star, X } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Star, X, Lock, UserPlus } from 'lucide-react';
 import Modal from './Modal.jsx';
 import PlayerProfileCard from './PlayerProfileCard.jsx';
 import PlayerCompareView from './PlayerCompareView.jsx';
 import { otherPlayers } from '../data/mockData.js';
 
+// Scope can only ever look up one exact Riot ID at a time (account-v1 has no fuzzy
+// search), matching case-insensitively like the users_riot_id_idx unique index.
+function parseRiotId(raw) {
+  const trimmed = raw.trim();
+  const hashIndex = trimmed.indexOf('#');
+  if (hashIndex <= 0 || hashIndex === trimmed.length - 1) return null;
+  return { name: trimmed.slice(0, hashIndex), tag: trimmed.slice(hashIndex + 1) };
+}
+
 export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite }) {
   const [query, setQuery] = useState('');
+  const [result, setResult] = useState(null);
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState('profile');
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return otherPlayers.filter((p) => p.connected && p.isPublic && `${p.name}#${p.tag}`.toLowerCase().includes(q));
-  }, [query]);
+  const [inviteCopied, setInviteCopied] = useState(false);
 
   const favorites = otherPlayers.filter((p) => favoriteIds.includes(p.puuid));
 
   function openPlayer(p) {
     setSelected(p);
     setView('profile');
+    setResult(null);
     setQuery('');
+  }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const parsed = parseRiotId(query);
+    if (!parsed) {
+      setResult({ status: 'invalid' });
+      return;
+    }
+    const match = otherPlayers.find(
+      (p) => p.name.toLowerCase() === parsed.name.toLowerCase() && p.tag.toLowerCase() === parsed.tag.toLowerCase()
+    );
+    if (match && match.connected && match.isPublic) {
+      openPlayer(match);
+    } else if (match && match.connected && !match.isPublic) {
+      setResult({ status: 'private' });
+    } else {
+      setResult({ status: 'not_found', riotId: `${parsed.name}#${parsed.tag}` });
+    }
+  }
+
+  async function handleInvite() {
+    try {
+      await navigator.clipboard.writeText(window.location.origin);
+      setInviteCopied(true);
+      setTimeout(() => setInviteCopied(false), 1500);
+    } catch {
+      /* ignore — clipboard unavailable */
+    }
   }
 
   return (
     <div className="mb-6">
-      <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" />
+      <form onSubmit={handleSearch} className="relative">
+        <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-accent transition-colors" aria-label={t.searchPlaceholder}>
+          <Search size={14} />
+        </button>
         <input
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => { setQuery(e.target.value); setResult(null); }}
           placeholder={t.searchPlaceholder}
           aria-label={t.searchPlaceholder}
           className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-9 pr-3 py-2.5 text-sm font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
         />
-        {query.trim() && (
-          <div className="absolute z-20 mt-1 w-full bg-[#0F0F0F] border border-neutral-800 max-h-64 overflow-y-auto">
-            {results.length === 0 ? (
-              <div className="px-3 py-3 text-xs font-body text-neutral-500">{t.searchNoResults}</div>
-            ) : (
-              results.map((p) => (
-                <button
-                  key={p.puuid}
-                  onClick={() => openPlayer(p)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-neutral-900 transition-colors"
-                >
-                  <span className="text-sm font-body text-neutral-200">
-                    {p.name}
-                    <span className="text-neutral-600">#{p.tag}</span>
-                  </span>
-                  <span className="text-[11px] font-mono text-neutral-500">{p.rank}</span>
-                </button>
-              ))
-            )}
+      </form>
+
+      {result?.status === 'invalid' && (
+        <div className="mt-2 text-xs font-body text-neutral-500">{t.searchInvalidFormat}</div>
+      )}
+
+      {result?.status === 'private' && (
+        <div className="mt-2 flex items-center gap-3 border border-neutral-800 bg-neutral-950 px-3 py-3">
+          <Lock size={16} className="text-neutral-500 shrink-0" />
+          <div>
+            <div className="text-xs font-body text-neutral-300">{t.searchPrivateTitle}</div>
+            <div className="text-[11px] font-body text-neutral-500 mt-0.5">{t.searchPrivateDesc}</div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {result?.status === 'not_found' && (
+        <div className="mt-2 flex items-center gap-3 border border-neutral-800 bg-neutral-950 px-3 py-3">
+          <UserPlus size={16} className="text-accent shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-body text-neutral-300">{t.searchNotOnScopeTitle}</div>
+            <div className="text-[11px] font-body text-neutral-500 mt-0.5">{t.searchNotOnScopeDesc}</div>
+          </div>
+          <button
+            onClick={handleInvite}
+            className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
+          >
+            {inviteCopied ? t.linkCopied : t.inviteButton}
+          </button>
+        </div>
+      )}
 
       {favorites.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-3">
