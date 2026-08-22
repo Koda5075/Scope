@@ -1,7 +1,10 @@
 import { Star, Swords, Crosshair, Target, Zap } from 'lucide-react';
 import StatReadout from './StatReadout.jsx';
+import { getRankIcon } from '../data/valorantAssets.js';
 
 export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite, onCompare, t }) {
+  const rankIcon = getRankIcon(player.rank);
+
   return (
     <div>
       <div className="flex items-start justify-between mb-4">
@@ -10,7 +13,8 @@ export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite
             {player.name}
             <span className="text-neutral-600">#{player.tag}</span>
           </div>
-          <div className="text-xs text-neutral-500 font-body mt-1">
+          <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-body mt-1">
+            {rankIcon && <img src={rankIcon} alt="" className="val-asset w-4 h-4 object-contain" />}
             {player.rank} · {t.peakRankLabel} {player.peakRank}
           </div>
         </div>

@@ -77,6 +77,17 @@ export default function ScopeDashboard() {
         .locked-overlay { backdrop-filter: blur(3px); background: rgba(0,0,0,0.65); }
         .settings-panel { background: #0F0F0F; border: 1px solid #262626; }
         .swatch { width: 22px; height: 22px; border-radius: 999px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
+
+        /* Real Valorant art (agents/maps/ranks): muted by default, full color on hover
+           so it doesn't clash with the theme's accent — always full color on touch
+           devices, since there's no real hover there. */
+        .val-asset { filter: grayscale(1); transition: filter 0.25s ease; }
+        @media (hover: hover) and (pointer: fine) {
+          .val-asset:hover { filter: grayscale(0); }
+        }
+        @media (hover: none), (pointer: coarse) {
+          .val-asset { filter: grayscale(0); }
+        }
       `}</style>
 
       <div className="max-w-5xl mx-auto px-5 py-8">

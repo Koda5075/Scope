@@ -1,8 +1,17 @@
+import { getAgentIcon, getMapImage } from '../data/valorantAssets.js';
+
 export default function GameScoreboard({ match, t }) {
   const modeLabel = { competitive: t.modeCompetitive, unrated: t.modeUnrated, deathmatch: t.modeDeathmatch }[match.mode];
+  const mapImage = getMapImage(match.map);
 
   return (
     <div>
+      {mapImage && (
+        <div className="relative -mx-5 -mt-5 mb-4 h-24 overflow-hidden">
+          <img src={mapImage.splash} alt="" className="val-asset w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent" />
+        </div>
+      )}
       <div className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1">
         {match.map} · {modeLabel}
       </div>
@@ -17,7 +26,10 @@ export default function GameScoreboard({ match, t }) {
             <div className="flex items-center gap-3 min-w-0">
               <span className="font-mono text-[10px] text-neutral-600 w-4 shrink-0">{p.team}</span>
               <span className={`font-body text-xs truncate ${p.isYou ? 'text-accent' : 'text-neutral-300'}`}>{p.name}</span>
-              <span className="text-[10px] font-mono text-neutral-600 shrink-0">{p.agent}</span>
+              <span className="flex items-center gap-1 text-[10px] font-mono text-neutral-600 shrink-0">
+                {getAgentIcon(p.agent) && <img src={getAgentIcon(p.agent)} alt="" className="val-asset w-4 h-4 rounded-full object-cover" />}
+                {p.agent}
+              </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <span className="font-mono text-xs text-neutral-400">

@@ -8,6 +8,7 @@ import ActivityCalendar from '../ActivityCalendar.jsx';
 import Modal from '../Modal.jsx';
 import GameScoreboard from '../GameScoreboard.jsx';
 import { rrHistory, badgeDefs, recentGames, getMatchScoreboard } from '../../data/mockData.js';
+import { getAgentIcon } from '../../data/valorantAssets.js';
 
 const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, act: 59, all: Infinity };
 
@@ -91,7 +92,10 @@ export default function OverviewTab({ t, accent }) {
                   <div className="flex items-center gap-3 min-w-0">
                     <span className={`w-1.5 h-1.5 shrink-0 ${g.result === 'win' ? 'bg-accent' : 'bg-neutral-600'}`} />
                     <span className="font-body text-xs text-neutral-300 truncate">{g.map}</span>
-                    <span className="font-mono text-[10px] text-neutral-600 shrink-0">{g.agent}</span>
+                    <span className="flex items-center gap-1 font-mono text-[10px] text-neutral-600 shrink-0">
+                      {getAgentIcon(g.agent) && <img src={getAgentIcon(g.agent)} alt="" className="val-asset w-4 h-4 rounded-full object-cover" />}
+                      {g.agent}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="font-mono text-xs text-neutral-500">{g.kda}</span>
