@@ -308,32 +308,6 @@ export function getMatchScoreboard(gameId) {
   const [teamScore, enemyScore] = game.score.split('-').map(Number);
   const totalRounds = teamScore + enemyScore;
 
-  const n1 = seededValue(seed + 501);
-  const n2 = seededValue(seed + 502);
-  const n3 = seededValue(seed + 503);
-  const n4 = seededValue(seed + 504);
-  const n5 = seededValue(seed + 505);
-
-  const headshotPct = Math.round(20 + n1 * 25);
-  const accuracyPct = Math.round(15 + n2 * 20);
-  const firstBloods = Math.max(0, Math.round(n3 * 5));
-  const firstDeaths = Math.max(0, Math.round((1 - n3) * 4));
-  const clutchesWon = n4 > 0.6 ? 1 : 0;
-  const clutchesPlayed = Math.max(clutchesWon, n4 > 0.3 ? 1 : 0);
-  const damageDealt = Math.round(yourKills * (120 + n5 * 40) + yourAssists * 25);
-  const damageReceived = Math.round(yourDeaths * (110 + (1 - n5) * 40) + 200);
-  const avgDamageRound = totalRounds ? Math.round(damageDealt / totalRounds) : 0;
-
-  const ecoRoundsWon = Math.max(0, Math.round(n1 * 3));
-  const ecoRoundsPlayed = ecoRoundsWon + Math.round(n2 * 2) + 1;
-  const avgSpend = Math.round(2400 + n3 * 1400);
-
-  // Rivals only make sense against the enemy team — picking from all fillers could
-  // otherwise land on a teammate, who you never actually fight in competitive modes.
-  const enemyFillers = fillers.filter((f) => f.team !== 'A');
-  const rivalIdx = Math.floor(n4 * enemyFillers.length);
-  const targetIdx = Math.floor(n5 * enemyFillers.length);
-
   const you = {
     name: 'KAITO#EUW1',
     team: 'A',
@@ -343,22 +317,60 @@ export function getMatchScoreboard(gameId) {
     deaths: yourDeaths,
     assists: yourAssists,
     acs: game.acs,
-    headshotPct,
-    accuracyPct,
-    firstBloods,
-    firstDeaths,
-    clutchesWon,
-    clutchesPlayed,
-    damageDealt,
-    damageReceived,
-    avgDamageRound,
-    economy: { ecoRoundsWon, ecoRoundsPlayed, avgSpend },
-    rivals: {
-      toughest: { name: enemyFillers[rivalIdx]?.name, count: Math.max(2, Math.round(1 + n1 * 3)) },
-      favorite: { name: enemyFillers[targetIdx]?.name, count: Math.max(2, Math.round(1 + n2 * 3)) },
-    },
   };
-  const players = [you, ...fillers].sort((a, b) => b.acs - a.acs);
+
+  const allPlayers = [you, ...fillers];
+
+  // Extended per-player stats (headshots, accuracy, first bloods/deaths, clutches,
+  // damage, economy, rivals) computed for every player via a per-player-seeded pass,
+  // instead of a one-off block for `you` alone — this way any participant can be
+  // expanded to the same depth of detail, not just the viewing player.
+  allPlayers.forEach((p, idx) => {
+    const pSeed = seed + idx * 97;
+    const n1 = seededValue(pSeed + 501);
+    const n2 = seededValue(pSeed + 502);
+    const n3 = seededValue(pSeed + 503);
+    const n4 = seededValue(pSeed + 504);
+    const n5 = seededValue(pSeed + 505);
+
+    const headshotPct = Math.round(20 + n1 * 25);
+    const accuracyPct = Math.round(15 + n2 * 20);
+    const firstBloods = Math.max(0, Math.round(n3 * 5));
+    const firstDeaths = Math.max(0, Math.round((1 - n3) * 4));
+    const clutchesWon = n4 > 0.6 ? 1 : 0;
+    const clutchesPlayed = Math.max(clutchesWon, n4 > 0.3 ? 1 : 0);
+    const damageDealt = Math.round(p.kills * (120 + n5 * 40) + p.assists * 25);
+    const damageReceived = Math.round(p.deaths * (110 + (1 - n5) * 40) + 200);
+    const avgDamageRound = totalRounds ? Math.round(damageDealt / totalRounds) : 0;
+
+    const ecoRoundsWon = Math.max(0, Math.round(n1 * 3));
+    const ecoRoundsPlayed = ecoRoundsWon + Math.round(n2 * 2) + 1;
+    const avgSpend = Math.round(2400 + n3 * 1400);
+
+    // Rivals only make sense against the enemy team — picking from the full roster
+    // could otherwise land on a teammate, who you never actually fight in competitive
+    // modes. Generalized from a hardcoded team-A check so it holds for any player.
+    const enemyPool = allPlayers.filter((o) => o.team !== p.team);
+    const rivalIdx = Math.floor(n4 * enemyPool.length);
+    const targetIdx = Math.floor(n5 * enemyPool.length);
+
+    p.headshotPct = headshotPct;
+    p.accuracyPct = accuracyPct;
+    p.firstBloods = firstBloods;
+    p.firstDeaths = firstDeaths;
+    p.clutchesWon = clutchesWon;
+    p.clutchesPlayed = clutchesPlayed;
+    p.damageDealt = damageDealt;
+    p.damageReceived = damageReceived;
+    p.avgDamageRound = avgDamageRound;
+    p.economy = { ecoRoundsWon, ecoRoundsPlayed, avgSpend };
+    p.rivals = {
+      toughest: { name: enemyPool[rivalIdx]?.name, count: Math.max(2, Math.round(1 + n1 * 3)) },
+      favorite: { name: enemyPool[targetIdx]?.name, count: Math.max(2, Math.round(1 + n2 * 3)) },
+    };
+  });
+
+  const players = [...allPlayers].sort((a, b) => b.acs - a.acs);
 
   const dateTime = new Date();
   dateTime.setDate(dateTime.getDate() - game.daysAgo);

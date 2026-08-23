@@ -5,7 +5,7 @@ import { inviteStats } from '../data/mockData.js';
 
 const MOCK_PUBLIC_SLUG = 'kaito-euw1';
 
-export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible }) {
+export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium }) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopyLink() {
@@ -67,6 +67,14 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
         <div className="text-[11px] text-neutral-500 font-body mt-2">
           {t.inviteStatsText.replace('{joined}', inviteStats.joined)}
         </div>
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-neutral-800">
+        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-3">{t.demoSection}</div>
+        <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer">
+          <input type="checkbox" checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} className="accent-[var(--accent)]" />
+          {t.simulatePremiumLabel}
+        </label>
       </div>
     </div>
   );

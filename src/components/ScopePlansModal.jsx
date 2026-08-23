@@ -6,7 +6,7 @@ function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
 }
 
-export default function ScopePlansModal({ onClose, t }) {
+export default function ScopePlansModal({ onClose, onChoose, t }) {
   return (
     <Modal onClose={onClose} closeLabel={t.close}>
       <div className="flex items-center gap-2 mb-1">
@@ -33,7 +33,10 @@ export default function ScopePlansModal({ onClose, t }) {
                 {fmt(t.plansPerMonthEquiv, { price: plan.perMonthEquivalent.toFixed(2) })}
               </div>
             )}
-            <button className="w-full mt-2 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity">
+            <button
+              onClick={onChoose}
+              className="w-full mt-2 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
+            >
               {t.plansChoose}
             </button>
           </div>

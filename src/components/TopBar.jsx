@@ -2,7 +2,7 @@ import { LogIn, Settings } from 'lucide-react';
 import SettingsPanel from './SettingsPanel.jsx';
 import NotificationsBell from './NotificationsBell.jsx';
 
-export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible }) {
+export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium }) {
   return (
     <div className="flex items-start justify-between mb-6">
       <div className="flex items-center gap-3">
@@ -43,6 +43,8 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
               setTheme={setTheme}
               publicVisible={publicVisible}
               setPublicVisible={setPublicVisible}
+              isPremium={isPremium}
+              setIsPremium={setIsPremium}
             />
           )}
         </div>

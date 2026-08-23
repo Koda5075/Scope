@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
-export default function Modal({ onClose, children, closeLabel = 'Close' }) {
+const SIZE_CLASSES = {
+  md: 'max-w-lg max-h-[85vh]',
+  lg: 'max-w-3xl max-h-[90vh]',
+};
+
+export default function Modal({ onClose, children, closeLabel = 'Close', size = 'md' }) {
   const closeButtonRef = useRef(null);
 
   useEffect(() => {
@@ -16,7 +21,7 @@ export default function Modal({ onClose, children, closeLabel = 'Close' }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4" onClick={onClose}>
       <div
-        className="bg-[#0F0F0F] border border-neutral-800 max-w-lg w-full max-h-[85vh] overflow-y-auto p-5 relative"
+        className={`bg-[#0F0F0F] border border-neutral-800 w-full overflow-y-auto p-5 relative ${SIZE_CLASSES[size]}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

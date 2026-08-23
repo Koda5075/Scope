@@ -32,6 +32,7 @@ export default function ScopeDashboard() {
   const [bannerUrl, setBannerUrl] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPlansModal, setShowPlansModal] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
@@ -50,6 +51,7 @@ export default function ScopeDashboard() {
       const savedAvatar = localStorage.getItem('scope-avatar');
       const savedBanner = localStorage.getItem('scope-banner');
       const savedLoggedIn = localStorage.getItem('scope-logged-in');
+      const savedPremium = localStorage.getItem('scope-premium');
       if (savedLang && T[savedLang]) setLang(savedLang);
       if (savedTheme && THEMES[savedTheme]) setTheme(savedTheme);
       if (savedFavorites) setFavoriteIds(JSON.parse(savedFavorites));
@@ -57,6 +59,7 @@ export default function ScopeDashboard() {
       if (savedAvatar) setAvatarUrl(savedAvatar);
       if (savedBanner) setBannerUrl(savedBanner);
       if (savedLoggedIn === 'true') setLoggedIn(true);
+      if (savedPremium === 'true') setIsPremium(true);
     } catch (e) { /* ignore */ }
   }, []);
 
@@ -71,8 +74,9 @@ export default function ScopeDashboard() {
       if (bannerUrl) localStorage.setItem('scope-banner', bannerUrl);
       else localStorage.removeItem('scope-banner');
       localStorage.setItem('scope-logged-in', String(loggedIn));
+      localStorage.setItem('scope-premium', String(isPremium));
     } catch (e) { /* ignore */ }
-  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, bannerUrl, loggedIn]);
+  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, bannerUrl, loggedIn, isPremium]);
 
   return (
     <div
@@ -109,6 +113,14 @@ export default function ScopeDashboard() {
 
         .tour-highlight { position: relative; z-index: 55; background: #0F0F0F; outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; transition: box-shadow 0.3s ease; }
         .tour-dim { position: fixed; inset: 0; z-index: 54; background: rgba(0,0,0,0.75); pointer-events: none; transition: opacity 0.3s ease; }
+
+        /* Themed scrollbars app-wide (modals, panels, horizontal-scroll rows) instead of
+           the browser-default light/thin bar, which clashed with the dark theme. */
+        * { scrollbar-width: thin; scrollbar-color: var(--accent-dim) #171717; }
+        *::-webkit-scrollbar { width: 9px; height: 9px; }
+        *::-webkit-scrollbar-track { background: #171717; }
+        *::-webkit-scrollbar-thumb { background: var(--accent-dim); border: 2px solid #171717; border-radius: 999px; }
+        *::-webkit-scrollbar-thumb:hover { background: var(--accent); }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">
@@ -124,6 +136,8 @@ export default function ScopeDashboard() {
           setTheme={setTheme}
           publicVisible={publicVisible}
           setPublicVisible={setPublicVisible}
+          isPremium={isPremium}
+          setIsPremium={setIsPremium}
         />
 
         {!loggedIn ? (
@@ -142,9 +156,9 @@ export default function ScopeDashboard() {
             <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
             <TabNav tab={tab} setTab={setTab} t={t} />
 
-            {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} />}
+            {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />}
 
-            {tab === 'overview' && <OverviewTab t={t} accent={accent} />}
+            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} />}
             {tab === 'agents' && <AgentsTab t={t} />}
             {tab === 'compare' && <CompareTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} />}
@@ -169,7 +183,16 @@ export default function ScopeDashboard() {
           </Modal>
         )}
 
-        {showPlansModal && <ScopePlansModal onClose={() => setShowPlansModal(false)} t={t} />}
+        {showPlansModal && (
+          <ScopePlansModal
+            onClose={() => setShowPlansModal(false)}
+            onChoose={() => {
+              setIsPremium(true);
+              setShowPlansModal(false);
+            }}
+            t={t}
+          />
+        )}
       </div>
     </div>
   );

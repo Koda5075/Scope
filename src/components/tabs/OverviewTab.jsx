@@ -11,6 +11,7 @@ import KDAStat from '../KDAStat.jsx';
 import Highlights from '../Highlights.jsx';
 import SessionGoal from '../SessionGoal.jsx';
 import InviteFriendsCard from '../InviteFriendsCard.jsx';
+import AdSlot from '../AdSlot.jsx';
 import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, acts, getStreaks } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
@@ -18,7 +19,7 @@ import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/sh
 const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 
-export default function OverviewTab({ t, accent }) {
+export default function OverviewTab({ t, accent, isPremium }) {
   const [filterMode, setFilterMode] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState('7d');
   const [actId, setActId] = useState(acts.find((a) => a.current)?.id ?? acts[0].id);
@@ -201,6 +202,8 @@ export default function OverviewTab({ t, accent }) {
             )}
           </div>
         </Card>
+
+        <AdSlot t={t} isPremium={isPremium} variant="banner" />
       </div>
 
       <div className="flex flex-col gap-4">
@@ -247,10 +250,12 @@ export default function OverviewTab({ t, accent }) {
         <Card>
           <ActivityCalendar t={t} />
         </Card>
+
+        <AdSlot t={t} isPremium={isPremium} variant="rectangle" />
       </div>
 
       {selectedMatch && (
-        <Modal onClose={() => setSelectedGameId(null)} closeLabel={t.close}>
+        <Modal onClose={() => setSelectedGameId(null)} closeLabel={t.close} size="lg">
           <GameScoreboard match={selectedMatch} t={t} />
         </Modal>
       )}
