@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
@@ -9,7 +9,7 @@ import Modal from '../Modal.jsx';
 import GameScoreboard from '../GameScoreboard.jsx';
 import KDAStat from '../KDAStat.jsx';
 import Highlights from '../Highlights.jsx';
-import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, acts, getStreaks } from '../../data/mockData.js';
+import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, acts, getStreaks } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 
 const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
@@ -55,16 +55,34 @@ export default function OverviewTab({ t, accent }) {
           </div>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={rrHistory} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+              <AreaChart data={rrHistory} margin={{ top: 5, right: 5, left: -8, bottom: 0 }}>
                 <defs>
                   <linearGradient id="rrGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={accent} stopOpacity={0.3} />
                     <stop offset="100%" stopColor={accent} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="s" tick={{ fill: '#737373', fontSize: 11 }} axisLine={{ stroke: '#262626' }} tickLine={false} />
-                <YAxis hide domain={['dataMin - 10', 'dataMax + 10']} />
-                <Tooltip contentStyle={{ background: '#0F0F0F', border: '1px solid #262626', fontSize: 12, fontFamily: 'JetBrains Mono' }} labelStyle={{ color: '#a3a3a3' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1F1F1F" vertical={false} />
+                <XAxis
+                  dataKey="s"
+                  tickFormatter={(s) => `${t.sessionLabel} ${s}`}
+                  tick={{ fill: '#737373', fontSize: 11 }}
+                  axisLine={{ stroke: '#262626' }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: '#737373', fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={34}
+                  domain={['dataMin - 10', 'dataMax + 10']}
+                />
+                <Tooltip
+                  contentStyle={{ background: '#0F0F0F', border: '1px solid #262626', fontSize: 12, fontFamily: 'JetBrains Mono' }}
+                  labelStyle={{ color: '#a3a3a3' }}
+                  labelFormatter={(s) => `${t.sessionLabel} ${s}`}
+                  formatter={(value) => [`${value} RR`, '']}
+                />
                 <Area type="monotone" dataKey="rr" stroke={accent} strokeWidth={2} fill="url(#rrGrad)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -167,10 +185,21 @@ export default function OverviewTab({ t, accent }) {
             {badgeDefs.filter(isBadgeUnlocked).slice(0, 3).map((b) => {
               const Icon = b.icon;
               const info = t.badges[b.id];
+              const progress = getBadgeProgress(b);
               return (
-                <div key={b.id} className="sc-badge px-3 py-2 flex items-center gap-2.5">
-                  <Icon size={14} className="text-accent" />
-                  <span className="text-xs font-body text-neutral-300">{info.label}</span>
+                <div key={b.id} className="sc-badge px-3 py-2 flex items-center justify-between gap-2.5">
+                  <span className="flex items-center gap-2.5 min-w-0">
+                    <Icon size={14} className="text-accent shrink-0" />
+                    <span className="text-xs font-body text-neutral-300 truncate">{info.label}</span>
+                  </span>
+                  {progress && (
+                    <span
+                      className="font-display text-[9px] font-bold uppercase tracking-wide px-1 py-0.5 shrink-0"
+                      style={{ color: progress.tierColor, border: `1px solid ${progress.tierColor}` }}
+                    >
+                      {progress.tierName}
+                    </span>
+                  )}
                 </div>
               );
             })}

@@ -1,9 +1,12 @@
 import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle } from 'lucide-react';
 import { getAllAgentNames } from './valorantAssets.js';
 
+// `s` is a plain session index (1-based) rather than a pre-formatted "S1" string, so the
+// chart's tick/tooltip formatters can render it as a full "Session 1" label per locale
+// instead of a cryptic abbreviation.
 export const rrHistory = [
-  { s: 'S1', rr: 38 }, { s: 'S2', rr: 52 }, { s: 'S3', rr: 45 }, { s: 'S4', rr: 61 },
-  { s: 'S5', rr: 57 }, { s: 'S6', rr: 74 }, { s: 'S7', rr: 67 },
+  { s: 1, rr: 38 }, { s: 2, rr: 52 }, { s: 3, rr: 45 }, { s: 4, rr: 61 },
+  { s: 5, rr: 57 }, { s: 6, rr: 74 }, { s: 7, rr: 67 },
 ];
 
 // Tier ladder shared by every progressive badge (kept in English — same convention as
@@ -76,15 +79,24 @@ export const agentStats = [
   { name: 'Jett', games: 14, wr: 64 },
   { name: 'Reyna', games: 9, wr: 56 },
   { name: 'Sova', games: 6, wr: 50 },
+  { name: 'Omen', games: 5, wr: 40 },
+  { name: 'Killjoy', games: 4, wr: 75 },
+  { name: 'Cypher', games: 3, wr: 33 },
 ];
 
 // atkWr/defWr are separate win rates for rounds started on attack vs. defense on that
 // map — a real tactical signal (e.g. a map you're strong on overall but weak on one
-// side) that the combined `wr` alone hides.
+// side) that the combined `wr` alone hides. bestAgent is the agent with the best
+// winrate specifically on that map (agent x map cross-reference).
 export const mapStats = [
-  { name: 'Bind', games: 8, wr: 62, atkWr: 58, defWr: 67 },
-  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39 },
-  { name: 'Haven', games: 5, wr: 40, atkWr: 33, defWr: 47 },
+  { name: 'Bind', games: 8, wr: 62, atkWr: 58, defWr: 67, bestAgent: 'Jett' },
+  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39, bestAgent: 'Reyna' },
+  { name: 'Haven', games: 5, wr: 40, atkWr: 33, defWr: 47, bestAgent: 'Sova' },
+  { name: 'Split', games: 4, wr: 55, atkWr: 50, defWr: 60, bestAgent: 'Jett' },
+  { name: 'Icebox', games: 3, wr: 67, atkWr: 71, defWr: 63, bestAgent: 'Sova' },
+  { name: 'Fracture', games: 3, wr: 45, atkWr: 40, defWr: 50, bestAgent: 'Killjoy' },
+  { name: 'Pearl', games: 2, wr: 70, atkWr: 65, defWr: 75, bestAgent: 'Jett' },
+  { name: 'Sunset', games: 2, wr: 55, atkWr: 60, defWr: 50, bestAgent: 'Sova' },
 ];
 
 // Round-type and clutch breakdown — Scope+. Pistol/eco-force winrates and clutch
@@ -149,7 +161,11 @@ export const weaponStats = [
   { name: 'Vandal', accuracy: 24, kills: 142, favorite: true },
   { name: 'Phantom', accuracy: 21, kills: 88 },
   { name: 'Operator', accuracy: 41, kills: 37 },
+  { name: 'Spectre', accuracy: 19, kills: 41 },
+  { name: 'Sheriff', accuracy: 28, kills: 33 },
   { name: 'Classic', accuracy: 18, kills: 29 },
+  { name: 'Guardian', accuracy: 33, kills: 22 },
+  { name: 'Ghost', accuracy: 22, kills: 18 },
 ];
 
 // Deterministic pseudo-random in [0, 1) — keeps mock data reproducible across renders/builds.
@@ -166,6 +182,16 @@ export const activityCalendar = Array.from({ length: 90 }, (_, i) => {
   const games = roll < 0.3 ? 0 : Math.ceil(roll * 4);
   return { date: date.toISOString().slice(0, 10), games };
 });
+
+// Summary numbers for the activity calendar (total games, most active single day, days
+// played) — gives the calendar block something concrete to say instead of just a grid
+// of mostly-faint squares.
+export function getActivitySummary(days = activityCalendar) {
+  const totalGames = days.reduce((sum, d) => sum + d.games, 0);
+  const mostActive = days.reduce((best, d) => (d.games > best.games ? d : best), days[0]);
+  const activeDays = days.filter((d) => d.games > 0).length;
+  return { totalGames, mostActiveDate: mostActive.date, mostActiveGames: mostActive.games, activeDays };
+}
 
 // First 7 entries (daysAgo 0-6) intentionally reproduce the numbers that used to be
 // hardcoded in OverviewTab's session summary (7 games, 5W-2L, best 24/9, worst 8/17),

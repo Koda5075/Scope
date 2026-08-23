@@ -1,3 +1,3 @@
-export default function Card({ children, className = '' }) {
-  return <div className={`sc-card ${className}`}>{children}</div>;
+export default function Card({ children, className = '', style }) {
+  return <div className={`sc-card ${className}`} style={style}>{children}</div>;
 }

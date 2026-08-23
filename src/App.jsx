@@ -9,6 +9,7 @@ import PlayerSearchBar from './components/PlayerSearchBar.jsx';
 import Modal from './components/Modal.jsx';
 import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
 import TabNav from './components/TabNav.jsx';
+import PromoBanner from './components/PromoBanner.jsx';
 import Footer from './components/Footer.jsx';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
@@ -128,9 +129,11 @@ export default function ScopeDashboard() {
             <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
             <TabNav tab={tab} setTab={setTab} t={t} />
 
+            {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setTab('premium')} />}
+
             {tab === 'overview' && <OverviewTab t={t} accent={accent} />}
             {tab === 'agents' && <AgentsTab t={t} />}
-            {tab === 'compare' && <CompareTab t={t} theme={theme} />}
+            {tab === 'compare' && <CompareTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} />}
             {tab === 'premium' && <PremiumTab t={t} accent={accent} />}
           </>

@@ -1,31 +1,44 @@
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import Card from '../Card.jsx';
-import CompareRow from '../CompareRow.jsx';
-import { THEMES } from '../../data/themes.js';
 import { comparisons, friends } from '../../data/mockData.js';
 
-export default function CompareTab({ t, theme }) {
+function DeltaRow({ value, baseline, label }) {
+  const diff = value - baseline;
+  const pct = baseline ? Math.round((diff / baseline) * 100) : 0;
+  const flat = diff === 0;
+  const positive = diff > 0;
+  const Icon = flat ? Minus : positive ? TrendingUp : TrendingDown;
+  const toneClass = positive ? 'border-accent text-accent' : 'border-neutral-700 text-neutral-400';
+
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className={`flex items-center gap-1 px-2 py-0.5 border text-[11px] font-mono shrink-0 ${toneClass}`}>
+        <Icon size={11} />
+        {positive && !flat ? '+' : ''}{pct}%
+      </span>
+      <span className="text-[11px] text-neutral-500 font-body truncate">{label} ({baseline})</span>
+    </div>
+  );
+}
+
+export default function CompareTab({ t }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <Card>
-        <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1 block">{t.compareTitle}</span>
-        <div className="flex gap-3 mb-4 text-[10px] font-body text-neutral-500">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-accent inline-block" /> {t.you}</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-neutral-500 inline-block" /> {t.rankAvg}</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 inline-block" style={{ background: THEMES[theme].dim }} /> {t.past30}</span>
-        </div>
-        <div className="flex flex-col gap-6">
+        <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.compareTitle}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {comparisons.map((c, i) => (
             <div
               key={c.metric}
-              className={`sc-reveal ${i > 0 ? 'pt-6 border-t border-neutral-900' : ''}`}
-              style={{ animationDelay: `${i * 140}ms` }}
+              className="sc-reveal border border-neutral-800 bg-neutral-950 px-4 py-3.5 flex flex-col gap-2.5"
+              style={{ animationDelay: `${i * 120}ms` }}
             >
-              <div className="text-xs font-display uppercase tracking-wide text-neutral-300 mb-3">{c.metric}</div>
-              <div className="flex flex-col gap-2.5">
-                <CompareRow label={t.you} value={c.you} max={c.max} tone="you" />
-                <CompareRow label={t.rankAvg} value={c.rankAvg} max={c.max} tone="avg" />
-                <CompareRow label={t.past30} value={c.past} max={c.max} tone="past" />
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-display uppercase tracking-wide text-neutral-400">{c.metric}</span>
+                <span className="font-mono text-3xl font-bold text-white leading-none">{c.you}</span>
               </div>
+              <DeltaRow value={c.you} baseline={c.rankAvg} label={t.rankAvg} />
+              <DeltaRow value={c.you} baseline={c.past} label={t.past30} />
             </div>
           ))}
         </div>
