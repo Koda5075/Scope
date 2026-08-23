@@ -207,6 +207,11 @@ export default function ScopeDashboard() {
               onAvatarChange={setAvatarUrl}
               bannerUrl={bannerUrl}
               onBannerChange={setBannerUrl}
+              isPremium={isPremium}
+              onSeePlans={() => {
+                setShowProfileModal(false);
+                setShowPlansModal(true);
+              }}
               t={t}
             />
           </Modal>

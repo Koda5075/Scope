@@ -3,7 +3,8 @@
 // image URLs). Hardcoded here rather than fetched live: no backend proxy exists yet to
 // call the authenticated val-content-v1 endpoint, so this stands in as the mock/static
 // catalog until the real integration is wired up, same as the rest of src/data.
-// URLs verified reachable (200) on 2026-08-23.
+// URLs verified reachable (200) on 2026-08-23; player card URLs added and verified on
+// 2026-08-24.
 
 const AGENT_ICONS = {
   Jett: 'https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png',
@@ -33,6 +34,22 @@ const AGENT_ICONS = {
   Clove: 'https://media.valorant-api.com/agents/1dbf2edd-4729-0984-3115-daa5eed44993/displayicon.png',
   Yoru: 'https://media.valorant-api.com/agents/7f94d92c-4234-0a36-9646-3a87eb8b5c89/displayicon.png',
   Waylay: 'https://media.valorant-api.com/agents/df1cb487-4902-002e-5c17-d28e83e78588/displayicon.png',
+};
+
+// Official VALORANT "Player Card" cosmetics (wide art) — the Scope+ profile-banner
+// gallery. Distinct from MAP_IMAGES: player cards are the game's actual in-client
+// profile-banner cosmetic, so they're the thematically correct "official" option here,
+// vs. map splash art which was only ever a stand-in.
+const PLAYER_CARDS = {
+  'Dayglo Duo': 'https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/wideart.png',
+  'Afternoon Asada': 'https://media.valorant-api.com/playercards/c8b2f5fd-4331-b172-f3b7-c8a26f356a1f/wideart.png',
+  'Pass the Sticks': 'https://media.valorant-api.com/playercards/eef542d2-4724-bc47-f53f-239f8c9c2623/wideart.png',
+  'Dance It All Away': 'https://media.valorant-api.com/playercards/d32e58b1-4191-7315-ad4a-9da58b3f23dd/wideart.png',
+  'V25: Prelude To Paris': 'https://media.valorant-api.com/playercards/d2d3caf9-499f-2ac8-9722-54961c3bcbf5/wideart.png',
+  'Dimensional Folding': 'https://media.valorant-api.com/playercards/e8787c31-4a39-9636-94a5-77b298d26ba7/wideart.png',
+  "Serpent's Celebration": 'https://media.valorant-api.com/playercards/41244f42-43f5-f795-9be8-d2b9edba458a/wideart.png',
+  'The Way Forward': 'https://media.valorant-api.com/playercards/33c1f011-4eca-068c-9751-f68c788b2eee/wideart.png',
+  Hivemind: 'https://media.valorant-api.com/playercards/fc209787-414b-10d0-dcac-04832fc2c654/wideart.png',
 };
 
 const MAP_IMAGES = {
@@ -92,6 +109,12 @@ export function getMapImage(name) {
 // than user-uploaded.
 export function getAllMapImages() {
   return Object.entries(MAP_IMAGES).map(([name, img]) => ({ name, ...img }));
+}
+
+// Scope+ profile-banner gallery — official art, no moderation needed (Riot-provided,
+// not user content).
+export function getAllPlayerCards() {
+  return Object.entries(PLAYER_CARDS).map(([name, url]) => ({ name, url }));
 }
 
 export function getRankIcon(rankName) {

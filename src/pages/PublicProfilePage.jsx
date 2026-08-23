@@ -4,7 +4,6 @@ import Card from '../components/Card.jsx';
 import StatReadout from '../components/StatReadout.jsx';
 import Footer from '../components/Footer.jsx';
 import Avatar from '../components/Avatar.jsx';
-import ReportPhotoButton from '../components/ReportPhotoButton.jsx';
 import { T } from '../i18n/translations.js';
 import { THEMES } from '../data/themes.js';
 import { myStats, peakRank, badgeDefs } from '../data/mockData.js';
@@ -32,14 +31,15 @@ export default function PublicProfilePage({ slug }) {
     }
   });
   const [publicVisible, setPublicVisible] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState(null);
 
+  // Deliberately never reads scope-avatar or scope-banner: personalization (photo,
+  // banner, accent color) is only ever visible to the player who chose it, never to
+  // anyone viewing their public profile — this page always renders the default letter
+  // avatar and no banner, regardless of what's customized in the owner's own session.
   useEffect(() => {
     try {
       const stored = localStorage.getItem('scope-public-visible');
       if (stored !== null) setPublicVisible(stored === 'true');
-      const savedAvatar = localStorage.getItem('scope-avatar');
-      if (savedAvatar) setAvatarUrl(savedAvatar);
     } catch {
       /* ignore */
     }
@@ -74,7 +74,7 @@ export default function PublicProfilePage({ slug }) {
         {visible ? (
           <>
             <div className="flex items-center gap-4 mb-6">
-              <Avatar name="KAITO" photoUrl={avatarUrl} size={56} />
+              <Avatar name="KAITO" size={56} />
               <div>
                 <div className="font-display text-2xl font-semibold text-white">
                   KAITO<span className="text-neutral-600">#EUW1</span>
@@ -82,9 +82,6 @@ export default function PublicProfilePage({ slug }) {
                 <div className="flex items-center gap-2 text-xs text-neutral-500 font-body mt-1.5">
                   {getRankIcon(CURRENT_RANK) && <img src={getRankIcon(CURRENT_RANK)} alt="" className="val-icon w-6 h-6" />}
                   {CURRENT_RANK} · {t.peakRankLabel} {peakRank}
-                </div>
-                <div className="mt-1">
-                  <ReportPhotoButton t={t} />
                 </div>
               </div>
             </div>

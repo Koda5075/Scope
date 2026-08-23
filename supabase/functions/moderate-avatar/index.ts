@@ -8,6 +8,12 @@
 // the photo un-approved rather than defaulting to accepted. A human "report" safety net
 // (see report-photo) exists alongside this because no automated moderation is 100%
 // reliable — this function is not meant to be the only line of defense.
+//
+// Per-player daily rate limit (see MAX_UPLOADS_PER_DAY below) is enforced here,
+// server-side, before the Claude call — a bot spamming uploads would otherwise run up
+// the API bill. Scope+'s banner upload (client-simulated for now, see
+// ProfileCustomizationModal.jsx) will need the same real Edge Function + rate limit
+// once it's wired to a real backend — this isn't automatically covered by this file.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -16,6 +22,10 @@ const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
 
 const BUCKET = 'avatars';
 const CLAUDE_MODEL = 'claude-sonnet-5';
+// Per-player daily cap on upload attempts, enforced server-side (see
+// try_record_avatar_upload) — a bot spamming uploads to run up the Claude API bill is
+// blocked here before the API call happens, not just discouraged in the UI.
+const MAX_UPLOADS_PER_DAY = 5;
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': Deno.env.get('APP_URL') ?? '*',
@@ -90,6 +100,29 @@ Deno.serve(async (req) => {
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+  // Rate limit checked (and recorded) before the download/Claude call — the whole
+  // point is to stop the billable API call from happening, not just to log it after
+  // the fact. An RPC failure fails closed: we can't verify the caller is under the
+  // limit, so we don't proceed to the paid API call.
+  const { data: allowed, error: rateLimitError } = await supabase.rpc('try_record_avatar_upload', {
+    p_puuid: puuid,
+    p_max_per_day: MAX_UPLOADS_PER_DAY,
+  });
+
+  if (rateLimitError) {
+    console.error('rate limit check failed', rateLimitError);
+    return new Response(JSON.stringify({ error: 'rate_limit_check_failed' }), { status: 500, headers: CORS_HEADERS });
+  }
+
+  if (!allowed) {
+    // Don't leave the already-uploaded pending file behind — it will never be processed.
+    await supabase.storage.from(BUCKET).remove([storagePath]);
+    return new Response(
+      JSON.stringify({ error: 'rate_limited', message: `You can upload up to ${MAX_UPLOADS_PER_DAY} photos per day. Try again tomorrow.` }),
+      { status: 429, headers: CORS_HEADERS },
+    );
+  }
 
   const { data: imageBlob, error: downloadError } = await supabase.storage.from(BUCKET).download(storagePath);
   if (downloadError || !imageBlob) {
