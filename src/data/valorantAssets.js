@@ -88,6 +88,25 @@ const RANK_ICONS = {
   'IMMORTAL 2': 'https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/25/largeicon.png',
 };
 
+// Full rank ladder for the "how ranking works" pyramid — same competitivetiers episode
+// UUID as RANK_ICONS above, walked by tier number (verified reachable 3-27 on
+// 2026-08-24). Iron through Immortal have 3 sub-tiers each (baseTier..baseTier+2);
+// Radiant has just one. Colors are a stylized approximation of the real palette, same
+// as the rest of this mock UI.
+const RANK_TIER_BASE_UUID = '03621f52-342b-cf4e-4f86-9350a49c6d04';
+
+const RANK_GROUPS = [
+  { name: 'Iron', baseTier: 3, subTiers: 3, color: '#6B6B6B' },
+  { name: 'Bronze', baseTier: 6, subTiers: 3, color: '#CD7F32' },
+  { name: 'Silver', baseTier: 9, subTiers: 3, color: '#C0C4C9' },
+  { name: 'Gold', baseTier: 12, subTiers: 3, color: '#F2C94C' },
+  { name: 'Platinum', baseTier: 15, subTiers: 3, color: '#3FA9A0' },
+  { name: 'Diamond', baseTier: 18, subTiers: 3, color: '#A97FE0' },
+  { name: 'Ascendant', baseTier: 21, subTiers: 3, color: '#2FBE7C' },
+  { name: 'Immortal', baseTier: 24, subTiers: 3, color: '#B93A46' },
+  { name: 'Radiant', baseTier: 27, subTiers: 1, color: '#FFF3B0' },
+];
+
 export function getAgentIcon(name) {
   return AGENT_ICONS[name];
 }
@@ -120,4 +139,15 @@ export function getAllPlayerCards() {
 export function getRankIcon(rankName) {
   if (!rankName) return undefined;
   return RANK_ICONS[rankName.toUpperCase()];
+}
+
+// Every rank group (Iron..Radiant) with its real sub-tier icons, for the rank pyramid.
+export function getRankLadder() {
+  return RANK_GROUPS.map((group) => ({
+    ...group,
+    tiers: Array.from({ length: group.subTiers }, (_, i) => ({
+      label: group.subTiers > 1 ? `${group.name} ${i + 1}` : group.name,
+      icon: `https://media.valorant-api.com/competitivetiers/${RANK_TIER_BASE_UUID}/${group.baseTier + i}/largeicon.png`,
+    })),
+  }));
 }

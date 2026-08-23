@@ -1,34 +1,57 @@
-// Tier colors are a stylized approximation of VALORANT's real rank palette, not a
-// hotlinked asset — avoids adding another dependency on a third-party image mirror for
-// a purely educational block. Widths shrink toward the top so the stack reads as a
-// pyramid, Iron at the wide base up to Radiant at the point.
-const TIERS = [
-  { name: 'Radiant', color: '#FFF3B0', width: '32%' },
-  { name: 'Immortal', color: '#B93A46', width: '42%' },
-  { name: 'Ascendant', color: '#2FBE7C', width: '52%' },
-  { name: 'Diamond', color: '#A97FE0', width: '62%' },
-  { name: 'Platinum', color: '#3FA9A0', width: '72%' },
-  { name: 'Gold', color: '#F2C94C', width: '82%' },
-  { name: 'Silver', color: '#C0C4C9', width: '91%' },
-  { name: 'Bronze', color: '#CD7F32', width: '96%' },
-  { name: 'Iron', color: '#6B6B6B', width: '100%' },
-];
+import { getRankLadder } from '../data/valorantAssets.js';
+
+// Illustrative player-distribution estimate per rank (not sub-tier) — there's no real
+// player-distribution API to pull from, so this is a plausible, roughly pyramid-shaped
+// mock spread (heaviest around Gold/Platinum, thinning sharply toward Radiant). Always
+// shown next to an explicit "approximate" label so it doesn't read as a real stat.
+const DISTRIBUTION_PCT = {
+  Iron: 4,
+  Bronze: 9,
+  Silver: 16,
+  Gold: 20,
+  Platinum: 18,
+  Diamond: 14,
+  Ascendant: 10,
+  Immortal: 8,
+};
+
+const RANK_LADDER = [...getRankLadder()].reverse(); // Radiant first, Iron last — peak at the top.
 
 export default function RankPyramid({ t }) {
   return (
     <div>
-      <p className="text-xs text-neutral-400 font-body leading-relaxed mb-5">{t.rankPyramidDesc}</p>
-      <div className="flex flex-col items-center gap-1.5">
-        {TIERS.map((tier) => (
-          <div
-            key={tier.name}
-            className="flex items-center justify-center text-center py-2 font-display text-xs font-bold uppercase tracking-wide"
-            style={{ width: tier.width, background: `${tier.color}22`, border: `1px solid ${tier.color}`, color: tier.color }}
-          >
-            {tier.name}
-          </div>
-        ))}
+      <p className="text-xs text-neutral-400 font-body leading-relaxed mb-2">{t.rankPyramidDesc}</p>
+      <p className="text-[11px] text-neutral-600 font-body leading-relaxed mb-5">{t.rankPyramidDistributionNote}</p>
+
+      <div className="flex flex-col gap-2">
+        {RANK_LADDER.map((group) => {
+          const pct = DISTRIBUTION_PCT[group.name];
+          return (
+            <div
+              key={group.name}
+              className="flex items-center gap-3 px-3 py-2.5"
+              style={{ background: `${group.color}14`, borderLeft: `3px solid ${group.color}` }}
+            >
+              <div className="flex items-center gap-2 shrink-0">
+                {group.tiers.map((tier) => (
+                  <div key={tier.label} className="flex flex-col items-center gap-0.5">
+                    <img src={tier.icon} alt={tier.label} className="val-icon w-9 h-9 rounded-full object-cover" />
+                  </div>
+                ))}
+              </div>
+              <div className="flex-1 min-w-0 flex items-baseline justify-between gap-2">
+                <span className="font-display text-sm font-bold uppercase tracking-wide" style={{ color: group.color }}>
+                  {group.name}
+                </span>
+                <span className="font-mono text-xs text-neutral-400 shrink-0">
+                  {pct !== undefined ? `~${pct}%` : '<1%'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
       <p className="text-[11px] text-neutral-500 font-body leading-relaxed mt-5">{t.rankPyramidRRNote}</p>
     </div>
   );
