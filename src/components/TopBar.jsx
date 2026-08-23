@@ -1,5 +1,6 @@
 import { LogIn, Settings } from 'lucide-react';
 import SettingsPanel from './SettingsPanel.jsx';
+import NotificationsBell from './NotificationsBell.jsx';
 
 export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible }) {
   return (
@@ -21,6 +22,8 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
         >
           <LogIn size={16} />
         </button>
+
+        {loggedIn && <NotificationsBell t={t} />}
 
         <div className="relative">
           <button

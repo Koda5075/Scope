@@ -10,11 +10,13 @@ import Modal from './components/Modal.jsx';
 import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
 import TabNav from './components/TabNav.jsx';
 import PromoBanner from './components/PromoBanner.jsx';
+import OnboardingTour from './components/OnboardingTour.jsx';
 import Footer from './components/Footer.jsx';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
 import BadgesTab from './components/tabs/BadgesTab.jsx';
+import ProgressTab from './components/tabs/ProgressTab.jsx';
 import PremiumTab from './components/tabs/PremiumTab.jsx';
 
 export default function ScopeDashboard() {
@@ -97,6 +99,8 @@ export default function ScopeDashboard() {
 
         @keyframes sc-reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .sc-reveal { animation: sc-reveal 0.45s ease-out both; }
+
+        .tour-highlight { position: relative; z-index: 55; outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; transition: box-shadow 0.3s ease; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">
@@ -135,7 +139,10 @@ export default function ScopeDashboard() {
             {tab === 'agents' && <AgentsTab t={t} />}
             {tab === 'compare' && <CompareTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} />}
+            {tab === 'progress' && <ProgressTab t={t} />}
             {tab === 'premium' && <PremiumTab t={t} accent={accent} />}
+
+            <OnboardingTour t={t} />
           </>
         )}
 

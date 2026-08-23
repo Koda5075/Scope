@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { THEMES } from '../data/themes.js';
+import { inviteStats } from '../data/mockData.js';
 
 const MOCK_PUBLIC_SLUG = 'kaito-euw1';
 
@@ -63,6 +64,9 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
         <button onClick={handleCopyLink} className="text-[11px] font-body text-accent hover:underline">
           {copied ? t.linkCopied : t.copyLink}
         </button>
+        <div className="text-[11px] text-neutral-500 font-body mt-2">
+          {t.inviteStatsText.replace('{joined}', inviteStats.joined)}
+        </div>
       </div>
     </div>
   );

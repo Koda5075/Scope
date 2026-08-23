@@ -60,7 +60,7 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite }) {
   }
 
   return (
-    <div className="mb-6">
+    <div className="mb-6" data-tour="search">
       <form onSubmit={handleSearch} className="relative">
         <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-accent transition-colors" aria-label={t.searchPlaceholder}>
           <Search size={14} />

@@ -49,7 +49,7 @@ export default function Highlights({ t }) {
   if (items.length === 0) return null;
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4" data-tour="highlights">
       <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.highlightsTitle}</span>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {items.map((item, i) => (

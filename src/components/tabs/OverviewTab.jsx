@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2 } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import FilterBar from '../FilterBar.jsx';
@@ -9,8 +9,10 @@ import Modal from '../Modal.jsx';
 import GameScoreboard from '../GameScoreboard.jsx';
 import KDAStat from '../KDAStat.jsx';
 import Highlights from '../Highlights.jsx';
+import SessionGoal from '../SessionGoal.jsx';
 import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, acts, getStreaks } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
+import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
@@ -20,6 +22,8 @@ export default function OverviewTab({ t, accent }) {
   const [filterPeriod, setFilterPeriod] = useState('7d');
   const [actId, setActId] = useState(acts.find((a) => a.current)?.id ?? acts[0].id);
   const [selectedGameId, setSelectedGameId] = useState(null);
+  const [sharing, setSharing] = useState(false);
+  const [shared, setShared] = useState(false);
 
   const selectedAct = acts.find((a) => a.id === actId) ?? acts[0];
 
@@ -42,6 +46,30 @@ export default function OverviewTab({ t, accent }) {
 
   const selectedMatch = selectedGameId ? getMatchScoreboard(selectedGameId) : null;
   const streaks = getStreaks();
+
+  async function handleShare() {
+    setSharing(true);
+    try {
+      const blob = await renderShareCard({
+        accent,
+        rank: 'DIAMOND 2',
+        playerName: 'KAITO#EUW1',
+        stats: [
+          { label: t.games, value: filteredGames.length },
+          { label: t.record, value: `${wins}${t.winShort}-${losses}${t.lossShort}` },
+          { label: t.best, value: best.label },
+          { label: t.streakLabel, value: `${streaks.currentCount}${streaks.currentType === 'win' ? t.winShort : t.lossShort}` },
+        ],
+        footerText: t.sampleData,
+      });
+      downloadBlob(blob, 'scope-session.png');
+      await copyBlobToClipboard(blob);
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
+    } finally {
+      setSharing(false);
+    }
+  }
 
   return (
     <>
@@ -103,8 +131,13 @@ export default function OverviewTab({ t, accent }) {
         <Card>
           <div className="flex items-center justify-between mb-3">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.sessionSummary}</span>
-            <button className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors">
-              <Share2 size={12} /> {t.share}
+            <button
+              onClick={handleShare}
+              disabled={sharing}
+              className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors disabled:opacity-50"
+            >
+              {shared ? <Check size={12} className="text-accent" /> : <Share2 size={12} />}
+              {shared ? t.shareDownloaded : t.share}
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
@@ -178,6 +211,8 @@ export default function OverviewTab({ t, accent }) {
           <StatReadout label={t.statFirstBloods} value="9" Icon={Skull} />
           <StatReadout label={t.statClutches} value="3" unit="/5" Icon={Flame} />
         </div>
+
+        <SessionGoal t={t} />
 
         <Card>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recentBadges}</span>

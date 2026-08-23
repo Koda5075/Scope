@@ -1,4 +1,4 @@
-import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert } from 'lucide-react';
 import { getAllAgentNames } from './valorantAssets.js';
 
 // `s` is a plain session index (1-based) rather than a pre-formatted "S1" string, so the
@@ -336,3 +336,32 @@ export function buildGamesCSV() {
   });
   return [header, ...rows].map((row) => row.join(',')).join('\n');
 }
+
+// Triggered-alerts feed backing the header bell — shaped like a generic notification
+// feed (id, icon, message template + params, daysAgo, read) so swapping this mock array
+// for a real backend feed later is a data-source change, not a UI rewrite.
+export const alertsFeed = [
+  { id: 'a1', icon: Trophy, messageKey: 'alertMsgGoalReached', params: { rank: 'Diamond 2' }, daysAgo: 0, read: false },
+  { id: 'a2', icon: ShieldAlert, messageKey: 'alertMsgDerankRisk', params: { rr: 8 }, daysAgo: 2, read: false },
+  { id: 'a3', icon: Flame, messageKey: 'alertMsgStreak', params: { n: 3 }, daysAgo: 5, read: true },
+];
+
+export function getUnreadAlertsCount(alerts = alertsFeed) {
+  return alerts.filter((a) => !a.read).length;
+}
+
+// "My Progress" timeline — narrative milestones, distinct from the Badges grid. Sourced
+// from the same underlying data where possible (bestWinStreak from getStreaks) so it
+// stays consistent with the rest of the mock dataset rather than being invented in
+// isolation.
+export const progressionTimeline = [
+  { id: 'm1', daysAgo: 82, icon: TrendingUp, titleKey: 'timelineFirstDiamondTitle', descKey: 'timelineFirstDiamondDesc' },
+  { id: 'm2', daysAgo: 58, icon: Zap, titleKey: 'timelineBestClimbTitle', descKey: 'timelineBestClimbDesc', descParams: { rr: 17 } },
+  { id: 'm3', daysAgo: 25, icon: Swords, titleKey: 'timelineFirstAceTitle', descKey: 'timelineFirstAceDesc', descParams: { map: 'Bind' } },
+  { id: 'm4', daysAgo: 10, icon: Flame, titleKey: 'timelineStreakTitle', descKey: 'timelineStreakDesc', descParams: { n: getStreaks().bestWinStreak } },
+  { id: 'm5', daysAgo: 0, icon: Trophy, titleKey: 'timelineTodayTitle', descKey: 'timelineTodayDesc', descParams: { rank: 'Diamond 2' } },
+];
+
+// Invite-tracking stat — shown in Settings so sharing has a visible payoff instead of
+// disappearing into the void.
+export const inviteStats = { invited: 12, joined: 4 };
