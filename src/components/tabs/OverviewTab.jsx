@@ -10,6 +10,7 @@ import GameScoreboard from '../GameScoreboard.jsx';
 import KDAStat from '../KDAStat.jsx';
 import Highlights from '../Highlights.jsx';
 import SessionGoal from '../SessionGoal.jsx';
+import InviteFriendsCard from '../InviteFriendsCard.jsx';
 import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, acts, getStreaks } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
@@ -187,7 +188,11 @@ export default function OverviewTab({ t, accent }) {
                       </span>
                     </div>
                     <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
-                      <KDAStat kills={k} deaths={d} assists={a} />
+                      <KDAStat kills={k} deaths={d} assists={a} showDiff />
+                      <span className="flex flex-col items-end w-11 shrink-0">
+                        <span className="font-mono text-xs text-white">{g.acs}</span>
+                        <span className="text-[8px] text-neutral-600 uppercase tracking-wide">{t.statACS}</span>
+                      </span>
                       <span className="font-mono text-xs text-white">{g.score}</span>
                     </div>
                   </button>
@@ -195,10 +200,6 @@ export default function OverviewTab({ t, accent }) {
               })
             )}
           </div>
-        </Card>
-
-        <Card>
-          <ActivityCalendar t={t} />
         </Card>
       </div>
 
@@ -211,6 +212,8 @@ export default function OverviewTab({ t, accent }) {
           <StatReadout label={t.statFirstBloods} value="9" Icon={Skull} />
           <StatReadout label={t.statClutches} value="3" unit="/5" Icon={Flame} />
         </div>
+
+        <InviteFriendsCard t={t} />
 
         <SessionGoal t={t} />
 
@@ -239,6 +242,10 @@ export default function OverviewTab({ t, accent }) {
               );
             })}
           </div>
+        </Card>
+
+        <Card>
+          <ActivityCalendar t={t} />
         </Card>
       </div>
 

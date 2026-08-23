@@ -4,10 +4,17 @@ import Card from './Card.jsx';
 
 const STORAGE_KEY = 'scope-session-goal';
 
-// Current values the goal types track against — same mock numbers already shown
-// elsewhere on Overview (RR progress chart, headshot StatReadout), kept in sync here
-// rather than re-derived, since both are hardcoded demo snapshots today.
-const CURRENT_VALUES = { rr: 67, headshots: 31 };
+// Current values + units the goal types track against — same mock numbers already
+// shown elsewhere on Overview (RR progress chart, StatReadout grid), kept in sync here
+// rather than re-derived, since all of these are hardcoded demo snapshots today.
+const GOAL_TYPES = [
+  { key: 'rr', labelKey: 'sessionGoalTypeRR', current: 67, unit: '', step: 1 },
+  { key: 'kda', labelKey: 'statKDA', current: 1.42, unit: '', step: 0.01 },
+  { key: 'acs', labelKey: 'statACS', current: 238, unit: '', step: 1 },
+  { key: 'accuracy', labelKey: 'statAccuracy', current: 24, unit: '%', step: 1 },
+  { key: 'headshots', labelKey: 'statHeadshots', current: 31, unit: '%', step: 1 },
+  { key: 'firstBloods', labelKey: 'statFirstBloods', current: 9, unit: '', step: 1 },
+];
 
 export default function SessionGoal({ t }) {
   const [goal, setGoal] = useState(null);
@@ -37,6 +44,8 @@ export default function SessionGoal({ t }) {
     setDraftTarget('');
   }
 
+  const draftConfig = GOAL_TYPES.find((g) => g.key === draftType);
+
   if (!goal) {
     return (
       <Card>
@@ -51,16 +60,18 @@ export default function SessionGoal({ t }) {
             onChange={(e) => setDraftType(e.target.value)}
             className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1.5 focus:border-accent outline-none"
           >
-            <option value="rr">{t.sessionGoalTypeRR}</option>
-            <option value="headshots">{t.sessionGoalTypeHeadshots}</option>
+            {GOAL_TYPES.map((g) => (
+              <option key={g.key} value={g.key}>{t[g.labelKey]}</option>
+            ))}
           </select>
           <input
             type="number"
-            min="1"
+            min="0"
+            step={draftConfig.step}
             value={draftTarget}
             onChange={(e) => setDraftTarget(e.target.value)}
-            placeholder={draftType === 'rr' ? 'RR' : '%'}
-            className="w-16 bg-neutral-950 border border-neutral-800 text-xs font-mono text-neutral-200 px-2 py-1.5 focus:border-accent outline-none"
+            placeholder={draftConfig.unit || t[draftConfig.labelKey]}
+            className="w-20 bg-neutral-950 border border-neutral-800 text-xs font-mono text-neutral-200 px-2 py-1.5 focus:border-accent outline-none"
           />
           <button type="submit" className="bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-3 py-1.5 hover:opacity-90 transition-opacity">
             {t.sessionGoalSet}
@@ -70,11 +81,9 @@ export default function SessionGoal({ t }) {
     );
   }
 
-  const current = CURRENT_VALUES[goal.type];
-  const pct = Math.min(100, Math.round((current / goal.target) * 100));
-  const reached = current >= goal.target;
-  const unit = goal.type === 'rr' ? '' : '%';
-  const label = goal.type === 'rr' ? t.sessionGoalTypeRR : t.sessionGoalTypeHeadshots;
+  const config = GOAL_TYPES.find((g) => g.key === goal.type) ?? GOAL_TYPES[0];
+  const pct = Math.min(100, Math.round((config.current / goal.target) * 100));
+  const reached = config.current >= goal.target;
 
   return (
     <Card>
@@ -88,8 +97,8 @@ export default function SessionGoal({ t }) {
         </button>
       </div>
       <div className="flex items-baseline justify-between mb-1.5">
-        <span className="text-xs text-neutral-400 font-body">{label}</span>
-        <span className="font-mono text-sm text-white">{current}{unit} / {goal.target}{unit}</span>
+        <span className="text-xs text-neutral-400 font-body">{t[config.labelKey]}</span>
+        <span className="font-mono text-sm text-white">{config.current}{config.unit} / {goal.target}{config.unit}</span>
       </div>
       <div className="sc-track h-2 overflow-hidden">
         <div className="sc-fill h-full transition-all" style={{ width: `${pct}%` }} />

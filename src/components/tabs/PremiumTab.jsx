@@ -31,7 +31,7 @@ function downloadCSV(csv, filename) {
   URL.revokeObjectURL(url);
 }
 
-export default function PremiumTab({ t, accent }) {
+export default function PremiumTab({ t, accent, onSeePlans }) {
   const weakest = performanceScore.reduce((min, p) => (p.value < min.value ? p : min), performanceScore[0]);
   const strongest = performanceScore.reduce((max, p) => (p.value > max.value ? p : max), performanceScore[0]);
   const [metric, setMetric] = useState(weakest.label.toLowerCase());
@@ -53,15 +53,25 @@ export default function PremiumTab({ t, accent }) {
         className="sc-card"
         style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), #0F0F0F 60%)' }}
       >
-        <div className="flex items-center gap-2 mb-1.5">
-          <Sparkles size={14} className="text-accent" />
-          <span className="font-display text-sm uppercase tracking-wide text-white">{t.scopePlusHeroTitle}</span>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Sparkles size={14} className="text-accent" />
+              <span className="font-display text-sm uppercase tracking-wide text-white">{t.scopePlusHeroTitle}</span>
+            </div>
+            <p className="text-xs font-body text-neutral-300 leading-relaxed max-w-2xl">{t.scopePlusHeroDesc}</p>
+          </div>
+          <button
+            onClick={onSeePlans}
+            className="shrink-0 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
+          >
+            {t.seePlans}
+          </button>
         </div>
-        <p className="text-xs font-body text-neutral-300 leading-relaxed max-w-2xl">{t.scopePlusHeroDesc}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <PremiumLock className="lg:col-span-2" title={t.unlock} description={t.descReco} ctaLabel={t.seePlans} preview={recoPreview}>
+        <PremiumLock className="lg:col-span-2" title={t.unlock} description={t.descReco} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={recoPreview}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recoTitle}</span>
             <p className="text-sm font-body text-neutral-300 leading-relaxed max-w-3xl">{recoText}</p>
@@ -71,7 +81,7 @@ export default function PremiumTab({ t, accent }) {
         <PremiumLock
           title={t.unlock}
           description={t.perfDesc}
-          ctaLabel={t.seePlans}
+          ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewPerf, { metric: strongest.label, value: strongest.value })}
         >
           <Card>
@@ -122,7 +132,7 @@ export default function PremiumTab({ t, accent }) {
         <PremiumLock
           title={t.unlock}
           description={t.descSynergy}
-          ctaLabel={t.seePlans}
+          ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewSynergy, { wr: topTeammate.winRate, name: topTeammate.name })}
         >
           <Card>
@@ -144,7 +154,7 @@ export default function PremiumTab({ t, accent }) {
         <PremiumLock
           title={t.unlock}
           description={t.descAlerts}
-          ctaLabel={t.seePlans}
+          ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewAlerts, { rr: rrToGoal, rank: 'Diamond 3' })}
         >
           <Card>
@@ -174,7 +184,7 @@ export default function PremiumTab({ t, accent }) {
         <PremiumLock
           title={t.unlock}
           description={t.descRoundBreakdown}
-          ctaLabel={t.seePlans}
+          ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewRoundBreakdown, { pct: clutchPct })}
         >
           <Card>
@@ -204,7 +214,7 @@ export default function PremiumTab({ t, accent }) {
           </Card>
         </PremiumLock>
 
-        <PremiumLock title={t.unlock} description={t.descTimePatterns} ctaLabel={t.seePlans} preview={timePatternsBestText}>
+        <PremiumLock title={t.unlock} description={t.descTimePatterns} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={timePatternsBestText}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.timePatternsTitle}</span>
             <p className="text-xs font-body text-neutral-400 mb-4">{timePatternsBestText}</p>
@@ -220,7 +230,7 @@ export default function PremiumTab({ t, accent }) {
           </Card>
         </PremiumLock>
 
-        <PremiumLock title={t.unlock} description={t.descExport} ctaLabel={t.seePlans}>
+        <PremiumLock title={t.unlock} description={t.descExport} ctaLabel={t.seePlans} onCtaClick={onSeePlans}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.exportTitle}</span>
             <p className="text-xs font-body text-neutral-500 mb-3">{t.exportDesc}</p>

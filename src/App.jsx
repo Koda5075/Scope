@@ -11,6 +11,7 @@ import ProfileCustomizationModal from './components/ProfileCustomizationModal.js
 import TabNav from './components/TabNav.jsx';
 import PromoBanner from './components/PromoBanner.jsx';
 import OnboardingTour from './components/OnboardingTour.jsx';
+import ScopePlansModal from './components/ScopePlansModal.jsx';
 import Footer from './components/Footer.jsx';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
@@ -28,7 +29,9 @@ export default function ScopeDashboard() {
   const [favoriteIds, setFavoriteIds] = useState(['p2']);
   const [publicVisible, setPublicVisible] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const [bannerUrl, setBannerUrl] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showPlansModal, setShowPlansModal] = useState(false);
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
@@ -45,12 +48,14 @@ export default function ScopeDashboard() {
       const savedFavorites = localStorage.getItem('scope-favorites');
       const savedPublicVisible = localStorage.getItem('scope-public-visible');
       const savedAvatar = localStorage.getItem('scope-avatar');
+      const savedBanner = localStorage.getItem('scope-banner');
       const savedLoggedIn = localStorage.getItem('scope-logged-in');
       if (savedLang && T[savedLang]) setLang(savedLang);
       if (savedTheme && THEMES[savedTheme]) setTheme(savedTheme);
       if (savedFavorites) setFavoriteIds(JSON.parse(savedFavorites));
       if (savedPublicVisible !== null) setPublicVisible(savedPublicVisible === 'true');
       if (savedAvatar) setAvatarUrl(savedAvatar);
+      if (savedBanner) setBannerUrl(savedBanner);
       if (savedLoggedIn === 'true') setLoggedIn(true);
     } catch (e) { /* ignore */ }
   }, []);
@@ -63,9 +68,11 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-public-visible', String(publicVisible));
       if (avatarUrl) localStorage.setItem('scope-avatar', avatarUrl);
       else localStorage.removeItem('scope-avatar');
+      if (bannerUrl) localStorage.setItem('scope-banner', bannerUrl);
+      else localStorage.removeItem('scope-banner');
       localStorage.setItem('scope-logged-in', String(loggedIn));
     } catch (e) { /* ignore */ }
-  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, loggedIn]);
+  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, bannerUrl, loggedIn]);
 
   return (
     <div
@@ -100,7 +107,8 @@ export default function ScopeDashboard() {
         @keyframes sc-reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .sc-reveal { animation: sc-reveal 0.45s ease-out both; }
 
-        .tour-highlight { position: relative; z-index: 55; outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; transition: box-shadow 0.3s ease; }
+        .tour-highlight { position: relative; z-index: 55; background: #0F0F0F; outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; transition: box-shadow 0.3s ease; }
+        .tour-dim { position: fixed; inset: 0; z-index: 54; background: rgba(0,0,0,0.75); pointer-events: none; transition: opacity 0.3s ease; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">
@@ -128,19 +136,20 @@ export default function ScopeDashboard() {
               rrGoal={rrGoal}
               peakRank={mockPeakRank}
               avatarUrl={avatarUrl}
+              bannerUrl={bannerUrl}
               onAvatarClick={() => setShowProfileModal(true)}
             />
             <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
             <TabNav tab={tab} setTab={setTab} t={t} />
 
-            {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setTab('premium')} />}
+            {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} />}
 
             {tab === 'overview' && <OverviewTab t={t} accent={accent} />}
             {tab === 'agents' && <AgentsTab t={t} />}
             {tab === 'compare' && <CompareTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} />}
             {tab === 'progress' && <ProgressTab t={t} />}
-            {tab === 'premium' && <PremiumTab t={t} accent={accent} />}
+            {tab === 'premium' && <PremiumTab t={t} accent={accent} onSeePlans={() => setShowPlansModal(true)} />}
 
             <OnboardingTour t={t} />
           </>
@@ -150,9 +159,17 @@ export default function ScopeDashboard() {
 
         {showProfileModal && (
           <Modal onClose={() => setShowProfileModal(false)} closeLabel={t.close}>
-            <ProfileCustomizationModal avatarUrl={avatarUrl} onAvatarChange={setAvatarUrl} t={t} />
+            <ProfileCustomizationModal
+              avatarUrl={avatarUrl}
+              onAvatarChange={setAvatarUrl}
+              bannerUrl={bannerUrl}
+              onBannerChange={setBannerUrl}
+              t={t}
+            />
           </Modal>
         )}
+
+        {showPlansModal && <ScopePlansModal onClose={() => setShowPlansModal(false)} t={t} />}
       </div>
     </div>
   );

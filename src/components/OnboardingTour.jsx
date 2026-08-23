@@ -48,7 +48,9 @@ export default function OnboardingTour({ t }) {
   const isLast = step === STEPS.length - 1;
 
   return (
-    <div className="fixed inset-0 z-[60] pointer-events-none">
+    <>
+      <div className="tour-dim" />
+      <div className="fixed inset-0 z-[60] pointer-events-none">
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[92vw] max-w-sm sc-card pointer-events-auto shadow-2xl">
         <div className="flex items-center justify-between mb-2">
           <span className="font-mono text-[10px] text-neutral-500">{step + 1} / {STEPS.length}</span>
@@ -67,6 +69,7 @@ export default function OnboardingTour({ t }) {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

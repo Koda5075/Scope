@@ -1,14 +1,25 @@
+import { useState } from 'react';
 import { getRankIcon } from '../data/valorantAssets.js';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
-export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl, onAvatarClick }) {
+export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, onAvatarClick }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
+  // Relative phrasing ("N min ago") rather than a baked-in clock time — always true
+  // regardless of when the demo is actually viewed, unlike a hardcoded "9:04 PM" that
+  // could read as a future time. Picked once per mount, not on every render.
+  const [minutesAgo] = useState(() => 5 + Math.floor(Math.random() * 55));
 
   return (
-    <div className="mb-7 border border-neutral-800 bg-neutral-950 px-6 py-5">
-      <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap">
+    <div className="mb-7 relative border border-neutral-800 bg-neutral-950 px-6 py-5 overflow-hidden">
+      {bannerUrl && (
+        <>
+          <img src={bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/60" />
+        </>
+      )}
+      <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
         {rankIcon && <img src={rankIcon} alt="" className="val-icon w-24 h-24 shrink-0" />}
         <div className="flex-1 min-w-[220px]">
           <div className="text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body mb-1">{t.rank}</div>
@@ -43,7 +54,7 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
             <span className="font-display text-lg font-semibold tracking-wide text-white block">
               KAITO<span className="text-neutral-600">#EUW1</span>
             </span>
-            <span className="text-xs text-neutral-500 font-body block">{t.lastSession}</span>
+            <span className="text-xs text-neutral-500 font-body block">{t.lastSession.replace('{n}', minutesAgo)}</span>
           </span>
         </button>
       </div>

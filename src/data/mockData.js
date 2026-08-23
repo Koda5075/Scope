@@ -135,6 +135,8 @@ export const performanceScore = [
 export const comparisons = [
   { metric: 'ACS', you: 238, rankAvg: 210, past: 195, max: 300 },
   { metric: 'KDA', you: 1.42, rankAvg: 1.25, past: 1.10, max: 2 },
+  { metric: 'HS%', you: 31, rankAvg: 24, past: 27, max: 50 },
+  { metric: 'DMG/Round', you: 145, rankAvg: 130, past: 125, max: 200 },
 ];
 
 export const friends = [
@@ -303,10 +305,66 @@ export function getMatchScoreboard(gameId) {
     };
   });
 
-  const you = { name: 'KAITO#EUW1', team: 'A', isYou: true, agent: game.agent, kills: yourKills, deaths: yourDeaths, assists: yourAssists, acs: game.acs };
+  const [teamScore, enemyScore] = game.score.split('-').map(Number);
+  const totalRounds = teamScore + enemyScore;
+
+  const n1 = seededValue(seed + 501);
+  const n2 = seededValue(seed + 502);
+  const n3 = seededValue(seed + 503);
+  const n4 = seededValue(seed + 504);
+  const n5 = seededValue(seed + 505);
+
+  const headshotPct = Math.round(20 + n1 * 25);
+  const accuracyPct = Math.round(15 + n2 * 20);
+  const firstBloods = Math.max(0, Math.round(n3 * 5));
+  const firstDeaths = Math.max(0, Math.round((1 - n3) * 4));
+  const clutchesWon = n4 > 0.6 ? 1 : 0;
+  const clutchesPlayed = Math.max(clutchesWon, n4 > 0.3 ? 1 : 0);
+  const damageDealt = Math.round(yourKills * (120 + n5 * 40) + yourAssists * 25);
+  const damageReceived = Math.round(yourDeaths * (110 + (1 - n5) * 40) + 200);
+  const avgDamageRound = totalRounds ? Math.round(damageDealt / totalRounds) : 0;
+
+  const ecoRoundsWon = Math.max(0, Math.round(n1 * 3));
+  const ecoRoundsPlayed = ecoRoundsWon + Math.round(n2 * 2) + 1;
+  const avgSpend = Math.round(2400 + n3 * 1400);
+
+  // Rivals only make sense against the enemy team — picking from all fillers could
+  // otherwise land on a teammate, who you never actually fight in competitive modes.
+  const enemyFillers = fillers.filter((f) => f.team !== 'A');
+  const rivalIdx = Math.floor(n4 * enemyFillers.length);
+  const targetIdx = Math.floor(n5 * enemyFillers.length);
+
+  const you = {
+    name: 'KAITO#EUW1',
+    team: 'A',
+    isYou: true,
+    agent: game.agent,
+    kills: yourKills,
+    deaths: yourDeaths,
+    assists: yourAssists,
+    acs: game.acs,
+    headshotPct,
+    accuracyPct,
+    firstBloods,
+    firstDeaths,
+    clutchesWon,
+    clutchesPlayed,
+    damageDealt,
+    damageReceived,
+    avgDamageRound,
+    economy: { ecoRoundsWon, ecoRoundsPlayed, avgSpend },
+    rivals: {
+      toughest: { name: enemyFillers[rivalIdx]?.name, count: Math.max(2, Math.round(1 + n1 * 3)) },
+      favorite: { name: enemyFillers[targetIdx]?.name, count: Math.max(2, Math.round(1 + n2 * 3)) },
+    },
+  };
   const players = [you, ...fillers].sort((a, b) => b.acs - a.acs);
 
-  return { ...game, players };
+  const dateTime = new Date();
+  dateTime.setDate(dateTime.getDate() - game.daysAgo);
+  dateTime.setHours(17 + Math.floor(seededValue(seed + 900) * 6), Math.floor(seededValue(seed + 901) * 60), 0, 0);
+
+  return { ...game, players, you, totalRounds, dateTime };
 }
 
 // Last entry matches performanceScore exactly, so the "current" snapshot is the latest
@@ -365,3 +423,17 @@ export const progressionTimeline = [
 // Invite-tracking stat — shown in Settings so sharing has a visible payoff instead of
 // disappearing into the void.
 export const inviteStats = { invited: 12, joined: 4 };
+
+// Mock Scope+ pricing — no real Stripe integration yet, so these are placeholder
+// figures rendered by the plans modal so "See plans" leads somewhere concrete.
+export const scopePlusPlans = [
+  { id: 'monthly', nameKey: 'planMonthly', price: 6.99, periodKey: 'periodMonth' },
+  { id: 'annual', nameKey: 'planAnnual', price: 59.99, periodKey: 'periodYear', badge: true, perMonthEquivalent: 5.0 },
+];
+
+// Feature list for the plans modal reuses section titles already translated elsewhere
+// in the app, instead of duplicating the same copy under new keys.
+export const scopePlusFeatureKeys = [
+  'recoTitle', 'scopePerformance', 'synergyTitle', 'alertsTitle',
+  'roundBreakdownTitle', 'timePatternsTitle', 'exportTitle',
+];

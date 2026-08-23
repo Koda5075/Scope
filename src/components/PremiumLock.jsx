@@ -1,6 +1,6 @@
 import { Lock, ChevronRight, Sparkles } from 'lucide-react';
 
-export default function PremiumLock({ title, description, ctaLabel, preview, className = '', children }) {
+export default function PremiumLock({ title, description, ctaLabel, preview, className = '', onCtaClick, children }) {
   return (
     <div className={`relative ${className}`}>
       <div className="opacity-30 select-none blur-[1.5px]">{children}</div>
@@ -14,7 +14,7 @@ export default function PremiumLock({ title, description, ctaLabel, preview, cla
             <span className="text-[11px] text-neutral-100 font-body italic leading-relaxed">{preview}</span>
           </div>
         )}
-        <button className="mt-1 flex items-center gap-1 text-[11px] font-body text-accent hover:underline">
+        <button onClick={onCtaClick} className="mt-1 flex items-center gap-1 text-[11px] font-body text-accent hover:underline">
           {ctaLabel} <ChevronRight size={12} />
         </button>
       </div>

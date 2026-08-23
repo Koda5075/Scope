@@ -87,6 +87,13 @@ export function getMapImage(name) {
   return MAP_IMAGES[name];
 }
 
+// Map splash art doubles as the preset profile-banner gallery — real Valorant art,
+// already verified reachable, needs no moderation since it's Scope-provided rather
+// than user-uploaded.
+export function getAllMapImages() {
+  return Object.entries(MAP_IMAGES).map(([name, img]) => ({ name, ...img }));
+}
+
 export function getRankIcon(rankName) {
   if (!rankName) return undefined;
   return RANK_ICONS[rankName.toUpperCase()];
