@@ -42,11 +42,13 @@ export default function ScopeDashboard() {
       const savedFavorites = localStorage.getItem('scope-favorites');
       const savedPublicVisible = localStorage.getItem('scope-public-visible');
       const savedAvatar = localStorage.getItem('scope-avatar');
+      const savedLoggedIn = localStorage.getItem('scope-logged-in');
       if (savedLang && T[savedLang]) setLang(savedLang);
       if (savedTheme && THEMES[savedTheme]) setTheme(savedTheme);
       if (savedFavorites) setFavoriteIds(JSON.parse(savedFavorites));
       if (savedPublicVisible !== null) setPublicVisible(savedPublicVisible === 'true');
       if (savedAvatar) setAvatarUrl(savedAvatar);
+      if (savedLoggedIn === 'true') setLoggedIn(true);
     } catch (e) { /* ignore */ }
   }, []);
 
@@ -58,8 +60,9 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-public-visible', String(publicVisible));
       if (avatarUrl) localStorage.setItem('scope-avatar', avatarUrl);
       else localStorage.removeItem('scope-avatar');
+      localStorage.setItem('scope-logged-in', String(loggedIn));
     } catch (e) { /* ignore */ }
-  }, [lang, theme, favoriteIds, publicVisible, avatarUrl]);
+  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, loggedIn]);
 
   return (
     <div
@@ -90,6 +93,9 @@ export default function ScopeDashboard() {
            border like sc-card — a filter on already-small icons just blurred the detail
            out instead of integrating them with the theme. */
         .val-icon { border: 1.5px solid var(--accent); background: #0F0F0F; padding: 2px; }
+
+        @keyframes sc-reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .sc-reveal { animation: sc-reveal 0.45s ease-out both; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">

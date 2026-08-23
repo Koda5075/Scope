@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import Card from '../Card.jsx';
 import { agentStats, mapStats, weaponStats } from '../../data/mockData.js';
-import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
+import { getAgentIcon, getMapImage, getWeaponIcon } from '../../data/valorantAssets.js';
 
 export default function AgentsTab({ t }) {
   return (
@@ -38,6 +38,18 @@ export default function AgentsTab({ t }) {
                   <span className="font-mono text-xs text-neutral-500 w-20 text-right shrink-0">{m.games} {t.gamesShort}</span>
                   <span className="font-mono text-xs text-accent w-12 text-right shrink-0">{m.wr}%</span>
                 </div>
+                <div className="flex items-center gap-3 mt-1.5">
+                  <span className="flex-1 flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-neutral-600 w-7 shrink-0">ATK</span>
+                    <div className="flex-1 sc-track h-1 overflow-hidden"><div className="sc-fill-dim h-full" style={{ width: `${m.atkWr}%` }} /></div>
+                    <span className="font-mono text-[10px] text-neutral-500 w-8 text-right shrink-0">{m.atkWr}%</span>
+                  </span>
+                  <span className="flex-1 flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-neutral-600 w-7 shrink-0">DEF</span>
+                    <div className="flex-1 sc-track h-1 overflow-hidden"><div className="sc-fill-dim h-full" style={{ width: `${m.defWr}%` }} /></div>
+                    <span className="font-mono text-[10px] text-neutral-500 w-8 text-right shrink-0">{m.defWr}%</span>
+                  </span>
+                </div>
               </div>
             </div>
           ))}
@@ -49,9 +61,10 @@ export default function AgentsTab({ t }) {
         <div className="flex flex-col gap-3">
           {weaponStats.map((w) => (
             <div key={w.name} className="flex items-center gap-4">
-              <span className="font-display text-sm text-white w-24 flex items-center gap-1.5">
-                {w.name}
-                {w.favorite && <Star size={10} className="text-accent" fill="currentColor" />}
+              <span className="font-display text-sm text-white w-32 flex items-center gap-1.5 shrink-0">
+                {getWeaponIcon(w.name) && <img src={getWeaponIcon(w.name)} alt="" className="val-icon w-9 h-9 object-contain shrink-0" />}
+                <span className="truncate">{w.name}</span>
+                {w.favorite && <Star size={10} className="text-accent shrink-0" fill="currentColor" />}
               </span>
               <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${w.accuracy}%` }} /></div>
               <span className="font-mono text-xs text-neutral-500 w-24 text-right">{w.kills} {t.weaponKills}</span>

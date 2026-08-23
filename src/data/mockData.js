@@ -1,4 +1,5 @@
 import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle } from 'lucide-react';
+import { getAllAgentNames } from './valorantAssets.js';
 
 export const rrHistory = [
   { s: 'S1', rr: 38 }, { s: 'S2', rr: 52 }, { s: 'S3', rr: 45 }, { s: 'S4', rr: 61 },
@@ -14,20 +15,23 @@ export const TIER_COLORS = ['#CD7F32', '#C0C4C9', '#F2C94C', '#7DD3E8'];
 // value = current count). One-off or snapshot-style achievements (Comeback, Marathon,
 // Explorer, time-of-day patterns, current percentile/rank-tier reached) keep the simple
 // single-state display — forcing 4 levels on those wouldn't mean anything.
+// Single-state badges (no tiers/value) carry their own `unlocked` flag since there's no
+// numeric threshold to derive it from — a mix of true/false so the Badges tab has real
+// locked entries to show, not just achievements.
 export const badgeDefs = [
   { id: 'teamPlayer', icon: Users, tiers: [10, 25, 50, 100], value: 38 },
   { id: 'aceX3', icon: Swords, tiers: [1, 3, 10, 25], value: 7 },
   { id: 'headshots200', icon: Target, tiers: [100, 500, 1000, 2500], value: 640 },
   { id: 'streak5', icon: Flame, tiers: [3, 5, 10, 30], value: 8 },
-  { id: 'newTier', icon: TrendingUp },
-  { id: 'top15', icon: Trophy },
-  { id: 'comeback', icon: RotateCcw },
-  { id: 'nightOwl', icon: Moon },
-  { id: 'earlyBird', icon: Sunrise },
-  { id: 'marathon', icon: Hourglass },
+  { id: 'newTier', icon: TrendingUp, unlocked: true },
+  { id: 'top15', icon: Trophy, unlocked: true },
+  { id: 'comeback', icon: RotateCcw, unlocked: true },
+  { id: 'nightOwl', icon: Moon, unlocked: false },
+  { id: 'earlyBird', icon: Sunrise, unlocked: true },
+  { id: 'marathon', icon: Hourglass, unlocked: false },
   { id: 'supportStar', icon: HeartHandshake, tiers: [200, 500, 1000, 2000], value: 740 },
   { id: 'rivalSlayer', icon: Crosshair, tiers: [1, 5, 15, 30], value: 4 },
-  { id: 'explorer', icon: Compass },
+  { id: 'explorer', icon: Compass, unlocked: false },
   { id: 'versatile', icon: Shuffle, tiers: [3, 6, 10, 15], value: 7 },
 ];
 
@@ -58,16 +62,55 @@ export function getBadgeProgress(badge) {
   };
 }
 
+// A tiered badge is unlocked once it has reached its first tier; a single-state badge
+// carries its own `unlocked` flag (set on the badge def above).
+export function isBadgeUnlocked(badge) {
+  if (badge.tiers) {
+    const progress = getBadgeProgress(badge);
+    return !!progress && progress.tierIndex >= 0;
+  }
+  return !!badge.unlocked;
+}
+
 export const agentStats = [
   { name: 'Jett', games: 14, wr: 64 },
   { name: 'Reyna', games: 9, wr: 56 },
   { name: 'Sova', games: 6, wr: 50 },
 ];
 
+// atkWr/defWr are separate win rates for rounds started on attack vs. defense on that
+// map — a real tactical signal (e.g. a map you're strong on overall but weak on one
+// side) that the combined `wr` alone hides.
 export const mapStats = [
-  { name: 'Bind', games: 8, wr: 62 },
-  { name: 'Ascent', games: 6, wr: 50 },
-  { name: 'Haven', games: 5, wr: 40 },
+  { name: 'Bind', games: 8, wr: 62, atkWr: 58, defWr: 67 },
+  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39 },
+  { name: 'Haven', games: 5, wr: 40, atkWr: 33, defWr: 47 },
+];
+
+// Round-type and clutch breakdown — Scope+. Pistol/eco-force winrates and clutch
+// success rate by man-disadvantage situation, instead of just the flat clutch count
+// already shown for free on the Overview tab.
+export const roundBreakdown = {
+  pistolWr: 58,
+  ecoForceWr: 36,
+  clutches: [
+    { situation: '1v1', attempts: 18, won: 11 },
+    { situation: '1v2', attempts: 9, won: 4 },
+    { situation: '1v3', attempts: 4, won: 1 },
+    { situation: '1v4', attempts: 2, won: 0 },
+    { situation: '1v5', attempts: 1, won: 0 },
+  ],
+};
+
+// Win rate by day/time-of-day slot — Scope+. Mock data engineered so evening/weekend
+// play is clearly the strongest slot, giving the "you perform best on weekend evenings"
+// coaching-style callout something concrete to point at.
+export const timePatterns = [
+  { id: 'weekdayMorning', games: 6, wr: 33 },
+  { id: 'weekdayEvening', games: 14, wr: 54 },
+  { id: 'weekendAfternoon', games: 9, wr: 61 },
+  { id: 'weekendEvening', games: 11, wr: 73 },
+  { id: 'lateNight', games: 7, wr: 29 },
 ];
 
 export const performanceScore = [
@@ -141,11 +184,73 @@ export const recentGames = [
   { id: 'g10', mode: 'competitive', map: 'Pearl', result: 'win', score: '13-6', agent: 'Jett', kda: '20/12/5', acs: 233, daysAgo: 25 },
   { id: 'g11', mode: 'deathmatch', map: 'Lotus', result: 'loss', score: '9-13', agent: 'Reyna', kda: '9/14/0', acs: 150, daysAgo: 40 },
   { id: 'g12', mode: 'competitive', map: 'Sunset', result: 'win', score: '13-11', agent: 'Sova', kda: '17/11/6', acs: 219, daysAgo: 58 },
+  // Older than everything above — only surface when browsing a past Act (see `acts` below).
+  { id: 'g13', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-7', agent: 'Jett', kda: '19/8/5', acs: 227, daysAgo: 70 },
+  { id: 'g14', mode: 'unrated', map: 'Bind', result: 'loss', score: '8-13', agent: 'Sova', kda: '9/13/6', acs: 168, daysAgo: 82 },
 ];
 
-const FILLER_NAMES = ['Nova', 'Miro', 'Shade', 'Kestrel', 'Ondine', 'Rasp', 'Tally', 'Brix', 'Wisp'];
-const FILLER_TAGS = ['EUW1', 'NA1', 'EU', 'KR'];
-const FILLER_AGENTS = ['Jett', 'Reyna', 'Sova', 'Omen', 'Sage', 'Killjoy', 'Neon', 'Cypher', 'Breach'];
+// Mock "Acts" — VALORANT's multi-month competitive periods (rank resets between them).
+// Ranges are expressed on the same daysAgo axis as recentGames/activityCalendar, most
+// recent first. Fictional names since this is mock data (episode/act numbers here don't
+// track the real game's current season).
+// Current streak + all-time best win/loss streak, derived from recentGames (already
+// ordered most-recent-first, so run lengths can be read directly off the array).
+export function getStreaks(games = recentGames) {
+  const currentType = games[0]?.result ?? null;
+  let currentCount = 0;
+  for (const g of games) {
+    if (g.result !== currentType) break;
+    currentCount++;
+  }
+
+  let bestWinStreak = 0;
+  let bestLossStreak = 0;
+  let runType = null;
+  let runCount = 0;
+  for (const g of games) {
+    runCount = g.result === runType ? runCount + 1 : 1;
+    runType = g.result;
+    if (runType === 'win') bestWinStreak = Math.max(bestWinStreak, runCount);
+    else bestLossStreak = Math.max(bestLossStreak, runCount);
+  }
+
+  return { currentType, currentCount, bestWinStreak, bestLossStreak };
+}
+
+export const acts = [
+  { id: 'e9a3', label: 'Episode 9 — Act III', minDaysAgo: 0, maxDaysAgo: 29, current: true },
+  { id: 'e9a2', label: 'Episode 9 — Act II', minDaysAgo: 30, maxDaysAgo: 59 },
+  { id: 'e9a1', label: 'Episode 9 — Act I', minDaysAgo: 60, maxDaysAgo: 89 },
+];
+
+const FILLER_NAMES = [
+  'Nova', 'Miro', 'Shade', 'Kestrel', 'Ondine', 'Rasp', 'Tally', 'Brix', 'Wisp',
+  'Ferro', 'Halcyon', 'Juno', 'Lynx', 'Marrow', 'Nyx', 'Orin', 'Pyre', 'Quill',
+  'Rift', 'Suto', 'Talon', 'Umbra', 'Vex', 'Wraith', 'Zephyra',
+];
+const FILLER_TAGS = ['EUW1', 'NA1', 'EU', 'KR', 'BR1', 'AP', 'LATAM'];
+const FILLER_AGENTS = getAllAgentNames();
+
+// Deterministic string hash (djb2-style) — used instead of a single trailing char so
+// every gameId spreads to a distinct seed (the old `charCodeAt(len-1) + length` hash
+// collided across ids like g1/g10 and g2/g11, which is why the same handful of filler
+// names kept resurfacing match after match).
+function hashString(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h * 33) ^ str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+// Deterministic Fisher-Yates shuffle, seeded — gives each match its own distinct draw
+// order from the shared name/agent pools instead of everyone reusing the same ~9 slots.
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(seededValue(seed + i * 13.37) * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 // Builds a deterministic 10-player scoreboard (you + 9 filler players) around a game's
 // known kda/acs, instead of hand-writing ten rows per match.
@@ -154,14 +259,17 @@ export function getMatchScoreboard(gameId) {
   if (!game) return null;
 
   const [yourKills, yourDeaths, yourAssists] = game.kda.split('/').map(Number);
-  const seed = gameId.charCodeAt(gameId.length - 1) + gameId.length;
+  const seed = hashString(gameId);
+
+  const shuffledNames = seededShuffle(FILLER_NAMES, seed);
+  const shuffledAgents = seededShuffle(FILLER_AGENTS, seed + 1000);
 
   const fillers = Array.from({ length: 9 }, (_, i) => {
     const n = seededValue(seed + i * 7);
     return {
-      name: `${FILLER_NAMES[(seed + i) % FILLER_NAMES.length]}#${FILLER_TAGS[i % FILLER_TAGS.length]}`,
+      name: `${shuffledNames[i % shuffledNames.length]}#${FILLER_TAGS[(seed + i) % FILLER_TAGS.length]}`,
       team: i < 4 ? 'A' : 'B',
-      agent: FILLER_AGENTS[(seed + i * 3) % FILLER_AGENTS.length],
+      agent: shuffledAgents[i % shuffledAgents.length],
       kills: Math.max(2, Math.round(yourKills * (0.4 + n * 0.9))),
       deaths: Math.max(3, Math.round(yourDeaths * (0.5 + (1 - n) * 0.8))),
       assists: Math.max(0, Math.round(yourAssists * (0.3 + n * 1.1))),

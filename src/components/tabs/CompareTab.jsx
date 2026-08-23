@@ -13,11 +13,15 @@ export default function CompareTab({ t, theme }) {
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-neutral-500 inline-block" /> {t.rankAvg}</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 inline-block" style={{ background: THEMES[theme].dim }} /> {t.past30}</span>
         </div>
-        <div className="flex flex-col gap-4">
-          {comparisons.map((c) => (
-            <div key={c.metric}>
-              <div className="text-xs font-display uppercase text-neutral-300 mb-2">{c.metric}</div>
-              <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-6">
+          {comparisons.map((c, i) => (
+            <div
+              key={c.metric}
+              className={`sc-reveal ${i > 0 ? 'pt-6 border-t border-neutral-900' : ''}`}
+              style={{ animationDelay: `${i * 140}ms` }}
+            >
+              <div className="text-xs font-display uppercase tracking-wide text-neutral-300 mb-3">{c.metric}</div>
+              <div className="flex flex-col gap-2.5">
                 <CompareRow label={t.you} value={c.you} max={c.max} tone="you" />
                 <CompareRow label={t.rankAvg} value={c.rankAvg} max={c.max} tone="avg" />
                 <CompareRow label={t.past30} value={c.past} max={c.max} tone="past" />

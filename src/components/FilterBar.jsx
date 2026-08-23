@@ -1,4 +1,4 @@
-export default function FilterBar({ t, mode, setMode, period, setPeriod }) {
+export default function FilterBar({ t, mode, setMode, period, setPeriod, acts, actId, setActId }) {
   return (
     <div className="flex flex-wrap gap-3 mb-4">
       <div className="flex items-center gap-2">
@@ -29,6 +29,21 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod }) {
           <option value="all">{t.periodAll}</option>
         </select>
       </div>
+      {period === 'act' && (
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.filterAct}</span>
+          <select
+            value={actId}
+            onChange={(e) => setActId(e.target.value)}
+            aria-label={t.filterAct}
+            className="bg-neutral-950 border border-accent text-xs font-body text-neutral-300 px-2 py-1.5 focus:border-accent outline-none"
+          >
+            {acts.map((a) => (
+              <option key={a.id} value={a.id}>{a.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 }

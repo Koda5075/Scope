@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Card from '../Card.jsx';
 import PremiumLock from '../PremiumLock.jsx';
-import { performanceScore, performanceHistory, teammates, buildGamesCSV } from '../../data/mockData.js';
+import { performanceScore, performanceHistory, teammates, buildGamesCSV, roundBreakdown, timePatterns } from '../../data/mockData.js';
 
 const METRICS = ['aim', 'consistency', 'impact', 'clutch'];
 
@@ -22,6 +22,8 @@ export default function PremiumTab({ t, accent }) {
   const weakest = performanceScore.reduce((min, p) => (p.value < min.value ? p : min), performanceScore[0]);
   const [metric, setMetric] = useState(weakest.label.toLowerCase());
   const recoText = t[`reco${weakest.label}`];
+  const bestSlot = [...timePatterns].sort((a, b) => b.wr - a.wr)[0];
+  const timePatternsBestText = t.timePatternsBest.replace('{slot}', t.timeSlots[bestSlot.id]).replace('{wr}', bestSlot.wr);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -116,6 +118,50 @@ export default function PremiumTab({ t, accent }) {
               <option>Diamond 3</option>
               <option>Immortal 1</option>
             </select>
+          </div>
+        </Card>
+      </PremiumLock>
+
+      <PremiumLock title={t.unlock} description={t.descRoundBreakdown} ctaLabel={t.seePlans}>
+        <Card>
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.roundBreakdownTitle}</span>
+          <div className="flex flex-col gap-3 mb-4">
+            <div>
+              <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{t.pistolRoundsLabel}</span><span>{roundBreakdown.pistolWr}%</span></div>
+              <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${roundBreakdown.pistolWr}%` }} /></div>
+            </div>
+            <div>
+              <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{t.ecoForceLabel}</span><span>{roundBreakdown.ecoForceWr}%</span></div>
+              <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${roundBreakdown.ecoForceWr}%` }} /></div>
+            </div>
+          </div>
+          <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.clutchBreakdownLabel}</div>
+          <div className="flex flex-col gap-1.5">
+            {roundBreakdown.clutches.map((c) => (
+              <div key={c.situation} className="flex items-center gap-3">
+                <span className="font-mono text-xs text-neutral-400 w-10 shrink-0">{c.situation}</span>
+                <div className="flex-1 sc-track h-1.5 overflow-hidden">
+                  <div className="sc-fill-dim h-full" style={{ width: `${c.attempts ? Math.round((c.won / c.attempts) * 100) : 0}%` }} />
+                </div>
+                <span className="font-mono text-xs text-neutral-300 w-14 text-right shrink-0">{c.won}/{c.attempts}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </PremiumLock>
+
+      <PremiumLock title={t.unlock} description={t.descTimePatterns} ctaLabel={t.seePlans}>
+        <Card>
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.timePatternsTitle}</span>
+          <p className="text-xs font-body text-neutral-400 mb-4">{timePatternsBestText}</p>
+          <div className="flex flex-col gap-2.5">
+            {timePatterns.map((slot) => (
+              <div key={slot.id} className="flex items-center gap-3">
+                <span className="text-[11px] font-body text-neutral-400 w-36 shrink-0 truncate">{t.timeSlots[slot.id]}</span>
+                <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${slot.wr}%` }} /></div>
+                <span className="font-mono text-xs text-neutral-300 w-10 text-right shrink-0">{slot.wr}%</span>
+              </div>
+            ))}
           </div>
         </Card>
       </PremiumLock>

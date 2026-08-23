@@ -7,19 +7,27 @@ import FilterBar from '../FilterBar.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
 import Modal from '../Modal.jsx';
 import GameScoreboard from '../GameScoreboard.jsx';
-import { rrHistory, badgeDefs, recentGames, getMatchScoreboard } from '../../data/mockData.js';
-import { getAgentIcon } from '../../data/valorantAssets.js';
+import KDAStat from '../KDAStat.jsx';
+import Highlights from '../Highlights.jsx';
+import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, acts, getStreaks } from '../../data/mockData.js';
+import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 
-const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, act: 59, all: Infinity };
+const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
+const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 
 export default function OverviewTab({ t, accent }) {
   const [filterMode, setFilterMode] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState('7d');
+  const [actId, setActId] = useState(acts.find((a) => a.current)?.id ?? acts[0].id);
   const [selectedGameId, setSelectedGameId] = useState(null);
 
-  const filteredGames = recentGames.filter(
-    (g) => (filterMode === 'all' || g.mode === filterMode) && g.daysAgo <= PERIOD_MAX_DAYS[filterPeriod]
-  );
+  const selectedAct = acts.find((a) => a.id === actId) ?? acts[0];
+
+  const filteredGames = recentGames.filter((g) => {
+    if (filterMode !== 'all' && g.mode !== filterMode) return false;
+    if (filterPeriod === 'act') return g.daysAgo >= selectedAct.minDaysAgo && g.daysAgo <= selectedAct.maxDaysAgo;
+    return g.daysAgo <= PERIOD_MAX_DAYS[filterPeriod];
+  });
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
@@ -33,9 +41,12 @@ export default function OverviewTab({ t, accent }) {
   }, { diff: Infinity, label: '—' });
 
   const selectedMatch = selectedGameId ? getMatchScoreboard(selectedGameId) : null;
+  const streaks = getStreaks();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <>
+      <Highlights t={t} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 flex flex-col gap-4">
         <Card>
           <div className="flex items-center justify-between mb-3">
@@ -60,7 +71,16 @@ export default function OverviewTab({ t, accent }) {
           </div>
         </Card>
 
-        <FilterBar t={t} mode={filterMode} setMode={setFilterMode} period={filterPeriod} setPeriod={setFilterPeriod} />
+        <FilterBar
+          t={t}
+          mode={filterMode}
+          setMode={setFilterMode}
+          period={filterPeriod}
+          setPeriod={setFilterPeriod}
+          acts={acts}
+          actId={actId}
+          setActId={setActId}
+        />
 
         <Card>
           <div className="flex items-center justify-between mb-3">
@@ -69,11 +89,18 @@ export default function OverviewTab({ t, accent }) {
               <Share2 size={12} /> {t.share}
             </button>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.games}</div><div className="font-mono text-xl text-white">{filteredGames.length}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.record}</div><div className="font-mono text-xl text-accent">{wins}{t.winShort} – {losses}{t.lossShort}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.best}</div><div className="font-mono text-xl text-white">{best.label}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.worst}</div><div className="font-mono text-xl text-neutral-400">{worst.label}</div></div>
+            <div>
+              <div className="text-[11px] text-neutral-500 font-body mb-1">{t.streakLabel}</div>
+              <div className={`font-mono text-xl ${streaks.currentType === 'win' ? 'text-accent' : 'text-neutral-400'}`}>
+                {streaks.currentCount}{streaks.currentType === 'win' ? t.winShort : t.lossShort}
+              </div>
+              <div className="text-[10px] text-neutral-600 font-mono mt-0.5">{t.bestStreak}: {streaks.bestWinStreak}{t.winShort}</div>
+            </div>
           </div>
         </Card>
 
@@ -83,26 +110,38 @@ export default function OverviewTab({ t, accent }) {
             {filteredGames.length === 0 ? (
               <div className="text-xs font-body text-neutral-500 py-2">{t.noGamesForFilter}</div>
             ) : (
-              filteredGames.map((g) => (
-                <button
-                  key={g.id}
-                  onClick={() => setSelectedGameId(g.id)}
-                  className="flex items-center justify-between px-3 py-2 border border-neutral-800 hover:border-accent bg-neutral-950 transition-colors text-left"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className={`w-1.5 h-1.5 shrink-0 ${g.result === 'win' ? 'bg-accent' : 'bg-neutral-600'}`} />
-                    <span className="font-body text-xs text-neutral-300 truncate">{g.map}</span>
-                    <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 shrink-0">
-                      {getAgentIcon(g.agent) && <img src={getAgentIcon(g.agent)} alt="" className="val-icon w-8 h-8 rounded-full object-cover" />}
-                      {g.agent}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="font-mono text-xs text-neutral-500">{g.kda}</span>
-                    <span className="font-mono text-xs text-white">{g.score}</span>
-                  </div>
-                </button>
-              ))
+              filteredGames.map((g) => {
+                const [k, d, a] = g.kda.split('/').map(Number);
+                const mapImage = getMapImage(g.map);
+                return (
+                  <button
+                    key={g.id}
+                    onClick={() => setSelectedGameId(g.id)}
+                    className="flex items-center justify-between gap-3 px-3 py-2 border border-neutral-800 hover:border-accent bg-neutral-950 transition-colors text-left flex-wrap sm:flex-nowrap"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className={`w-1.5 h-1.5 shrink-0 ${g.result === 'win' ? 'bg-accent' : 'bg-neutral-600'}`} />
+                      {mapImage && <img src={mapImage.splash} alt="" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
+                      <span className="font-display text-sm font-semibold text-white truncate">{g.map}</span>
+                      <span
+                        className={`font-body text-[10px] uppercase tracking-wide px-1.5 py-0.5 shrink-0 border ${
+                          g.mode === 'competitive' ? 'text-accent border-accent' : 'text-neutral-500 border-neutral-700'
+                        }`}
+                      >
+                        {t[MODE_LABEL_KEY[g.mode]]}
+                      </span>
+                      <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 shrink-0">
+                        {getAgentIcon(g.agent) && <img src={getAgentIcon(g.agent)} alt="" className="val-icon w-8 h-8 rounded-full object-cover" />}
+                        {g.agent}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
+                      <KDAStat kills={k} deaths={d} assists={a} />
+                      <span className="font-mono text-xs text-white">{g.score}</span>
+                    </div>
+                  </button>
+                );
+              })
             )}
           </div>
         </Card>
@@ -125,7 +164,7 @@ export default function OverviewTab({ t, accent }) {
         <Card>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recentBadges}</span>
           <div className="flex flex-col gap-2">
-            {badgeDefs.slice(0, 3).map((b) => {
+            {badgeDefs.filter(isBadgeUnlocked).slice(0, 3).map((b) => {
               const Icon = b.icon;
               const info = t.badges[b.id];
               return (
@@ -144,6 +183,7 @@ export default function OverviewTab({ t, accent }) {
           <GameScoreboard match={selectedMatch} t={t} />
         </Modal>
       )}
-    </div>
+      </div>
+    </>
   );
 }

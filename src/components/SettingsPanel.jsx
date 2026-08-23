@@ -18,15 +18,15 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
   }
 
   return (
-    <div className="settings-panel absolute right-0 top-11 w-64 p-4 z-10">
-      <div className="mb-4">
-        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.language}</div>
-        <div className="flex flex-wrap gap-2">
+    <div className="settings-panel absolute right-0 top-11 w-80 sm:w-96 max-h-[75vh] overflow-y-auto p-6 z-10">
+      <div>
+        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-3">{t.language}</div>
+        <div className="grid grid-cols-3 gap-2">
           {['en', 'fr', 'de', 'es', 'it', 'pt'].map((l) => (
             <button
               key={l}
               onClick={() => setLang(l)}
-              className={`px-3 py-1 text-xs font-display uppercase border transition-colors ${
+              className={`px-3 py-1.5 text-xs font-display uppercase border transition-colors ${
                 lang === l ? 'border-accent text-accent' : 'border-neutral-800 text-neutral-500 hover:text-neutral-300'
               }`}
             >
@@ -35,9 +35,10 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
           ))}
         </div>
       </div>
-      <div className="mb-4">
-        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.appearance}</div>
-        <div className="flex gap-2.5">
+
+      <div className="mt-6 pt-6 border-t border-neutral-800">
+        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-3">{t.appearance}</div>
+        <div className="flex gap-3">
           {Object.entries(THEMES).map(([key, val]) => (
             <button
               key={key}
@@ -52,9 +53,10 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
           ))}
         </div>
       </div>
-      <div>
-        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.publicProfileSection}</div>
-        <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-2">
+
+      <div className="mt-6 pt-6 border-t border-neutral-800">
+        <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-3">{t.publicProfileSection}</div>
+        <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-2.5">
           <input type="checkbox" checked={publicVisible} onChange={(e) => setPublicVisible(e.target.checked)} className="accent-[var(--accent)]" />
           {t.publicVisibilityLabel}
         </label>

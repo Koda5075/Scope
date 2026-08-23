@@ -1,4 +1,5 @@
 import { getAgentIcon, getMapImage } from '../data/valorantAssets.js';
+import KDAStat from './KDAStat.jsx';
 
 export default function GameScoreboard({ match, t }) {
   const modeLabel = { competitive: t.modeCompetitive, unrated: t.modeUnrated, deathmatch: t.modeDeathmatch }[match.mode];
@@ -32,9 +33,7 @@ export default function GameScoreboard({ match, t }) {
               </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              <span className="font-mono text-xs text-neutral-400">
-                {p.kills}/{p.deaths}/{p.assists}
-              </span>
+              <KDAStat kills={p.kills} deaths={p.deaths} assists={p.assists} tone={p.isYou ? 'you' : 'default'} />
               <span className="font-mono text-xs text-white w-10 text-right">{p.acs}</span>
             </div>
           </div>
