@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Star, Maximize2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
+import AdSlot from '../AdSlot.jsx';
 import { agentStats, mapStats, weaponStats } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage, getWeaponIcon } from '../../data/valorantAssets.js';
 
@@ -103,7 +104,7 @@ function WeaponRow({ w, killShare, t }) {
   );
 }
 
-export default function AgentsTab({ t }) {
+export default function AgentsTab({ t, isPremium }) {
   const [openModal, setOpenModal] = useState(null); // 'agents' | 'maps' | 'weapons' | null
   const totalKills = weaponStats.reduce((sum, w) => sum + w.kills, 0);
 
@@ -140,6 +141,10 @@ export default function AgentsTab({ t }) {
           ))}
         </div>
       </Card>
+
+      <div className="md:col-span-2">
+        <AdSlot t={t} isPremium={isPremium} variant="banner" />
+      </div>
 
       {openModal === 'agents' && (
         <Modal onClose={() => setOpenModal(null)} closeLabel={t.close}>

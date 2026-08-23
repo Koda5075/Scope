@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { alertsFeed } from '../data/mockData.js';
+import { useClickOutside } from '../hooks/useClickOutside.js';
 
 function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
@@ -10,6 +11,8 @@ export default function NotificationsBell({ t }) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState(alertsFeed);
   const unreadCount = alerts.filter((a) => !a.read).length;
+  const panelRef = useRef(null);
+  useClickOutside(panelRef, open, () => setOpen(false));
 
   function toggle() {
     setOpen((s) => {
@@ -20,7 +23,7 @@ export default function NotificationsBell({ t }) {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={panelRef}>
       <button
         onClick={toggle}
         className="relative w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"

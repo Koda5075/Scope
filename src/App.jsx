@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { T } from './i18n/translations.js';
 import { THEMES } from './data/themes.js';
 import { peakRank as mockPeakRank } from './data/mockData.js';
@@ -13,26 +13,45 @@ import PromoBanner from './components/PromoBanner.jsx';
 import OnboardingTour from './components/OnboardingTour.jsx';
 import ScopePlansModal from './components/ScopePlansModal.jsx';
 import Footer from './components/Footer.jsx';
+import TabLoading from './components/TabLoading.jsx';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
 import BadgesTab from './components/tabs/BadgesTab.jsx';
 import ProgressTab from './components/tabs/ProgressTab.jsx';
-import PremiumTab from './components/tabs/PremiumTab.jsx';
+
+// Scope+ pulls in its own chart/lock UI that only ever renders once a paying-curious
+// user opens the tab — splitting it out of the main bundle keeps the initial load lean
+// for the free dashboard most sessions never leave.
+const PremiumTab = lazy(() => import('./components/tabs/PremiumTab.jsx'));
+
+// Reads a saved value at state-creation time (lazy useState initializer) rather than
+// via a mount-only useEffect — the effect approach renders once with the hardcoded
+// default first, and a broader persist-effect firing on that same initial commit was
+// writing that stale default back over the just-loaded value before the load's setState
+// had actually taken effect, silently losing the saved setting on every fresh load.
+function loadStored(key, fallback, parse = (v) => v) {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved !== null ? parse(saved) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export default function ScopeDashboard() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(() => loadStored('scope-logged-in', false, (v) => v === 'true'));
   const [tab, setTab] = useState('overview');
-  const [lang, setLang] = useState('en');
-  const [theme, setTheme] = useState('yellow');
+  const [lang, setLang] = useState(() => loadStored('scope-lang', 'en', (v) => (T[v] ? v : 'en')));
+  const [theme, setTheme] = useState(() => loadStored('scope-theme', 'yellow', (v) => (THEMES[v] ? v : 'yellow')));
   const [showSettings, setShowSettings] = useState(false);
-  const [favoriteIds, setFavoriteIds] = useState(['p2']);
-  const [publicVisible, setPublicVisible] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState(null);
-  const [bannerUrl, setBannerUrl] = useState(null);
+  const [favoriteIds, setFavoriteIds] = useState(() => loadStored('scope-favorites', ['p2'], JSON.parse));
+  const [publicVisible, setPublicVisible] = useState(() => loadStored('scope-public-visible', true, (v) => v === 'true'));
+  const [avatarUrl, setAvatarUrl] = useState(() => loadStored('scope-avatar', null));
+  const [bannerUrl, setBannerUrl] = useState(() => loadStored('scope-banner', null));
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPlansModal, setShowPlansModal] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
+  const [isPremium, setIsPremium] = useState(() => loadStored('scope-premium', false, (v) => v === 'true'));
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
@@ -42,26 +61,31 @@ export default function ScopeDashboard() {
     setFavoriteIds((ids) => (ids.includes(puuid) ? ids.filter((id) => id !== puuid) : [...ids, puuid]));
   }
 
-  useEffect(() => {
+  // Mock deletion — no real backend/account exists yet, so this just wipes every
+  // scope-* key this app has ever written (listed explicitly rather than
+  // localStorage.clear(), which would also nuke anything unrelated sharing the origin)
+  // and resets in-memory state to first-run defaults. Matches the deletion right
+  // already promised in the privacy policy.
+  function handleDeleteAccount() {
     try {
-      const savedLang = localStorage.getItem('scope-lang');
-      const savedTheme = localStorage.getItem('scope-theme');
-      const savedFavorites = localStorage.getItem('scope-favorites');
-      const savedPublicVisible = localStorage.getItem('scope-public-visible');
-      const savedAvatar = localStorage.getItem('scope-avatar');
-      const savedBanner = localStorage.getItem('scope-banner');
-      const savedLoggedIn = localStorage.getItem('scope-logged-in');
-      const savedPremium = localStorage.getItem('scope-premium');
-      if (savedLang && T[savedLang]) setLang(savedLang);
-      if (savedTheme && THEMES[savedTheme]) setTheme(savedTheme);
-      if (savedFavorites) setFavoriteIds(JSON.parse(savedFavorites));
-      if (savedPublicVisible !== null) setPublicVisible(savedPublicVisible === 'true');
-      if (savedAvatar) setAvatarUrl(savedAvatar);
-      if (savedBanner) setBannerUrl(savedBanner);
-      if (savedLoggedIn === 'true') setLoggedIn(true);
-      if (savedPremium === 'true') setIsPremium(true);
+      [
+        'scope-lang', 'scope-theme', 'scope-favorites', 'scope-public-visible',
+        'scope-avatar', 'scope-banner', 'scope-logged-in', 'scope-premium',
+        'scope-invite-card-dismissed', 'scope-onboarding-seen', 'scope-session-goal',
+      ].forEach((key) => localStorage.removeItem(key));
+      sessionStorage.removeItem('scope-promo-dismissed');
     } catch (e) { /* ignore */ }
-  }, []);
+
+    setLoggedIn(false);
+    setLang('en');
+    setTheme('yellow');
+    setFavoriteIds(['p2']);
+    setPublicVisible(true);
+    setAvatarUrl(null);
+    setBannerUrl(null);
+    setIsPremium(false);
+    setShowSettings(false);
+  }
 
   useEffect(() => {
     try {
@@ -138,6 +162,7 @@ export default function ScopeDashboard() {
           setPublicVisible={setPublicVisible}
           isPremium={isPremium}
           setIsPremium={setIsPremium}
+          onDeleteAccount={handleDeleteAccount}
         />
 
         {!loggedIn ? (
@@ -159,11 +184,15 @@ export default function ScopeDashboard() {
             {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />}
 
             {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} />}
-            {tab === 'agents' && <AgentsTab t={t} />}
-            {tab === 'compare' && <CompareTab t={t} />}
-            {tab === 'badges' && <BadgesTab t={t} />}
-            {tab === 'progress' && <ProgressTab t={t} />}
-            {tab === 'premium' && <PremiumTab t={t} accent={accent} onSeePlans={() => setShowPlansModal(true)} />}
+            {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} />}
+            {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} />}
+            {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
+            {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
+            {tab === 'premium' && (
+              <Suspense fallback={<TabLoading />}>
+                <PremiumTab t={t} accent={accent} onSeePlans={() => setShowPlansModal(true)} />
+              </Suspense>
+            )}
 
             <OnboardingTour t={t} />
           </>

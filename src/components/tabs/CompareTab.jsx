@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, Minus, Search } from 'lucide-react';
 import Card from '../Card.jsx';
+import AdSlot from '../AdSlot.jsx';
 import { comparisons, friends, otherPlayers, myStats } from '../../data/mockData.js';
 import { parseRiotId } from '../../lib/riotId.js';
 
@@ -30,7 +31,7 @@ const COMPARE_METRICS = [
   { key: 'headshots', labelKey: 'statHeadshots' },
 ];
 
-export default function CompareTab({ t }) {
+export default function CompareTab({ t, isPremium }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
@@ -133,6 +134,8 @@ export default function CompareTab({ t }) {
           </div>
         </Card>
       </div>
+
+      <AdSlot t={t} isPremium={isPremium} variant="banner" />
     </div>
   );
 }

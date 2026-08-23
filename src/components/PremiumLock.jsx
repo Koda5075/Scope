@@ -1,10 +1,15 @@
 import { Lock, ChevronRight, Sparkles } from 'lucide-react';
 
+// The blurred content and the lock overlay are stacked via CSS grid (both placed in
+// the same 1/1 cell) rather than absolute positioning, so the container's height grows
+// to fit whichever layer is taller. With `absolute inset-0`, the overlay's height never
+// influenced the container — a longer translation (French, German...) could overflow
+// past the blurred content's height and spill into the card below it.
 export default function PremiumLock({ title, description, ctaLabel, preview, className = '', onCtaClick, children }) {
   return (
-    <div className={`relative ${className}`}>
-      <div className="opacity-30 select-none blur-[1.5px]">{children}</div>
-      <div className="absolute inset-0 locked-overlay flex flex-col items-center justify-center gap-2 px-4 py-3">
+    <div className={`grid ${className}`}>
+      <div className="col-start-1 row-start-1 opacity-30 select-none blur-[1.5px]">{children}</div>
+      <div className="col-start-1 row-start-1 locked-overlay flex flex-col items-center justify-center gap-2 px-4 py-3">
         <Lock size={18} className="text-accent" />
         <span className="font-display text-xs tracking-wide uppercase text-neutral-100">{title}</span>
         <span className="text-[10px] text-neutral-400 font-body text-center max-w-[240px]">{description}</span>

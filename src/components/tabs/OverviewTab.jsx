@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check } from 'lucide-react';
 import Card from '../Card.jsx';
@@ -6,12 +6,16 @@ import StatReadout from '../StatReadout.jsx';
 import FilterBar from '../FilterBar.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
 import Modal from '../Modal.jsx';
-import GameScoreboard from '../GameScoreboard.jsx';
 import KDAStat from '../KDAStat.jsx';
 import Highlights from '../Highlights.jsx';
 import SessionGoal from '../SessionGoal.jsx';
 import InviteFriendsCard from '../InviteFriendsCard.jsx';
 import AdSlot from '../AdSlot.jsx';
+import TabLoading from '../TabLoading.jsx';
+
+// Match-detail stats only render once a game row is clicked — splitting it out of the
+// main bundle keeps everyone else's initial load lean.
+const GameScoreboard = lazy(() => import('../GameScoreboard.jsx'));
 import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, acts, getStreaks } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
@@ -256,7 +260,9 @@ export default function OverviewTab({ t, accent, isPremium }) {
 
       {selectedMatch && (
         <Modal onClose={() => setSelectedGameId(null)} closeLabel={t.close} size="lg">
-          <GameScoreboard match={selectedMatch} t={t} />
+          <Suspense fallback={<TabLoading />}>
+            <GameScoreboard match={selectedMatch} t={t} />
+          </Suspense>
         </Modal>
       )}
       </div>

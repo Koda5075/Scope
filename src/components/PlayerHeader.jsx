@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { getRankIcon } from '../data/valorantAssets.js';
+import Modal from './Modal.jsx';
+import RankPyramid from './RankPyramid.jsx';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
 export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, onAvatarClick }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
+  const [showRankInfo, setShowRankInfo] = useState(false);
   // Relative phrasing ("N min ago") rather than a baked-in clock time — always true
   // regardless of when the demo is actually viewed, unlike a hardcoded "9:04 PM" that
   // could read as a future time. Picked once per mount, not on every render.
@@ -22,7 +26,17 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
       <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
         {rankIcon && <img src={rankIcon} alt="" className="val-icon w-24 h-24 shrink-0" />}
         <div className="flex-1 min-w-[220px]">
-          <div className="text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body mb-1">{t.rank}</div>
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body">{t.rank}</span>
+            <button
+              onClick={() => setShowRankInfo(true)}
+              aria-label={t.rankPyramidTitle}
+              title={t.rankPyramidTitle}
+              className="text-neutral-600 hover:text-accent transition-colors"
+            >
+              <HelpCircle size={13} />
+            </button>
+          </div>
           <div className="font-display text-4xl sm:text-5xl font-bold text-accent leading-none">{CURRENT_RANK}</div>
           <div className="sc-track h-2.5 w-full max-w-sm overflow-hidden mt-3">
             <div className="sc-fill h-full" style={{ width: `${rrCurrent}%` }} />
@@ -58,6 +72,13 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
           </span>
         </button>
       </div>
+
+      {showRankInfo && (
+        <Modal onClose={() => setShowRankInfo(false)} closeLabel={t.close}>
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.rankPyramidTitle}</span>
+          <RankPyramid t={t} />
+        </Modal>
+      )}
     </div>
   );
 }

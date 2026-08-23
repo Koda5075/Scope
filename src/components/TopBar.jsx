@@ -1,8 +1,13 @@
+import { useRef } from 'react';
 import { LogIn, Settings } from 'lucide-react';
 import SettingsPanel from './SettingsPanel.jsx';
 import NotificationsBell from './NotificationsBell.jsx';
+import { useClickOutside } from '../hooks/useClickOutside.js';
 
-export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium }) {
+export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium, onDeleteAccount }) {
+  const settingsRef = useRef(null);
+  useClickOutside(settingsRef, showSettings, () => setShowSettings(false));
+
   return (
     <div className="flex items-start justify-between mb-6">
       <div className="flex items-center gap-3">
@@ -25,7 +30,7 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
 
         {loggedIn && <NotificationsBell t={t} />}
 
-        <div className="relative">
+        <div className="relative" ref={settingsRef}>
           <button
             onClick={() => setShowSettings((s) => !s)}
             className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
@@ -45,6 +50,7 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
               setPublicVisible={setPublicVisible}
               isPremium={isPremium}
               setIsPremium={setIsPremium}
+              onDeleteAccount={onDeleteAccount}
             />
           )}
         </div>

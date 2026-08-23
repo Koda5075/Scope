@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, AlertTriangle } from 'lucide-react';
 import { THEMES } from '../data/themes.js';
 import { inviteStats } from '../data/mockData.js';
 
 const MOCK_PUBLIC_SLUG = 'kaito-euw1';
 
-export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium }) {
+export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium, onDeleteAccount }) {
   const [copied, setCopied] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   async function handleCopyLink() {
     try {
@@ -75,6 +76,39 @@ export default function SettingsPanel({ t, lang, setLang, theme, setTheme, publi
           <input type="checkbox" checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} className="accent-[var(--accent)]" />
           {t.simulatePremiumLabel}
         </label>
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-red-900/40">
+        <div className="text-[10px] tracking-[0.15em] uppercase text-red-500/80 font-body mb-3">{t.dangerZoneTitle}</div>
+        {!confirmingDelete ? (
+          <button
+            onClick={() => setConfirmingDelete(true)}
+            className="text-[11px] font-body text-red-500 hover:text-red-400 hover:underline"
+          >
+            {t.deleteAccountButton}
+          </button>
+        ) : (
+          <div className="border border-red-900/50 bg-red-950/20 px-3 py-3">
+            <div className="flex items-start gap-2 mb-3">
+              <AlertTriangle size={13} className="text-red-500 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-neutral-300 font-body leading-relaxed">{t.deleteAccountWarning}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onDeleteAccount}
+                className="bg-red-600 text-white font-display font-bold uppercase text-[10px] tracking-wide px-3 py-1.5 hover:bg-red-500 transition-colors"
+              >
+                {t.deleteAccountConfirm}
+              </button>
+              <button
+                onClick={() => setConfirmingDelete(false)}
+                className="text-[11px] font-body text-neutral-400 hover:text-neutral-200"
+              >
+                {t.cancel}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
