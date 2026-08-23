@@ -177,6 +177,8 @@ export default function ScopeDashboard() {
               avatarUrl={avatarUrl}
               bannerUrl={bannerUrl}
               onAvatarClick={() => setShowProfileModal(true)}
+              isPremium={isPremium}
+              onSeePlans={() => setShowPlansModal(true)}
             />
             <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
             <TabNav tab={tab} setTab={setTab} t={t} />

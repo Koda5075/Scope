@@ -251,6 +251,83 @@ export const T = {
       weekendEvening: 'Weekend evenings',
       lateNight: 'Late nights',
     },
+    rankTipsLabel: 'Tips',
+    rankTipsHowToLabel: 'How to reach it',
+    rankTipsLockedLabel: '2 more tips with Scope+',
+    rankTips: {
+      Iron: {
+        howTo: "Focus on landing your shots and holding basic angles — most Iron games come down to aim and awareness, not strategy.",
+        tips: [
+          'Warm up with 10-15 minutes of deathmatch or the range before ranked.',
+          'Play a little passively and let the round come to you instead of over-peeking.',
+          "Don't chase kills into unknown space — trade for map control instead.",
+        ],
+      },
+      Bronze: {
+        howTo: 'Start using utility with intent — take space with smokes and flashes instead of using them on cooldown.',
+        tips: [
+          'Call out enemy positions for your team, even simple ones.',
+          'Learn one or two lineups per map for your main agent.',
+          "Don't save your ultimate for 'the perfect moment' — use it to win rounds.",
+        ],
+      },
+      Silver: {
+        howTo: 'Consistency starts to matter more than raw aim — repeat good habits every single round.',
+        tips: [
+          'Hold crosshair placement at head level around common angles.',
+          'Rotate based on real information, not guesses.',
+          "Don't peek the same angle the same way twice in a row.",
+        ],
+      },
+      Gold: {
+        howTo: "Trading kills becomes the difference-maker — die with value by setting your teammates up for the follow-up duel.",
+        tips: [
+          "Play off your team's utility instead of using your own in isolation.",
+          'Review your deaths after a loss to spot a pattern.',
+          "Don't solo-push a site without checking your team is with you.",
+        ],
+      },
+      Platinum: {
+        howTo: 'Round economy and mid-round decisions start to separate winners from losers here.',
+        tips: [
+          "Track the enemy's likely buy based on their last round's economy.",
+          'Default to gathering information early in the round instead of forcing picks.',
+          "Don't force-buy every round after a loss — eco rounds win games too.",
+        ],
+      },
+      Diamond: {
+        howTo: 'Individual mechanics are assumed at this level — the gap is in game sense, post-contact positioning, and clutch composure.',
+        tips: [
+          'Reposition immediately after a kill instead of holding the same spot.',
+          'Play for retakes, not just entries — post-plant is where rounds are won.',
+          "Don't tunnel-vision on one lane and lose track of the rest of the round.",
+        ],
+      },
+      Ascendant: {
+        howTo: 'Communication quality and role discipline start mattering as much as mechanics here.',
+        tips: [
+          'Stick to a clear role (entry, support, lurk) instead of playing everything.',
+          'Call your utility usage before the round so your team can plan around it.',
+          "Don't coast on one strong agent — keep a backup pick for a bad matchup.",
+        ],
+      },
+      Immortal: {
+        howTo: 'Games are close and small mistakes get punished immediately — the focus shifts to cutting unforced errors.',
+        tips: [
+          'Study your own VODs, not just pros — your own mistakes are the fastest fix.',
+          "Adapt your strat mid-game when the first read isn't working.",
+          "Don't play for highlight plays — play the percentages, every round.",
+        ],
+      },
+      Radiant: {
+        howTo: "You're competing against the best players on the server — marginal gains in mechanics, utility, and mental reset make the difference.",
+        tips: [
+          "Treat every session like a mini-review — track what worked and what didn't.",
+          'Keep your mental reset fast after a loss — tilt is the biggest limiter at this level.',
+          "Don't assume what worked in Immortal still works here — the read speed is faster.",
+        ],
+      },
+    },
   },
   fr: {
     lastSession: 'Dernière session : il y a {n} min',
@@ -503,6 +580,83 @@ export const T = {
       weekendAfternoon: 'Week-end, après-midi',
       weekendEvening: 'Week-end, soir',
       lateNight: 'Tard le soir',
+    },
+    rankTipsLabel: 'Conseils',
+    rankTipsHowToLabel: "Comment l'atteindre",
+    rankTipsLockedLabel: '2 conseils de plus avec Scope+',
+    rankTips: {
+      Iron: {
+        howTo: "Concentre-toi sur tes tirs et tiens des angles simples — la plupart des games en Fer se jouent sur l'aim et la vigilance, pas la stratégie.",
+        tips: [
+          "Échauffe-toi 10-15 minutes en deathmatch ou au stand de tir avant le ranked.",
+          'Joue un peu plus passivement et laisse venir le round au lieu de trop peek.',
+          "Ne va pas chercher des kills en terrain inconnu — trade pour du contrôle de la carte à la place.",
+        ],
+      },
+      Bronze: {
+        howTo: "Commence à utiliser ton utilitaire avec intention — prends de l'espace avec les fumées et flashs au lieu de les utiliser dès qu'ils sont dispo.",
+        tips: [
+          'Callout les positions ennemies pour ton équipe, même simples.',
+          'Apprends un ou deux lineups par carte pour ton agent principal.',
+          "Ne garde pas ton ultime pour 'le moment parfait' — utilise-le pour gagner des rounds.",
+        ],
+      },
+      Silver: {
+        howTo: "La régularité commence à compter plus que l'aim brut — répète les bonnes habitudes à chaque round.",
+        tips: [
+          'Garde ton viseur au niveau de la tête près des angles courants.',
+          'Rotate sur de vraies infos, pas des suppositions.',
+          'Ne peek pas le même angle de la même façon deux fois de suite.',
+        ],
+      },
+      Gold: {
+        howTo: 'Trader les kills devient déterminant — meurs avec de la valeur en mettant tes coéquipiers en position pour le duel suivant.',
+        tips: [
+          "Joue avec l'utilitaire de ton équipe au lieu d'utiliser le tien de façon isolée.",
+          'Revois tes morts après une défaite pour repérer un pattern.',
+          'Ne push pas un site seul sans vérifier que ton équipe suit.',
+        ],
+      },
+      Platinum: {
+        howTo: "L'économie de round et les décisions en milieu de round commencent à faire la différence entre gagnants et perdants.",
+        tips: [
+          "Suis l'achat probable de l'ennemi selon son économie du round précédent.",
+          'Privilégie la collecte d\'infos en début de round plutôt que de forcer les picks.',
+          'Ne force pas l\'achat à chaque round après une défaite — les rounds éco font gagner des games aussi.',
+        ],
+      },
+      Diamond: {
+        howTo: "Les mécaniques individuelles sont acquises à ce niveau — l'écart se joue sur le game sense, le repositionnement après un contact, et le sang-froid en clutch.",
+        tips: [
+          'Repositionne-toi immédiatement après un kill au lieu de tenir le même spot.',
+          'Joue pour les retakes, pas juste les entries — le post-plant, c\'est là que se gagnent les rounds.',
+          'Ne reste pas focalisé sur un seul couloir en perdant de vue le reste du round.',
+        ],
+      },
+      Ascendant: {
+        howTo: 'La qualité de la communication et la discipline de rôle comptent ici autant que les mécaniques.',
+        tips: [
+          'Tiens-toi à un rôle clair (entry, support, lurk) au lieu de tout jouer.',
+          "Annonce l'usage de ton utilitaire avant le round pour que ton équipe puisse s'organiser.",
+          'Ne te repose pas sur un seul agent fort — garde un pick de secours pour un mauvais matchup.',
+        ],
+      },
+      Immortal: {
+        howTo: "Les games sont serrées et la moindre erreur est punie immédiatement — l'objectif devient de réduire les erreurs évitables.",
+        tips: [
+          'Étudie tes propres VODs, pas seulement celles des pros — tes propres erreurs sont le correctif le plus rapide.',
+          "Adapte ta stratégie en cours de partie quand le premier plan ne fonctionne pas.",
+          'Ne joue pas pour le highlight — joue les probabilités, à chaque round.',
+        ],
+      },
+      Radiant: {
+        howTo: "Tu affrontes les meilleurs joueurs du serveur — les gains marginaux sur les mécaniques, l'utilitaire et la remise à zéro mentale font la différence.",
+        tips: [
+          "Traite chaque session comme une mini-review — note ce qui a marché et ce qui n'a pas marché.",
+          'Garde une remise à zéro mentale rapide après une défaite — le tilt est le plus gros frein à ce niveau.',
+          "Ne suppose pas que ce qui marchait en Immortal marche encore ici — la vitesse de lecture est plus rapide.",
+        ],
+      },
     },
   },
   de: {
@@ -757,6 +911,83 @@ export const T = {
       weekendEvening: 'Wochenende abends',
       lateNight: 'Spät nachts',
     },
+    rankTipsLabel: 'Tipps',
+    rankTipsHowToLabel: 'So erreichst du ihn',
+    rankTipsLockedLabel: '2 weitere Tipps mit Scope+',
+    rankTips: {
+      Iron: {
+        howTo: 'Konzentrier dich aufs Treffen und halte einfache Angles — die meisten Iron-Spiele entscheiden sich durch Aim und Aufmerksamkeit, nicht durch Strategie.',
+        tips: [
+          'Wärm dich 10-15 Minuten im Deathmatch oder auf dem Schießstand auf, bevor du ranked spielst.',
+          'Spiel etwas passiver und lass die Runde zu dir kommen, statt zu oft zu peeken.',
+          'Jag keinen Kills in unbekanntes Terrain hinterher — trade stattdessen für Map-Kontrolle.',
+        ],
+      },
+      Bronze: {
+        howTo: 'Setze Utility gezielt ein — nimm mit Rauch und Flash Raum ein, statt sie einfach zu benutzen, sobald sie verfügbar sind.',
+        tips: [
+          'Callst gegnerische Positionen für dein Team, auch einfache.',
+          'Lern ein oder zwei Lineups pro Karte für deinen Hauptagenten.',
+          "Spar deine Ultimate nicht für den 'perfekten Moment' auf — nutze sie, um Runden zu gewinnen.",
+        ],
+      },
+      Silver: {
+        howTo: 'Konstanz zählt jetzt mehr als reiner Aim — wiederhole gute Gewohnheiten in jeder Runde.',
+        tips: [
+          'Halte dein Fadenkreuz auf Kopfhöhe an häufigen Angles.',
+          'Rotiere basierend auf echten Infos, nicht auf Vermutungen.',
+          'Peek denselben Angle nicht zweimal hintereinander auf dieselbe Weise.',
+        ],
+      },
+      Gold: {
+        howTo: 'Kills zu traden wird entscheidend — stirb mit Mehrwert, indem du deine Teammates für das Folgeduell in Position bringst.',
+        tips: [
+          'Spiel mit der Utility deines Teams, statt deine isoliert zu nutzen.',
+          'Analysiere deine Tode nach einer Niederlage, um ein Muster zu erkennen.',
+          'Push kein Site allein, ohne zu prüfen, ob dein Team mitzieht.',
+        ],
+      },
+      Platinum: {
+        howTo: 'Rundenökonomie und Entscheidungen in der Rundenmitte beginnen hier, Gewinner von Verlierern zu trennen.',
+        tips: [
+          'Verfolge den wahrscheinlichen Kauf des Gegners anhand seiner Ökonomie aus der letzten Runde.',
+          'Sammle früh in der Runde Informationen, statt Kills zu erzwingen.',
+          'Kauf nicht nach jeder Niederlage forciert — Eco-Runden gewinnen auch Spiele.',
+        ],
+      },
+      Diamond: {
+        howTo: 'Individuelle Mechanik wird auf diesem Niveau vorausgesetzt — der Unterschied liegt im Game Sense, im Repositionieren nach Kontakt und in der Nervenstärke im Clutch.',
+        tips: [
+          'Positioniere dich sofort nach einem Kill neu, statt denselben Spot zu halten.',
+          'Spiel für Retakes, nicht nur für Entries — Post-Plant entscheidet die Runden.',
+          'Fixier dich nicht auf eine Lane und verlier dabei den Rest der Runde aus den Augen.',
+        ],
+      },
+      Ascendant: {
+        howTo: 'Kommunikationsqualität und Rollendisziplin zählen hier genauso viel wie Mechanik.',
+        tips: [
+          'Halte dich an eine klare Rolle (Entry, Support, Lurk), statt alles zu spielen.',
+          'Kündige deine Utility-Nutzung vor der Runde an, damit dein Team planen kann.',
+          'Verlass dich nicht auf einen starken Agenten — hab einen Backup-Pick für ein schlechtes Matchup.',
+        ],
+      },
+      Immortal: {
+        howTo: 'Spiele sind eng und kleine Fehler werden sofort bestraft — der Fokus verschiebt sich darauf, unnötige Fehler zu vermeiden.',
+        tips: [
+          'Studier deine eigenen VODs, nicht nur die von Profis — deine eigenen Fehler lassen sich am schnellsten beheben.',
+          'Pass deine Strategie mitten im Spiel an, wenn der erste Plan nicht funktioniert.',
+          'Spiel nicht für Highlight-Momente — spiel jede Runde die Wahrscheinlichkeiten.',
+        ],
+      },
+      Radiant: {
+        howTo: 'Du spielst gegen die besten Spieler des Servers — marginale Verbesserungen bei Mechanik, Utility-Nutzung und mentalem Reset machen den Unterschied.',
+        tips: [
+          "Behandle jede Session wie eine Mini-Review — notier, was funktioniert hat und was nicht.",
+          'Halt deinen mentalen Reset nach einer Niederlage schnell — Tilt ist auf diesem Niveau der größte Bremsklotz.',
+          'Geh nicht davon aus, dass das, was in Immortal funktioniert hat, auch hier funktioniert — das Lesetempo ist schneller.',
+        ],
+      },
+    },
   },
   es: {
     lastSession: 'Última sesión: hace {n} min',
@@ -1009,6 +1240,83 @@ export const T = {
       weekendAfternoon: 'Tardes de fin de semana',
       weekendEvening: 'Noches de fin de semana',
       lateNight: 'Madrugadas',
+    },
+    rankTipsLabel: 'Consejos',
+    rankTipsHowToLabel: 'Cómo alcanzarlo',
+    rankTipsLockedLabel: '2 consejos más con Scope+',
+    rankTips: {
+      Iron: {
+        howTo: 'Concéntrate en acertar tus disparos y mantener ángulos básicos — la mayoría de las partidas en Hierro se deciden por la puntería y la atención, no por la estrategia.',
+        tips: [
+          'Caliéntate 10-15 minutos en deathmatch o en la galería de tiro antes de jugar ranked.',
+          'Juega un poco más pasivo y deja que la ronda venga a ti en lugar de asomarte demasiado.',
+          'No persigas bajas en zonas desconocidas — cambia bajas por control del mapa.',
+        ],
+      },
+      Bronze: {
+        howTo: 'Empieza a usar tu utilidad con intención — gana espacio con humos y flashes en lugar de usarlos en cuanto estén disponibles.',
+        tips: [
+          'Marca las posiciones enemigas para tu equipo, aunque sean sencillas.',
+          'Aprende una o dos lineups por mapa para tu agente principal.',
+          "No guardes tu definitiva para 'el momento perfecto' — úsala para ganar rondas.",
+        ],
+      },
+      Silver: {
+        howTo: 'La consistencia empieza a importar más que la puntería en bruto — repite buenos hábitos en cada ronda.',
+        tips: [
+          'Mantén la mira a la altura de la cabeza cerca de los ángulos comunes.',
+          'Rota según información real, no suposiciones.',
+          'No te asomes al mismo ángulo de la misma forma dos veces seguidas.',
+        ],
+      },
+      Gold: {
+        howTo: 'Intercambiar bajas se vuelve decisivo — muere aportando valor, dejando a tus compañeros en posición para el siguiente duelo.',
+        tips: [
+          'Juega apoyándote en la utilidad de tu equipo en lugar de usar la tuya de forma aislada.',
+          'Revisa tus muertes tras una derrota para detectar un patrón.',
+          'No hagas push a un sitio en solitario sin comprobar que tu equipo te sigue.',
+        ],
+      },
+      Platinum: {
+        howTo: 'La economía de ronda y las decisiones a mitad de ronda empiezan a marcar la diferencia entre ganar y perder.',
+        tips: [
+          'Sigue la compra probable del rival según su economía de la ronda anterior.',
+          'Prioriza recopilar información al inicio de la ronda en lugar de forzar bajas.',
+          'No compres a la fuerza cada ronda tras una derrota — las rondas eco también ganan partidas.',
+        ],
+      },
+      Diamond: {
+        howTo: 'A este nivel se dan por hechas las mecánicas individuales — la diferencia está en el game sense, el reposicionamiento tras el contacto y el aplomo en los clutch.',
+        tips: [
+          'Reposiciónate justo después de una baja en lugar de quedarte en el mismo sitio.',
+          'Juega para los retakes, no solo para las entries — el post-plant es donde se ganan las rondas.',
+          'No te centres solo en un carril y pierdas de vista el resto de la ronda.',
+        ],
+      },
+      Ascendant: {
+        howTo: 'Aquí la calidad de la comunicación y la disciplina de rol importan tanto como la mecánica.',
+        tips: [
+          'Mantén un rol claro (entry, support, lurker) en lugar de jugarlo todo.',
+          'Anuncia el uso de tu utilidad antes de la ronda para que tu equipo pueda planificar.',
+          'No dependas de un único agente fuerte — ten un pick de reserva para un mal matchup.',
+        ],
+      },
+      Immortal: {
+        howTo: 'Las partidas están muy reñidas y los pequeños errores se castigan al instante — el foco pasa a reducir los errores no forzados.',
+        tips: [
+          'Estudia tus propias VODs, no solo las de los profesionales — tus propios errores son lo más rápido de corregir.',
+          'Adapta tu estrategia a mitad de partida cuando el primer plan no funcione.',
+          'No juegues buscando la jugada espectacular — juega las probabilidades, ronda tras ronda.',
+        ],
+      },
+      Radiant: {
+        howTo: 'Compites contra los mejores jugadores del servidor — las mejoras marginales en mecánica, uso de utilidad y reinicio mental marcan la diferencia.',
+        tips: [
+          'Trata cada sesión como una mini-revisión — anota qué funcionó y qué no.',
+          'Mantén un reinicio mental rápido tras una derrota — el tilt es el mayor freno a este nivel.',
+          'No asumas que lo que funcionaba en Immortal sigue funcionando aquí — la velocidad de lectura es mayor.',
+        ],
+      },
     },
   },
   it: {
@@ -1263,6 +1571,83 @@ export const T = {
       weekendEvening: 'Sere del weekend',
       lateNight: 'Notte fonda',
     },
+    rankTipsLabel: 'Consigli',
+    rankTipsHowToLabel: 'Come raggiungerlo',
+    rankTipsLockedLabel: '2 consigli in più con Scope+',
+    rankTips: {
+      Iron: {
+        howTo: 'Concentrati sui colpi a segno e tieni angoli semplici — la maggior parte delle partite in Iron si decide sulla mira e sull\'attenzione, non sulla strategia.',
+        tips: [
+          'Scaldati 10-15 minuti in deathmatch o al poligono prima del ranked.',
+          "Gioca un po' più passivo e lascia che il round venga a te invece di peekare troppo.",
+          'Non inseguire le uccisioni in zone sconosciute — scambia invece per il controllo della mappa.',
+        ],
+      },
+      Bronze: {
+        howTo: 'Inizia a usare l\'utility con intenzione — prendi spazio con fumogeni e flash invece di usarli appena disponibili.',
+        tips: [
+          'Comunica le posizioni nemiche alla squadra, anche quelle semplici.',
+          'Impara una o due lineup per mappa con il tuo agente principale.',
+          "Non tenere l'ultimate per 'il momento perfetto' — usala per vincere i round.",
+        ],
+      },
+      Silver: {
+        howTo: 'La costanza inizia a contare più della mira pura — ripeti le buone abitudini in ogni round.',
+        tips: [
+          "Tieni il mirino all'altezza della testa vicino agli angoli più comuni.",
+          'Ruota in base a informazioni reali, non a supposizioni.',
+          'Non peekare lo stesso angolo nello stesso modo due volte di fila.',
+        ],
+      },
+      Gold: {
+        howTo: 'Scambiare le uccisioni diventa decisivo — muori dando valore, mettendo i compagni in posizione per il duello successivo.',
+        tips: [
+          "Gioca sfruttando l'utility della squadra invece di usare la tua in isolamento.",
+          'Rivedi le tue morti dopo una sconfitta per individuare un pattern.',
+          'Non fare push da solo su un sito senza controllare che la squadra ti segua.',
+        ],
+      },
+      Platinum: {
+        howTo: "L'economia dei round e le decisioni a metà round iniziano a fare la differenza tra vincitori e vinti.",
+        tips: [
+          'Tieni traccia del possibile acquisto nemico in base alla sua economia del round precedente.',
+          'Dai priorità a raccogliere informazioni a inizio round invece di forzare le uccisioni.',
+          'Non forzare l\'acquisto ogni round dopo una sconfitta — anche i round eco fanno vincere le partite.',
+        ],
+      },
+      Diamond: {
+        howTo: 'A questo livello le meccaniche individuali sono date per scontate — la differenza si gioca sul game sense, sul riposizionamento dopo il contatto e sul sangue freddo nei clutch.',
+        tips: [
+          "Riposizionati subito dopo un'uccisione invece di restare nello stesso punto.",
+          'Gioca in funzione dei retake, non solo delle entry — il post-plant è dove si vincono i round.',
+          'Non fissarti su una sola corsia perdendo di vista il resto del round.',
+        ],
+      },
+      Ascendant: {
+        howTo: 'Qui la qualità della comunicazione e la disciplina di ruolo contano quanto la meccanica.',
+        tips: [
+          'Mantieni un ruolo chiaro (entry, support, lurker) invece di giocarli tutti.',
+          "Annuncia l'uso della tua utility prima del round così la squadra può pianificare.",
+          'Non affidarti a un solo agente forte — tieni un pick di riserva per un brutto matchup.',
+        ],
+      },
+      Immortal: {
+        howTo: "Le partite sono equilibrate e i piccoli errori vengono puniti subito — l'obiettivo diventa ridurre gli errori non forzati.",
+        tips: [
+          'Studia le tue VOD, non solo quelle dei pro — i tuoi errori sono i più veloci da correggere.',
+          'Adatta la strategia a metà partita quando il primo piano non funziona.',
+          'Non giocare per la giocata spettacolare — gioca le percentuali, ogni round.',
+        ],
+      },
+      Radiant: {
+        howTo: 'Stai competendo contro i migliori giocatori del server — i miglioramenti marginali su meccanica, utility e reset mentale fanno la differenza.',
+        tips: [
+          'Tratta ogni sessione come una mini-review — annota cosa ha funzionato e cosa no.',
+          'Mantieni un reset mentale rapido dopo una sconfitta — il tilt è il limite più grande a questo livello.',
+          'Non dare per scontato che ciò che funzionava in Immortal funzioni ancora qui — la velocità di lettura è maggiore.',
+        ],
+      },
+    },
   },
   pt: {
     lastSession: 'Última sessão: há {n} min',
@@ -1515,6 +1900,83 @@ export const T = {
       weekendAfternoon: 'Tardes de fim de semana',
       weekendEvening: 'Noites de fim de semana',
       lateNight: 'Madrugada',
+    },
+    rankTipsLabel: 'Dicas',
+    rankTipsHowToLabel: 'Como alcançá-lo',
+    rankTipsLockedLabel: 'Mais 2 dicas com o Scope+',
+    rankTips: {
+      Iron: {
+        howTo: 'Foca em acertar os teus tiros e manter ângulos básicos — a maioria das partidas em Iron decide-se pela pontaria e atenção, não pela estratégia.',
+        tips: [
+          'Aquece 10-15 minutos em deathmatch ou no campo de tiro antes do ranked.',
+          'Joga um pouco mais passivo e deixa a ronda vir até ti em vez de espreitares demasiado.',
+          'Não persigas abates em zonas desconhecidas — troca por controlo do mapa.',
+        ],
+      },
+      Bronze: {
+        howTo: 'Começa a usar a tua utility com intenção — ganha espaço com fumos e flashes em vez de os usares assim que disponíveis.',
+        tips: [
+          'Comunica as posições inimigas à equipa, mesmo as simples.',
+          'Aprende um ou dois lineups por mapa para o teu agente principal.',
+          "Não guardes a tua ultimate para 'o momento perfeito' — usa-a para ganhar rondas.",
+        ],
+      },
+      Silver: {
+        howTo: 'A consistência começa a importar mais do que a pontaria pura — repete bons hábitos em todas as rondas.',
+        tips: [
+          'Mantém a mira à altura da cabeça perto dos ângulos comuns.',
+          'Faz rotações com base em informação real, não suposições.',
+          'Não espreites o mesmo ângulo da mesma forma duas vezes seguidas.',
+        ],
+      },
+      Gold: {
+        howTo: 'Trocar abates torna-se decisivo — morre a dar valor, deixando os teus colegas em posição para o duelo seguinte.',
+        tips: [
+          'Joga a partir da utility da tua equipa em vez de usares a tua isoladamente.',
+          'Revê as tuas mortes depois de uma derrota para identificar um padrão.',
+          'Não avances sozinho para um site sem verificar se a equipa te segue.',
+        ],
+      },
+      Platinum: {
+        howTo: 'A economia de ronda e as decisões a meio da ronda começam a separar quem ganha de quem perde.',
+        tips: [
+          'Segue a compra provável do inimigo com base na economia da ronda anterior.',
+          'Prioriza recolher informação no início da ronda em vez de forçar abates.',
+          'Não forces a compra em todas as rondas depois de uma derrota — rondas eco também ganham jogos.',
+        ],
+      },
+      Diamond: {
+        howTo: 'As mecânicas individuais já são dadas como garantidas neste nível — a diferença está no game sense, no reposicionamento após o contacto e na frieza nos clutch.',
+        tips: [
+          'Reposiciona-te logo a seguir a um abate em vez de ficares no mesmo sítio.',
+          'Joga a pensar nos retakes, não só nas entries — o post-plant é onde se ganham as rondas.',
+          'Não fiques fixado numa só via e percas de vista o resto da ronda.',
+        ],
+      },
+      Ascendant: {
+        howTo: 'Aqui a qualidade da comunicação e a disciplina de função contam tanto quanto a mecânica.',
+        tips: [
+          'Mantém-te fiel a uma função clara (entry, support, lurker) em vez de jogares tudo.',
+          'Anuncia o uso da tua utility antes da ronda para a equipa poder planear.',
+          'Não dependas de um único agente forte — tem um pick alternativo para um mau matchup.',
+        ],
+      },
+      Immortal: {
+        howTo: 'As partidas são renhidas e os pequenos erros são punidos de imediato — o foco passa a ser reduzir erros evitáveis.',
+        tips: [
+          'Estuda os teus próprios VODs, não só os dos profissionais — os teus erros são o que corriges mais depressa.',
+          'Adapta a tua estratégia a meio do jogo quando o primeiro plano não resulta.',
+          'Não jogues à procura da jogada espetacular — joga as probabilidades, ronda após ronda.',
+        ],
+      },
+      Radiant: {
+        howTo: 'Estás a competir contra os melhores jogadores do servidor — pequenos ganhos em mecânica, uso de utility e reset mental fazem a diferença.',
+        tips: [
+          'Trata cada sessão como uma mini-revisão — regista o que resultou e o que não resultou.',
+          'Mantém um reset mental rápido depois de uma derrota — o tilt é o maior limitador a este nível.',
+          'Não assumas que o que funcionava em Immortal continua a funcionar aqui — a velocidade de leitura é maior.',
+        ],
+      },
     },
   },
 };

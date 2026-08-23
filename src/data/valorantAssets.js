@@ -151,3 +151,20 @@ export function getRankLadder() {
     })),
   }));
 }
+
+// Same ladder, flattened to one entry per individual tier (25 total: 3 each for
+// Iron..Immortal, 1 for Radiant) — each carries its group name (for looking up
+// how-to-reach copy shared across a rank's sub-tiers) and sub-tier index (1-3, or 1 for
+// Radiant), for a per-tier accordion rather than a per-rank one.
+export function getFlatRankTiers() {
+  return getRankLadder().flatMap((group) =>
+    group.tiers.map((tier, i) => ({
+      key: tier.label,
+      label: tier.label,
+      icon: tier.icon,
+      color: group.color,
+      groupName: group.name,
+      subTier: i + 1,
+    })),
+  );
+}

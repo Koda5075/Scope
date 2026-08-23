@@ -6,7 +6,7 @@ import RankPyramid from './RankPyramid.jsx';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
-export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, onAvatarClick }) {
+export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, onAvatarClick, isPremium, onSeePlans }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
   const [showRankInfo, setShowRankInfo] = useState(false);
@@ -76,7 +76,7 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
       {showRankInfo && (
         <Modal onClose={() => setShowRankInfo(false)} closeLabel={t.close}>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.rankPyramidTitle}</span>
-          <RankPyramid t={t} />
+          <RankPyramid t={t} isPremium={isPremium} onSeePlans={onSeePlans} />
         </Modal>
       )}
     </div>
