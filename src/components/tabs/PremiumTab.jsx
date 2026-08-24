@@ -31,7 +31,7 @@ function downloadCSV(csv, filename) {
   URL.revokeObjectURL(url);
 }
 
-export default function PremiumTab({ t, accent, onSeePlans }) {
+export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
   const weakest = performanceScore.reduce((min, p) => (p.value < min.value ? p : min), performanceScore[0]);
   const strongest = performanceScore.reduce((max, p) => (p.value > max.value ? p : max), performanceScore[0]);
   const [metric, setMetric] = useState(weakest.label.toLowerCase());
@@ -71,7 +71,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <PremiumLock className="lg:col-span-2" title={t.unlock} description={t.descReco} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={recoPreview}>
+        <PremiumLock className="lg:col-span-2" title={t.unlock} description={t.descReco} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={recoPreview} isPremium={isPremium}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recoTitle}</span>
             <p className="text-sm font-body text-neutral-300 leading-relaxed max-w-3xl">{recoText}</p>
@@ -83,6 +83,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
           description={t.perfDesc}
           ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewPerf, { metric: strongest.label, value: strongest.value })}
+          isPremium={isPremium}
         >
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.scopePerformance}</span>
@@ -134,6 +135,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
           description={t.descSynergy}
           ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewSynergy, { wr: topTeammate.winRate, name: topTeammate.name })}
+          isPremium={isPremium}
         >
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.synergyTitle}</span>
@@ -156,6 +158,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
           description={t.descAlerts}
           ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewAlerts, { rr: rrToGoal, rank: 'Diamond 3' })}
+          isPremium={isPremium}
         >
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.alertsTitle}</span>
@@ -186,6 +189,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
           description={t.descRoundBreakdown}
           ctaLabel={t.seePlans} onCtaClick={onSeePlans}
           preview={fmt(t.previewRoundBreakdown, { pct: clutchPct })}
+          isPremium={isPremium}
         >
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.roundBreakdownTitle}</span>
@@ -214,7 +218,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
           </Card>
         </PremiumLock>
 
-        <PremiumLock title={t.unlock} description={t.descTimePatterns} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={timePatternsBestText}>
+        <PremiumLock title={t.unlock} description={t.descTimePatterns} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={timePatternsBestText} isPremium={isPremium}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.timePatternsTitle}</span>
             <p className="text-xs font-body text-neutral-400 mb-4">{timePatternsBestText}</p>
@@ -230,7 +234,7 @@ export default function PremiumTab({ t, accent, onSeePlans }) {
           </Card>
         </PremiumLock>
 
-        <PremiumLock title={t.unlock} description={t.descExport} ctaLabel={t.seePlans} onCtaClick={onSeePlans}>
+        <PremiumLock title={t.unlock} description={t.descExport} ctaLabel={t.seePlans} onCtaClick={onSeePlans} isPremium={isPremium}>
           <Card>
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.exportTitle}</span>
             <p className="text-xs font-body text-neutral-500 mb-3">{t.exportDesc}</p>

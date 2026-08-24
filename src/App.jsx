@@ -216,7 +216,7 @@ export default function ScopeDashboard() {
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
             {tab === 'premium' && (
               <Suspense fallback={<TabLoading />}>
-                <PremiumTab t={t} accent={accent} onSeePlans={() => setShowPlansModal(true)} />
+                <PremiumTab t={t} accent={accent} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />
               </Suspense>
             )}
 

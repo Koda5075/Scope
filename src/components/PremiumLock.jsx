@@ -5,7 +5,9 @@ import { Lock, ChevronRight, Sparkles } from 'lucide-react';
 // to fit whichever layer is taller. With `absolute inset-0`, the overlay's height never
 // influenced the container — a longer translation (French, German...) could overflow
 // past the blurred content's height and spill into the card below it.
-export default function PremiumLock({ title, description, ctaLabel, preview, className = '', onCtaClick, children }) {
+export default function PremiumLock({ title, description, ctaLabel, preview, className = '', onCtaClick, isPremium = false, children }) {
+  if (isPremium) return <div className={className}>{children}</div>;
+
   return (
     <div className={`grid ${className}`}>
       <div className="col-start-1 row-start-1 opacity-30 select-none blur-[1.5px]">{children}</div>
