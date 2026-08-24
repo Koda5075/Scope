@@ -1,6 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
 import CompareRow from './CompareRow.jsx';
-import { myStats } from '../data/mockData.js';
+import {
+  myStats, computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
+} from '../data/mockData.js';
 
 const METRICS = [
   { key: 'kda', labelKey: 'statKDA', max: 2 },
@@ -9,7 +11,17 @@ const METRICS = [
   { key: 'headshots', labelKey: 'statHeadshots', max: 45 },
 ];
 
-export default function PlayerCompareView({ player, onBack, t }) {
+export default function PlayerCompareView({ player, onBack, t, filteredGames }) {
+  // Same "you" comparison as the Compare tab's own search — every metric follows the
+  // global filter there, so it must here too, or this reachable-from-the-search-bar view
+  // would quote different "you" numbers than the Compare tab for the same filter.
+  const you = {
+    acs: computeAverageAcs(filteredGames) ?? myStats.acs,
+    kda: computeAggregateKDA(filteredGames) ?? myStats.kda,
+    accuracy: computeAverageAccuracy(filteredGames) ?? myStats.accuracy,
+    headshots: computeAverageHeadshots(filteredGames) ?? myStats.headshots,
+  };
+
   return (
     <div>
       <button
@@ -28,7 +40,7 @@ export default function PlayerCompareView({ player, onBack, t }) {
           <div key={m.key}>
             <div className="text-xs font-display uppercase text-neutral-300 mb-2">{t[m.labelKey]}</div>
             <div className="flex flex-col gap-1.5">
-              <CompareRow label={t.you} value={myStats[m.key]} max={m.max} tone="you" />
+              <CompareRow label={t.you} value={you[m.key]} max={m.max} tone="you" />
               <CompareRow label={player.name} value={player[m.key]} max={m.max} tone="avg" />
             </div>
           </div>

@@ -6,7 +6,7 @@ import PlayerCompareView from './PlayerCompareView.jsx';
 import { otherPlayers } from '../data/mockData.js';
 import { parseRiotId } from '../lib/riotId.js';
 
-export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite }) {
+export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filteredGames }) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -132,7 +132,7 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite }) {
               t={t}
             />
           ) : (
-            <PlayerCompareView player={selected} onBack={() => setView('profile')} t={t} />
+            <PlayerCompareView player={selected} onBack={() => setView('profile')} t={t} filteredGames={filteredGames} />
           )}
         </Modal>
       )}

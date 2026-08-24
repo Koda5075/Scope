@@ -75,29 +75,80 @@ export function isBadgeUnlocked(badge) {
   return !!badge.unlocked;
 }
 
+// Full 29-agent roster (verified against the live agent list, 2026-08-24) so the
+// "Voir tout" popup on Agents & Maps can seed every agent that exists, not just the
+// handful that happen to appear in recentGames — computeAgentStats (below) uses this
+// array's `name` field to build that seed and then overwrites games/wr with real
+// numbers derived from the filtered games, so the games/wr values here are never
+// rendered directly; kept only so every entry has the same shape.
 export const agentStats = [
+  // Duelists
+  { name: 'Phoenix', games: 0, wr: 0 },
   { name: 'Jett', games: 14, wr: 64 },
   { name: 'Reyna', games: 9, wr: 56 },
-  { name: 'Sova', games: 6, wr: 50 },
+  { name: 'Raze', games: 0, wr: 0 },
+  { name: 'Yoru', games: 0, wr: 0 },
+  { name: 'Neon', games: 0, wr: 0 },
+  { name: 'Iso', games: 0, wr: 0 },
+  { name: 'Waylay', games: 0, wr: 0 },
+  // Controllers
+  { name: 'Brimstone', games: 0, wr: 0 },
   { name: 'Omen', games: 5, wr: 40 },
-  { name: 'Killjoy', games: 4, wr: 75 },
+  { name: 'Viper', games: 0, wr: 0 },
+  { name: 'Astra', games: 0, wr: 0 },
+  { name: 'Harbor', games: 0, wr: 0 },
+  { name: 'Clove', games: 0, wr: 0 },
+  { name: 'Miks', games: 0, wr: 0 },
+  // Initiators
+  { name: 'Sova', games: 6, wr: 50 },
+  { name: 'Breach', games: 0, wr: 0 },
+  { name: 'Skye', games: 0, wr: 0 },
+  { name: 'KAY/O', games: 0, wr: 0 },
+  { name: 'Fade', games: 0, wr: 0 },
+  { name: 'Gekko', games: 0, wr: 0 },
+  { name: 'Tejo', games: 0, wr: 0 },
+  // Sentinels
+  { name: 'Sage', games: 0, wr: 0 },
   { name: 'Cypher', games: 3, wr: 33 },
+  { name: 'Killjoy', games: 4, wr: 75 },
+  { name: 'Chamber', games: 0, wr: 0 },
+  { name: 'Deadlock', games: 0, wr: 0 },
+  { name: 'Vyse', games: 0, wr: 0 },
+  { name: 'Veto', games: 0, wr: 0 },
 ];
 
 // atkWr/defWr are separate win rates for rounds started on attack vs. defense on that
 // map — a real tactical signal (e.g. a map you're strong on overall but weak on one
 // side) that the combined `wr` alone hides. bestAgent is the agent with the best
 // winrate specifically on that map (agent x map cross-reference).
+//
+// Full 13-map roster (verified against the live map list, 2026-08-24), same reasoning
+// as agentStats above: computeMapStats seeds every map from this array's `name`, then
+// overwrites games/wr with real numbers from the filtered games — atkWr/defWr/bestAgent
+// stay as this static, illustrative snapshot since recentGames has no per-side data.
 export const mapStats = [
   { name: 'Bind', games: 8, wr: 62, atkWr: 58, defWr: 67, bestAgent: 'Jett' },
-  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39, bestAgent: 'Reyna' },
   { name: 'Haven', games: 5, wr: 40, atkWr: 33, defWr: 47, bestAgent: 'Sova' },
   { name: 'Split', games: 4, wr: 55, atkWr: 50, defWr: 60, bestAgent: 'Jett' },
+  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39, bestAgent: 'Reyna' },
   { name: 'Icebox', games: 3, wr: 67, atkWr: 71, defWr: 63, bestAgent: 'Sova' },
+  { name: 'Breeze', games: 0, wr: 0, atkWr: 55, defWr: 60, bestAgent: 'Sova' },
   { name: 'Fracture', games: 3, wr: 45, atkWr: 40, defWr: 50, bestAgent: 'Killjoy' },
   { name: 'Pearl', games: 2, wr: 70, atkWr: 65, defWr: 75, bestAgent: 'Jett' },
+  { name: 'Lotus', games: 0, wr: 0, atkWr: 40, defWr: 55, bestAgent: 'Reyna' },
   { name: 'Sunset', games: 2, wr: 55, atkWr: 60, defWr: 50, bestAgent: 'Sova' },
+  { name: 'Abyss', games: 0, wr: 0, atkWr: 48, defWr: 52, bestAgent: 'Neon' },
+  { name: 'Corrode', games: 0, wr: 0, atkWr: 50, defWr: 58, bestAgent: 'Viper' },
+  { name: 'Summit', games: 0, wr: 0, atkWr: 53, defWr: 47, bestAgent: 'Fade' },
 ];
+
+// ⚠️ Illustrative snapshot only, not a live value — captured for this mockup at the end
+// of August 2026. Riot rotates the competitive map pool roughly every two months, so
+// this exact 7-map list will likely already be out of date by the time this code is
+// read; don't treat it as a permanent truth. Not wired into any filter yet — once the
+// production Riot API is connected, the Act/Episode filter (`acts` below) should pull
+// the real, live rotation instead of this constant.
+export const CURRENT_COMPETITIVE_MAP_POOL = ['Ascent', 'Haven', 'Split', 'Sunset', 'Abyss', 'Lotus', 'Summit'];
 
 // Round-type and clutch breakdown — Scope+. Pistol/eco-force winrates and clutch
 // success rate by man-disadvantage situation, instead of just the flat clutch count
@@ -159,15 +210,40 @@ export const otherPlayers = [
   { puuid: 'p5', name: 'Volt', tag: 'NA1', connected: false, isPublic: false, rank: null, peakRank: null, kda: null, acs: null, accuracy: null, headshots: null },
 ];
 
+// Full 19-weapon roster (verified against the live weapon list, 2026-08-24). Unlike
+// agentStats/mapStats this one isn't filter-derived — recentGames has no per-match
+// weapon field — so it's rendered directly, all-time. Weapons you'd realistically never
+// buy (heavy machine guns, back-up pistols) are left at low/zero kills rather than
+// dropped, so the "Voir tout" popup still lists the entire roster.
+// "Melee" is the game's own official name for the knife (the brief's "Couteau" is just
+// its French gloss) — kept in English like every other weapon/agent/map name here.
 export const weaponStats = [
-  { name: 'Vandal', accuracy: 24, kills: 142, favorite: true },
-  { name: 'Phantom', accuracy: 21, kills: 88 },
-  { name: 'Operator', accuracy: 41, kills: 37 },
-  { name: 'Spectre', accuracy: 19, kills: 41 },
-  { name: 'Sheriff', accuracy: 28, kills: 33 },
+  // Sidearms
   { name: 'Classic', accuracy: 18, kills: 29 },
-  { name: 'Guardian', accuracy: 33, kills: 22 },
+  { name: 'Shorty', accuracy: 25, kills: 3 },
+  { name: 'Frenzy', accuracy: 22, kills: 2 },
   { name: 'Ghost', accuracy: 22, kills: 18 },
+  { name: 'Sheriff', accuracy: 28, kills: 33 },
+  // SMGs
+  { name: 'Stinger', accuracy: 20, kills: 7 },
+  { name: 'Spectre', accuracy: 19, kills: 41 },
+  // Shotguns
+  { name: 'Bucky', accuracy: 27, kills: 6 },
+  { name: 'Judge', accuracy: 30, kills: 9 },
+  // Rifles
+  { name: 'Bulldog', accuracy: 26, kills: 15 },
+  { name: 'Guardian', accuracy: 33, kills: 22 },
+  { name: 'Phantom', accuracy: 21, kills: 88 },
+  { name: 'Vandal', accuracy: 24, kills: 142, favorite: true },
+  // Sniper rifles
+  { name: 'Marshal', accuracy: 45, kills: 12 },
+  { name: 'Outlaw', accuracy: 44, kills: 5 },
+  { name: 'Operator', accuracy: 41, kills: 37 },
+  // Heavy weapons
+  { name: 'Ares', accuracy: 15, kills: 1 },
+  { name: 'Odin', accuracy: 0, kills: 0 },
+  // Melee
+  { name: 'Melee', accuracy: 100, kills: 4 },
 ];
 
 // Deterministic pseudo-random in [0, 1) — keeps mock data reproducible across renders/builds.
@@ -199,22 +275,27 @@ export function getActivitySummary(days = activityCalendar) {
 // hardcoded in OverviewTab's session summary (7 games, 5W-2L, best 24/9, worst 8/17),
 // so the default filter (all modes, last 7 days) renders identically to before. The
 // rest only surface once a wider period filter is selected.
+// accuracy/hs are per-match percentages, firstBloods a per-match count, and
+// clutchWon/clutchPlayed a per-match clutch-round record — added so the Overview
+// StatReadout grid (KDA/Accuracy/Headshots/ACS/First Bloods/Clutches) can be genuinely
+// derived from the filtered games, the same way the rest of Overview already is,
+// instead of staying hardcoded regardless of the global filter.
 export const recentGames = [
-  { id: 'g1', mode: 'competitive', map: 'Bind', result: 'win', score: '13-9', agent: 'Jett', kda: '24/9/6', acs: 289, daysAgo: 0 },
-  { id: 'g2', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-11', agent: 'Reyna', kda: '18/10/4', acs: 245, daysAgo: 1 },
-  { id: 'g3', mode: 'competitive', map: 'Haven', result: 'loss', score: '9-13', agent: 'Sova', kda: '12/15/5', acs: 198, daysAgo: 1 },
-  { id: 'g4', mode: 'unrated', map: 'Split', result: 'win', score: '13-8', agent: 'Jett', kda: '15/11/7', acs: 210, daysAgo: 2 },
-  { id: 'g5', mode: 'competitive', map: 'Bind', result: 'win', score: '13-10', agent: 'Reyna', kda: '16/13/3', acs: 225, daysAgo: 3 },
-  { id: 'g6', mode: 'unrated', map: 'Icebox', result: 'win', score: '13-7', agent: 'Sova', kda: '14/10/5', acs: 201, daysAgo: 4 },
-  { id: 'g7', mode: 'competitive', map: 'Haven', result: 'loss', score: '7-13', agent: 'Jett', kda: '8/17/2', acs: 139, daysAgo: 6 },
-  { id: 'g8', mode: 'competitive', map: 'Bind', result: 'loss', score: '10-13', agent: 'Reyna', kda: '10/16/4', acs: 175, daysAgo: 10 },
-  { id: 'g9', mode: 'unrated', map: 'Fracture', result: 'win', score: '13-9', agent: 'Sova', kda: '13/9/8', acs: 198, daysAgo: 18 },
-  { id: 'g10', mode: 'competitive', map: 'Pearl', result: 'win', score: '13-6', agent: 'Jett', kda: '20/12/5', acs: 233, daysAgo: 25 },
-  { id: 'g11', mode: 'deathmatch', map: 'Lotus', result: 'loss', score: '9-13', agent: 'Reyna', kda: '9/14/0', acs: 150, daysAgo: 40 },
-  { id: 'g12', mode: 'competitive', map: 'Sunset', result: 'win', score: '13-11', agent: 'Sova', kda: '17/11/6', acs: 219, daysAgo: 58 },
+  { id: 'g1', mode: 'competitive', map: 'Bind', result: 'win', score: '13-9', agent: 'Jett', kda: '24/9/6', acs: 289, daysAgo: 0, accuracy: 28, hs: 36, firstBloods: 3, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g2', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-11', agent: 'Reyna', kda: '18/10/4', acs: 245, daysAgo: 1, accuracy: 24, hs: 32, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g3', mode: 'competitive', map: 'Haven', result: 'loss', score: '9-13', agent: 'Sova', kda: '12/15/5', acs: 198, daysAgo: 1, accuracy: 19, hs: 25, firstBloods: 1, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g4', mode: 'unrated', map: 'Split', result: 'win', score: '13-8', agent: 'Jett', kda: '15/11/7', acs: 210, daysAgo: 2, accuracy: 21, hs: 27, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g5', mode: 'competitive', map: 'Bind', result: 'win', score: '13-10', agent: 'Reyna', kda: '16/13/3', acs: 225, daysAgo: 3, accuracy: 23, hs: 29, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g6', mode: 'unrated', map: 'Icebox', result: 'win', score: '13-7', agent: 'Sova', kda: '14/10/5', acs: 201, daysAgo: 4, accuracy: 20, hs: 26, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g7', mode: 'competitive', map: 'Haven', result: 'loss', score: '7-13', agent: 'Jett', kda: '8/17/2', acs: 139, daysAgo: 6, accuracy: 14, hs: 19, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g8', mode: 'competitive', map: 'Bind', result: 'loss', score: '10-13', agent: 'Reyna', kda: '10/16/4', acs: 175, daysAgo: 10, accuracy: 17, hs: 23, firstBloods: 0, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g9', mode: 'unrated', map: 'Fracture', result: 'win', score: '13-9', agent: 'Sova', kda: '13/9/8', acs: 198, daysAgo: 18, accuracy: 21, hs: 27, firstBloods: 1, clutchWon: 1, clutchPlayed: 2 },
+  { id: 'g10', mode: 'competitive', map: 'Pearl', result: 'win', score: '13-6', agent: 'Jett', kda: '20/12/5', acs: 233, daysAgo: 25, accuracy: 25, hs: 33, firstBloods: 2, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g11', mode: 'deathmatch', map: 'Lotus', result: 'loss', score: '9-13', agent: 'Reyna', kda: '9/14/0', acs: 150, daysAgo: 40, accuracy: 16, hs: 21, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g12', mode: 'competitive', map: 'Sunset', result: 'win', score: '13-11', agent: 'Sova', kda: '17/11/6', acs: 219, daysAgo: 58, accuracy: 22, hs: 28, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
   // Older than everything above — only surface when browsing a past Act (see `acts` below).
-  { id: 'g13', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-7', agent: 'Jett', kda: '19/8/5', acs: 227, daysAgo: 70 },
-  { id: 'g14', mode: 'unrated', map: 'Bind', result: 'loss', score: '8-13', agent: 'Sova', kda: '9/13/6', acs: 168, daysAgo: 82 },
+  { id: 'g13', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-7', agent: 'Jett', kda: '19/8/5', acs: 227, daysAgo: 70, accuracy: 24, hs: 31, firstBloods: 2, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g14', mode: 'unrated', map: 'Bind', result: 'loss', score: '8-13', agent: 'Sova', kda: '9/13/6', acs: 168, daysAgo: 82, accuracy: 18, hs: 24, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
 ];
 
 // Mock "Acts" — VALORANT's multi-month competitive periods (rank resets between them).
@@ -250,6 +331,107 @@ export const acts = [
   { id: 'e9a2', label: 'Episode 9 — Act II', minDaysAgo: 30, maxDaysAgo: 59 },
   { id: 'e9a1', label: 'Episode 9 — Act I', minDaysAgo: 60, maxDaysAgo: 89 },
 ];
+
+// Shared by the global Mode + Period filter (App.jsx) so every tab that filters
+// recentGames applies the exact same window definition.
+export const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
+
+export function filterGames(games, { mode, period, act }) {
+  return games.filter((g) => {
+    if (mode !== 'all' && g.mode !== mode) return false;
+    if (period === 'act') return act ? g.daysAgo >= act.minDaysAgo && g.daysAgo <= act.maxDaysAgo : true;
+    return g.daysAgo <= PERIOD_MAX_DAYS[period];
+  });
+}
+
+// Recomputes per-agent games/win-rate from whatever slice of recentGames the global
+// filter currently selects, so Agents & Maps reacts to the Mode + Period filter like
+// the rest of the app. Seeded with every agent from the all-time agentStats roster
+// (0 games/null wr by default) rather than built only from the filtered games — an
+// agent with zero matches in the current window still shows up instead of vanishing
+// from the "complete" list, which is exactly the popup-completeness bug the global
+// filter work must not reintroduce.
+export function computeAgentStats(games) {
+  const byAgent = new Map();
+  for (const a of agentStats) byAgent.set(a.name, { name: a.name, games: 0, wins: 0 });
+  for (const g of games) {
+    const entry = byAgent.get(g.agent) ?? { name: g.agent, games: 0, wins: 0 };
+    entry.games++;
+    if (g.result === 'win') entry.wins++;
+    byAgent.set(g.agent, entry);
+  }
+  return Array.from(byAgent.values())
+    .map((a) => ({ name: a.name, games: a.games, wr: a.games ? Math.round((a.wins / a.games) * 100) : null }))
+    .sort((a, b) => b.games - a.games);
+}
+
+// Same idea for per-map stats, seeded from the all-time mapStats roster for the same
+// reason. atkWr/defWr/bestAgent have no side-by-side data in recentGames (only a single
+// win/loss per match), so those cosmetic sub-fields are carried over from the all-time
+// snapshot and only shown once a map actually has games in the current filter.
+export function computeMapStats(games) {
+  const byMap = new Map();
+  for (const m of mapStats) byMap.set(m.name, { name: m.name, games: 0, wins: 0 });
+  for (const g of games) {
+    const entry = byMap.get(g.map) ?? { name: g.map, games: 0, wins: 0 };
+    entry.games++;
+    if (g.result === 'win') entry.wins++;
+    byMap.set(g.map, entry);
+  }
+  return Array.from(byMap.values())
+    .map((m) => {
+      const wr = m.games ? Math.round((m.wins / m.games) * 100) : null;
+      const staticDef = mapStats.find((s) => s.name === m.name);
+      return {
+        name: m.name,
+        games: m.games,
+        wr,
+        atkWr: m.games ? staticDef?.atkWr ?? wr : undefined,
+        defWr: m.games ? staticDef?.defWr ?? wr : undefined,
+        bestAgent: m.games ? staticDef?.bestAgent : undefined,
+      };
+    })
+    .sort((a, b) => b.games - a.games);
+}
+
+// Per-match aggregates used to make the Overview stat grid and Compare tab react to the
+// global filter — each recentGames row carries acs/kda/accuracy/hs/firstBloods/clutch
+// fields, so these are genuine derivations, not invented numbers.
+export function computeAverageAcs(games) {
+  if (!games.length) return null;
+  return Math.round(games.reduce((sum, g) => sum + g.acs, 0) / games.length);
+}
+
+export function computeAggregateKDA(games) {
+  if (!games.length) return null;
+  let kills = 0, deaths = 0, assists = 0;
+  for (const g of games) {
+    const [k, d, a] = g.kda.split('/').map(Number);
+    kills += k; deaths += d; assists += a;
+  }
+  return Math.round((deaths > 0 ? (kills + assists) / deaths : kills + assists) * 100) / 100;
+}
+
+export function computeAverageAccuracy(games) {
+  if (!games.length) return null;
+  return Math.round(games.reduce((sum, g) => sum + g.accuracy, 0) / games.length);
+}
+
+export function computeAverageHeadshots(games) {
+  if (!games.length) return null;
+  return Math.round(games.reduce((sum, g) => sum + g.hs, 0) / games.length);
+}
+
+export function computeFirstBloods(games) {
+  return games.reduce((sum, g) => sum + g.firstBloods, 0);
+}
+
+export function computeClutchRecord(games) {
+  return games.reduce(
+    (acc, g) => ({ won: acc.won + g.clutchWon, played: acc.played + g.clutchPlayed }),
+    { won: 0, played: 0 }
+  );
+}
 
 const FILLER_NAMES = [
   'Nova', 'Miro', 'Shade', 'Kestrel', 'Ondine', 'Rasp', 'Tally', 'Brix', 'Wisp',

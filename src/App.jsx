@@ -1,7 +1,7 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { T } from './i18n/translations.js';
 import { THEMES } from './data/themes.js';
-import { peakRank as mockPeakRank } from './data/mockData.js';
+import { peakRank as mockPeakRank, acts, filterGames, recentGames } from './data/mockData.js';
 import TopBar from './components/TopBar.jsx';
 import LoginScreen from './components/LoginScreen.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
@@ -9,6 +9,7 @@ import PlayerSearchBar from './components/PlayerSearchBar.jsx';
 import Modal from './components/Modal.jsx';
 import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
 import TabNav from './components/TabNav.jsx';
+import FilterBar from './components/FilterBar.jsx';
 import PromoBanner from './components/PromoBanner.jsx';
 import OnboardingTour from './components/OnboardingTour.jsx';
 import ScopePlansModal from './components/ScopePlansModal.jsx';
@@ -52,10 +53,21 @@ export default function ScopeDashboard() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPlansModal, setShowPlansModal] = useState(false);
   const [isPremium, setIsPremium] = useState(() => loadStored('scope-premium', false, (v) => v === 'true'));
+  // Mode + Period (and, when period is 'act', the Act/Episode) — one shared filter
+  // state for the whole dashboard, rendered once above the tabs, instead of a copy
+  // local to whichever tab happened to need it first.
+  const [filterMode, setFilterMode] = useState('all');
+  const [filterPeriod, setFilterPeriod] = useState('7d');
+  const [actId, setActId] = useState(() => acts.find((a) => a.current)?.id ?? acts[0].id);
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
   const accent = THEMES[theme].accent;
+  const selectedAct = acts.find((a) => a.id === actId) ?? acts[0];
+  const filteredGames = useMemo(
+    () => filterGames(recentGames, { mode: filterMode, period: filterPeriod, act: selectedAct }),
+    [filterMode, filterPeriod, selectedAct]
+  );
 
   function toggleFavorite(puuid) {
     setFavoriteIds((ids) => (ids.includes(puuid) ? ids.filter((id) => id !== puuid) : [...ids, puuid]));
@@ -180,14 +192,26 @@ export default function ScopeDashboard() {
               isPremium={isPremium}
               onSeePlans={() => setShowPlansModal(true)}
             />
-            <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
+            <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} filteredGames={filteredGames} />
+
+            <FilterBar
+              t={t}
+              mode={filterMode}
+              setMode={setFilterMode}
+              period={filterPeriod}
+              setPeriod={setFilterPeriod}
+              acts={acts}
+              actId={actId}
+              setActId={setActId}
+            />
+
             <TabNav tab={tab} setTab={setTab} t={t} />
 
             {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />}
 
-            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} />}
-            {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} />}
-            {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} />}
+            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} />}
+            {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
+            {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
             {tab === 'premium' && (

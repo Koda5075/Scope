@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Star, Maximize2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { agentStats, mapStats, weaponStats } from '../../data/mockData.js';
+import { weaponStats, computeAgentStats, computeMapStats } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage, getWeaponIcon } from '../../data/valorantAssets.js';
 
 const PREVIEW_COUNT = 3;
@@ -27,10 +27,10 @@ function AgentRow({ a, t }) {
         {getAgentIcon(a.name) && <img src={getAgentIcon(a.name)} alt="" className="val-icon w-11 h-11 rounded-full object-cover shrink-0" />}
         {a.name}
       </span>
-      <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr}%` }} /></div>
+      <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr ?? 0}%` }} /></div>
       <div className="flex items-center gap-3 shrink-0">
         <span className="font-mono text-xs text-neutral-500">{a.games} {t.gamesShort}</span>
-        <span className="font-mono text-xs text-accent w-10 text-right">{a.wr}%</span>
+        <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
       </div>
     </div>
   );
@@ -56,28 +56,35 @@ function MapRow({ m, t }) {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr}%` }} /></div>
+          <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr ?? 0}%` }} /></div>
           <span className="font-mono text-xs text-neutral-500 w-16 text-right shrink-0">{m.games} {t.gamesShort}</span>
-          <span className="font-mono text-xs text-accent w-10 text-right shrink-0">{m.wr}%</span>
+          <span className="font-mono text-xs text-accent w-10 text-right shrink-0">{m.wr !== null ? `${m.wr}%` : '—'}</span>
         </div>
-        <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-3 mt-1.5">
-          <span className="flex-1 flex items-center gap-2">
-            <span className="font-mono text-[10px] text-neutral-600 w-7 shrink-0">ATK</span>
-            <div className="flex-1 sc-track h-1 overflow-hidden"><div className="sc-fill-dim h-full" style={{ width: `${m.atkWr}%` }} /></div>
-            <span className="font-mono text-[10px] text-neutral-500 w-8 text-right shrink-0">{m.atkWr}%</span>
-          </span>
-          <span className="flex-1 flex items-center gap-2">
-            <span className="font-mono text-[10px] text-neutral-600 w-7 shrink-0">DEF</span>
-            <div className="flex-1 sc-track h-1 overflow-hidden"><div className="sc-fill-dim h-full" style={{ width: `${m.defWr}%` }} /></div>
-            <span className="font-mono text-[10px] text-neutral-500 w-8 text-right shrink-0">{m.defWr}%</span>
-          </span>
-        </div>
+        {m.atkWr !== undefined && m.defWr !== undefined && (
+          <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-3 mt-1.5">
+            <span className="flex-1 flex items-center gap-2">
+              <span className="font-mono text-[10px] text-neutral-600 w-7 shrink-0">ATK</span>
+              <div className="flex-1 sc-track h-1 overflow-hidden"><div className="sc-fill-dim h-full" style={{ width: `${m.atkWr}%` }} /></div>
+              <span className="font-mono text-[10px] text-neutral-500 w-8 text-right shrink-0">{m.atkWr}%</span>
+            </span>
+            <span className="flex-1 flex items-center gap-2">
+              <span className="font-mono text-[10px] text-neutral-600 w-7 shrink-0">DEF</span>
+              <div className="flex-1 sc-track h-1 overflow-hidden"><div className="sc-fill-dim h-full" style={{ width: `${m.defWr}%` }} /></div>
+              <span className="font-mono text-[10px] text-neutral-500 w-8 text-right shrink-0">{m.defWr}%</span>
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
+function fmt(template, vars) {
+  return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
+}
+
 function WeaponRow({ w, killShare, t }) {
+  const killShareHint = fmt(t.weaponKillShareExplain, { pct: killShare, weapon: w.name });
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <span className="font-display text-sm text-white flex items-center gap-1.5 sm:w-32 sm:shrink-0">
@@ -85,15 +92,15 @@ function WeaponRow({ w, killShare, t }) {
         <span className="truncate">{w.name}</span>
         {w.favorite && <Star size={10} className="text-accent shrink-0" fill="currentColor" />}
       </span>
-      <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${killShare}%` }} /></div>
+      <div className="flex-1 sc-track h-2 overflow-hidden" title={killShareHint}><div className="sc-fill h-full" style={{ width: `${killShare}%` }} /></div>
       <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
         <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0">
           <span className="font-mono text-xs text-neutral-300">{w.kills}</span>
           <span className="text-[9px] text-neutral-600 uppercase tracking-wide">{t.weaponKills}</span>
         </span>
-        <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0">
+        <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0" title={killShareHint}>
           <span className="font-mono text-xs text-accent">{killShare}%</span>
-          <span className="text-[9px] text-neutral-600 uppercase tracking-wide">{t.weaponKillShare}</span>
+          <span className="text-[9px] text-neutral-600 uppercase tracking-wide underline decoration-dotted decoration-neutral-600 cursor-help">{t.weaponKillShare}</span>
         </span>
         <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0">
           <span className="font-mono text-xs text-white">{w.accuracy}%</span>
@@ -104,9 +111,22 @@ function WeaponRow({ w, killShare, t }) {
   );
 }
 
-export default function AgentsTab({ t, isPremium }) {
+export default function AgentsTab({ t, isPremium, filteredGames }) {
   const [openModal, setOpenModal] = useState(null); // 'agents' | 'maps' | 'weapons' | null
+
+  // Agent/map performance is recomputed from whatever the global Mode + Period filter
+  // currently selects; weaponStats has no per-match weapon breakdown in the mock
+  // dataset, so it stays an all-time snapshot.
+  const agentStats = useMemo(() => computeAgentStats(filteredGames), [filteredGames]);
+  const mapStats = useMemo(() => computeMapStats(filteredGames), [filteredGames]);
+  // Sorted by kills, same "most relevant first" convention as agentStats/mapStats above
+  // — the full weapon roster is grouped by category in mockData.js for readability, so
+  // array order alone would otherwise put a rarely-used Shorty ahead of the Vandal in
+  // the 3-item preview.
+  const sortedWeapons = useMemo(() => [...weaponStats].sort((a, b) => b.kills - a.kills), []);
   const totalKills = weaponStats.reduce((sum, w) => sum + w.kills, 0);
+  const topWeapon = sortedWeapons[0] ?? null;
+  const topWeaponShare = topWeapon && totalKills ? Math.round((topWeapon.kills / totalKills) * 100) : 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -131,12 +151,17 @@ export default function AgentsTab({ t, isPremium }) {
       </Card>
 
       <Card className="md:col-span-2">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-1">
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.weaponPerf}</span>
           {weaponStats.length > PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('weapons')} t={t} />}
         </div>
+        {topWeapon && (
+          <p className="text-[11px] text-neutral-500 font-body mb-3">
+            {fmt(t.weaponKillShareExplain, { pct: topWeaponShare, weapon: topWeapon.name })}
+          </p>
+        )}
         <div className="flex flex-col gap-3">
-          {weaponStats.slice(0, PREVIEW_COUNT).map((w) => (
+          {sortedWeapons.slice(0, PREVIEW_COUNT).map((w) => (
             <WeaponRow key={w.name} w={w} killShare={totalKills ? Math.round((w.kills / totalKills) * 100) : 0} t={t} />
           ))}
         </div>
@@ -168,7 +193,7 @@ export default function AgentsTab({ t, isPremium }) {
         <Modal onClose={() => setOpenModal(null)} closeLabel={t.close}>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.weaponPerf}</span>
           <div className="flex flex-col gap-4">
-            {weaponStats.map((w) => (
+            {sortedWeapons.map((w) => (
               <WeaponRow key={w.name} w={w} killShare={totalKills ? Math.round((w.kills / totalKills) * 100) : 0} t={t} />
             ))}
           </div>

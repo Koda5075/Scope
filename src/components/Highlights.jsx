@@ -1,6 +1,6 @@
 import { Flame, TrendingDown, Map as MapIcon, Swords, Trophy } from 'lucide-react';
 import Card from './Card.jsx';
-import { agentStats, mapStats, badgeDefs, getBadgeProgress, getStreaks, TIER_NAMES } from '../data/mockData.js';
+import { badgeDefs, getBadgeProgress, getStreaks, computeAgentStats, computeMapStats, TIER_NAMES } from '../data/mockData.js';
 
 function fmt(template, vars) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
@@ -8,10 +8,14 @@ function fmt(template, vars) {
 
 // Picks up to 4 of the most tell-a-story-quickly facts across streaks, maps, agents and
 // badge progress, so the Overview tab has a fast entry point before digging into tabs.
-function computeHighlights(t) {
+// Streak/map/agent facts are computed from the currently filtered games — this card sits
+// right below the global Mode + Period filter, so it must agree with the numbers the
+// Agents & Maps tab shows for that same filter instead of quoting an unrelated all-time
+// snapshot.
+function computeHighlights(t, filteredGames) {
   const items = [];
 
-  const streaks = getStreaks();
+  const streaks = getStreaks(filteredGames);
   if (streaks.currentCount >= 2) {
     items.push({
       Icon: streaks.currentType === 'win' ? Flame : TrendingDown,
@@ -19,10 +23,10 @@ function computeHighlights(t) {
     });
   }
 
-  const bestMap = [...mapStats].sort((a, b) => b.wr - a.wr)[0];
+  const bestMap = computeMapStats(filteredGames).filter((m) => m.wr !== null).sort((a, b) => b.wr - a.wr)[0];
   if (bestMap) items.push({ Icon: MapIcon, text: fmt(t.highlightBestMap, { map: bestMap.name, wr: bestMap.wr }) });
 
-  const bestAgent = [...agentStats].sort((a, b) => b.wr - a.wr)[0];
+  const bestAgent = computeAgentStats(filteredGames).filter((a) => a.wr !== null).sort((a, b) => b.wr - a.wr)[0];
   if (bestAgent) items.push({ Icon: Swords, text: fmt(t.highlightBestAgent, { agent: bestAgent.name, wr: bestAgent.wr }) });
 
   const closestBadge = badgeDefs
@@ -44,8 +48,8 @@ function computeHighlights(t) {
   return items.slice(0, 4);
 }
 
-export default function Highlights({ t }) {
-  const items = computeHighlights(t);
+export default function Highlights({ t, filteredGames }) {
+  const items = computeHighlights(t, filteredGames);
   if (items.length === 0) return null;
 
   return (

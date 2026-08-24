@@ -3,7 +3,6 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
-import FilterBar from '../FilterBar.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
 import Modal from '../Modal.jsx';
 import KDAStat from '../KDAStat.jsx';
@@ -16,28 +15,20 @@ import TabLoading from '../TabLoading.jsx';
 // Match-detail stats only render once a game row is clicked — splitting it out of the
 // main bundle keeps everyone else's initial load lean.
 const GameScoreboard = lazy(() => import('../GameScoreboard.jsx'));
-import { rrHistory, badgeDefs, recentGames, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, acts, getStreaks } from '../../data/mockData.js';
+import {
+  rrHistory, badgeDefs, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, getStreaks,
+  computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
+  computeFirstBloods, computeClutchRecord,
+} from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
-const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 
-export default function OverviewTab({ t, accent, isPremium }) {
-  const [filterMode, setFilterMode] = useState('all');
-  const [filterPeriod, setFilterPeriod] = useState('7d');
-  const [actId, setActId] = useState(acts.find((a) => a.current)?.id ?? acts[0].id);
+export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
-
-  const selectedAct = acts.find((a) => a.id === actId) ?? acts[0];
-
-  const filteredGames = recentGames.filter((g) => {
-    if (filterMode !== 'all' && g.mode !== filterMode) return false;
-    if (filterPeriod === 'act') return g.daysAgo >= selectedAct.minDaysAgo && g.daysAgo <= selectedAct.maxDaysAgo;
-    return g.daysAgo <= PERIOD_MAX_DAYS[filterPeriod];
-  });
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
@@ -51,7 +42,16 @@ export default function OverviewTab({ t, accent, isPremium }) {
   }, { diff: Infinity, label: '—' });
 
   const selectedMatch = selectedGameId ? getMatchScoreboard(selectedGameId) : null;
-  const streaks = getStreaks();
+  const streaks = getStreaks(filteredGames);
+
+  // Stat grid — genuinely derived from the filtered games, same as the rest of
+  // Overview, rather than a fixed snapshot that ignores the global filter.
+  const avgAcs = computeAverageAcs(filteredGames);
+  const avgKda = computeAggregateKDA(filteredGames);
+  const avgAccuracy = computeAverageAccuracy(filteredGames);
+  const avgHeadshots = computeAverageHeadshots(filteredGames);
+  const firstBloods = computeFirstBloods(filteredGames);
+  const clutches = computeClutchRecord(filteredGames);
 
   async function handleShare() {
     setSharing(true);
@@ -79,7 +79,7 @@ export default function OverviewTab({ t, accent, isPremium }) {
 
   return (
     <>
-      <Highlights t={t} />
+      <Highlights t={t} filteredGames={filteredGames} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 flex flex-col gap-4">
         <Card>
@@ -122,17 +122,6 @@ export default function OverviewTab({ t, accent, isPremium }) {
             </ResponsiveContainer>
           </div>
         </Card>
-
-        <FilterBar
-          t={t}
-          mode={filterMode}
-          setMode={setFilterMode}
-          period={filterPeriod}
-          setPeriod={setFilterPeriod}
-          acts={acts}
-          actId={actId}
-          setActId={setActId}
-        />
 
         <Card>
           <div className="flex items-center justify-between mb-3">
@@ -212,12 +201,12 @@ export default function OverviewTab({ t, accent, isPremium }) {
 
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          <StatReadout label={t.statKDA} value="1.42" Icon={Swords} />
-          <StatReadout label={t.statAccuracy} value="24" unit="%" Icon={Crosshair} />
-          <StatReadout label={t.statHeadshots} value="31" unit="%" Icon={Target} />
-          <StatReadout label={t.statACS} value="238" Icon={Zap} />
-          <StatReadout label={t.statFirstBloods} value="9" Icon={Skull} />
-          <StatReadout label={t.statClutches} value="3" unit="/5" Icon={Flame} />
+          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} />
+          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} />
+          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} />
+          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} />
+          <StatReadout label={t.statFirstBloods} value={firstBloods} Icon={Skull} />
+          <StatReadout label={t.statClutches} value={clutches.won} unit={`/${clutches.played}`} Icon={Flame} />
         </div>
 
         <InviteFriendsCard t={t} />

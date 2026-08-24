@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { TrendingUp, TrendingDown, Minus, Search } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { comparisons, friends, otherPlayers, myStats } from '../../data/mockData.js';
+import {
+  comparisons, friends, otherPlayers, myStats,
+  computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
+} from '../../data/mockData.js';
 import { parseRiotId } from '../../lib/riotId.js';
 
 function DeltaRow({ value, baseline, label }) {
@@ -31,10 +34,34 @@ const COMPARE_METRICS = [
   { key: 'headshots', labelKey: 'statHeadshots' },
 ];
 
-export default function CompareTab({ t, isPremium }) {
+export default function CompareTab({ t, isPremium, filteredGames }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
+
+  // All four "you" numbers now genuinely derive from the filtered games, matching the
+  // Overview stat grid — falls back to the all-time myStats value only when the current
+  // filter has zero games (nothing to average).
+  const filteredAcs = useMemo(() => computeAverageAcs(filteredGames), [filteredGames]);
+  const filteredKda = useMemo(() => computeAggregateKDA(filteredGames), [filteredGames]);
+  const filteredAccuracy = useMemo(() => computeAverageAccuracy(filteredGames), [filteredGames]);
+  const filteredHeadshots = useMemo(() => computeAverageHeadshots(filteredGames), [filteredGames]);
+  const you = {
+    acs: filteredAcs ?? myStats.acs,
+    kda: filteredKda ?? myStats.kda,
+    accuracy: filteredAccuracy ?? myStats.accuracy,
+    headshots: filteredHeadshots ?? myStats.headshots,
+  };
+  const compared = comparisons.map((c) => {
+    if (c.metric === 'ACS') return filteredAcs !== null ? { ...c, you: filteredAcs } : c;
+    if (c.metric === 'KDA') return filteredKda !== null ? { ...c, you: filteredKda } : c;
+    if (c.metric === 'HS%') return filteredHeadshots !== null ? { ...c, you: filteredHeadshots } : c;
+    return c;
+  });
+  // The friends leaderboard's own "you" row must agree with the ACS shown just above it
+  // on this same tab — otherwise the page quotes two different numbers for "your ACS" at
+  // the same time depending on which card you're looking at.
+  const friendsWithYou = friends.map((f) => (f.isYou ? { ...f, acs: you.acs } : f));
 
   function handleSearch(e) {
     e.preventDefault();
@@ -87,7 +114,7 @@ export default function CompareTab({ t, isPremium }) {
                 <div key={m.key} className="border border-neutral-800 bg-neutral-950 px-3 py-2.5 flex items-center justify-between">
                   <span className="text-[11px] text-neutral-400 font-body">{t[m.labelKey]}</span>
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-sm text-accent">{myStats[m.key]}</span>
+                    <span className="font-mono text-sm text-accent">{you[m.key]}</span>
                     <span className="text-neutral-700 text-[10px] font-body">{t.compareVs}</span>
                     <span className="font-mono text-sm text-neutral-400">{player[m.key]}</span>
                   </div>
@@ -102,7 +129,7 @@ export default function CompareTab({ t, isPremium }) {
         <Card>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.compareTitle}</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {comparisons.map((c, i) => (
+            {compared.map((c, i) => (
               <div
                 key={c.metric}
                 className="sc-reveal border border-neutral-800 bg-neutral-950 px-4 py-3.5 flex flex-col gap-2.5"
@@ -122,7 +149,7 @@ export default function CompareTab({ t, isPremium }) {
         <Card>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.friendsBoard}</span>
           <div className="flex flex-col gap-2">
-            {[...friends].sort((a, b) => b.acs - a.acs).map((f, i) => (
+            {[...friendsWithYou].sort((a, b) => b.acs - a.acs).map((f, i) => (
               <div key={f.name} className={`flex items-center justify-between px-3 py-2 border ${f.isYou ? 'border-accent bg-neutral-900' : 'border-neutral-800 bg-neutral-950'}`}>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-neutral-500 w-4">{i + 1}</span>
