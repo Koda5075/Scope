@@ -99,6 +99,22 @@ export default function ScopeDashboard() {
     setShowSettings(false);
   }
 
+  // Stripe Checkout (test mode) bounces back here with ?checkout=success once a test
+  // payment actually completes — that's the real trigger for isPremium now, not the
+  // "Choose Plan" click itself (see ScopePlansModal.jsx). Runs once on mount, and
+  // strips the query param either way so a refresh doesn't re-trigger it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get('checkout');
+    if (!checkout) return;
+
+    if (checkout === 'success') setIsPremium(true);
+
+    params.delete('checkout');
+    const qs = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem('scope-lang', lang);
@@ -243,16 +259,7 @@ export default function ScopeDashboard() {
           </Modal>
         )}
 
-        {showPlansModal && (
-          <ScopePlansModal
-            onClose={() => setShowPlansModal(false)}
-            onChoose={() => {
-              setIsPremium(true);
-              setShowPlansModal(false);
-            }}
-            t={t}
-          />
-        )}
+        {showPlansModal && <ScopePlansModal onClose={() => setShowPlansModal(false)} t={t} />}
       </div>
     </div>
   );

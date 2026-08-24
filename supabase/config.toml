@@ -18,3 +18,8 @@ verify_jwt = false
 
 [functions.report-photo]
 verify_jwt = false
+
+# Same situation: no real Supabase session exists yet, so this is called with the
+# anon key only. Revisit once real auth lands.
+[functions.create-checkout-session]
+verify_jwt = false

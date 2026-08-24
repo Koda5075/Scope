@@ -1,12 +1,38 @@
-import { Sparkles, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Check, Loader2 } from 'lucide-react';
 import Modal from './Modal.jsx';
+import { supabase } from '../lib/supabaseClient.js';
 import { scopePlusPlans, scopePlusFeatureKeys } from '../data/mockData.js';
 
 function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
 }
 
-export default function ScopePlansModal({ onClose, onChoose, t }) {
+export default function ScopePlansModal({ onClose, t }) {
+  const [loadingPlan, setLoadingPlan] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Redirects the browser to a real Stripe Checkout session (test mode) instead of
+  // flipping isPremium locally — the flag only gets set once Stripe bounces back to
+  // Scope after a completed test payment (see the `checkout=success` handling in
+  // App.jsx). The "Simulate Scope+ (demo)" toggle in settings still does the old
+  // direct flip, for previewing the premium UI without a test payment each time.
+  async function handleChoose(planId) {
+    setError(null);
+    setLoadingPlan(planId);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke('create-checkout-session', {
+        body: { plan: planId },
+      });
+      if (invokeError || !data?.url) throw invokeError ?? new Error('missing checkout url');
+      window.location.href = data.url;
+    } catch (err) {
+      console.error('checkout session creation failed', err);
+      setError(t.plansCheckoutError);
+      setLoadingPlan(null);
+    }
+  }
+
   return (
     <Modal onClose={onClose} closeLabel={t.close}>
       <div className="flex items-center gap-2 mb-1">
@@ -25,7 +51,7 @@ export default function ScopePlansModal({ onClose, onChoose, t }) {
             )}
             <div className="font-display text-sm text-white uppercase tracking-wide mb-2">{t[plan.nameKey]}</div>
             <div className="flex items-baseline gap-1 mb-1">
-              <span className="font-mono text-3xl font-bold text-accent">${plan.price}</span>
+              <span className="font-mono text-3xl font-bold text-accent">{plan.price}€</span>
               <span className="text-xs text-neutral-500 font-body">/ {t[plan.periodKey]}</span>
             </div>
             {plan.perMonthEquivalent && (
@@ -34,14 +60,17 @@ export default function ScopePlansModal({ onClose, onChoose, t }) {
               </div>
             )}
             <button
-              onClick={onChoose}
-              className="w-full mt-2 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
+              onClick={() => handleChoose(plan.id)}
+              disabled={loadingPlan !== null}
+              className="w-full mt-2 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center"
             >
-              {t.plansChoose}
+              {loadingPlan === plan.id ? <Loader2 size={14} className="animate-spin" /> : t.plansChoose}
             </button>
           </div>
         ))}
       </div>
+
+      {error && <p className="text-xs text-red-500 font-body mb-4">{error}</p>}
 
       <div className="border-t border-neutral-800 pt-4">
         <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2.5">{t.plansIncluded}</div>

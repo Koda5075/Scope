@@ -621,8 +621,8 @@ export const inviteStats = { invited: 12, joined: 4 };
 // Mock Scope+ pricing — no real Stripe integration yet, so these are placeholder
 // figures rendered by the plans modal so "See plans" leads somewhere concrete.
 export const scopePlusPlans = [
-  { id: 'monthly', nameKey: 'planMonthly', price: 6.99, periodKey: 'periodMonth' },
-  { id: 'annual', nameKey: 'planAnnual', price: 59.99, periodKey: 'periodYear', badge: true, perMonthEquivalent: 5.0 },
+  { id: 'monthly', nameKey: 'planMonthly', price: 4.99, periodKey: 'periodMonth' },
+  { id: 'annual', nameKey: 'planAnnual', price: 49.99, periodKey: 'periodYear', badge: true, perMonthEquivalent: 49.99 / 12 },
 ];
 
 // Feature list for the plans modal reuses section titles already translated elsewhere
