@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sparkles, Check, Loader2 } from 'lucide-react';
 import Modal from './Modal.jsx';
-import { supabase } from '../lib/supabaseClient.js';
+import { getSupabase } from '../lib/supabaseClient.js';
 import { scopePlusPlans, scopePlusFeatureKeys } from '../data/mockData.js';
 
 function fmt(template, vars = {}) {
@@ -21,7 +21,7 @@ export default function ScopePlansModal({ onClose, t }) {
     setError(null);
     setLoadingPlan(planId);
     try {
-      const { data, error: invokeError } = await supabase.functions.invoke('create-checkout-session', {
+      const { data, error: invokeError } = await getSupabase().functions.invoke('create-checkout-session', {
         body: { plan: planId },
       });
       if (invokeError || !data?.url) throw invokeError ?? new Error('missing checkout url');
