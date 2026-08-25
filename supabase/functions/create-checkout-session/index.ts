@@ -36,7 +36,12 @@ Deno.serve(async (req) => {
     mode: 'subscription',
     'line_items[0][price]': priceId,
     'line_items[0][quantity]': '1',
-    success_url: `${APP_URL}/?checkout=success`,
+    // {CHECKOUT_SESSION_ID} is filled in by Stripe on redirect — the frontend passes it
+    // to verify-checkout-session so the payment is confirmed with Stripe directly
+    // instead of trusting the `checkout=success` query param on its own (that param is
+    // trivial to type into the URL bar; the session id alone isn't enough either since
+    // verify-checkout-session re-checks payment_status with the secret key server-side).
+    success_url: `${APP_URL}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${APP_URL}/?checkout=cancel`,
   });
 

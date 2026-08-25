@@ -15,6 +15,7 @@ import OnboardingTour from './components/OnboardingTour.jsx';
 import ScopePlansModal from './components/ScopePlansModal.jsx';
 import Footer from './components/Footer.jsx';
 import TabLoading from './components/TabLoading.jsx';
+import { getSupabase } from './lib/supabaseClient.js';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
@@ -99,20 +100,41 @@ export default function ScopeDashboard() {
     setShowSettings(false);
   }
 
-  // Stripe Checkout (test mode) bounces back here with ?checkout=success once a test
-  // payment actually completes — that's the real trigger for isPremium now, not the
-  // "Choose Plan" click itself (see ScopePlansModal.jsx). Runs once on mount, and
-  // strips the query param either way so a refresh doesn't re-trigger it.
+  // Stripe Checkout (test mode) bounces back here with ?checkout=success&session_id=...
+  // once a test payment actually completes — that's the real trigger for isPremium now,
+  // not the "Choose Plan" click itself (see ScopePlansModal.jsx). Runs once on mount, and
+  // strips the query params either way so a refresh doesn't re-trigger it.
+  //
+  // The `checkout=success` param alone was never proof of payment — anyone could type it
+  // into the URL bar and unlock Scope+ for free. verify-checkout-session re-checks the
+  // session id with Stripe directly (server-side, with the secret key) before isPremium
+  // is trusted, so only a session Stripe actually marks paid flips it.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const checkout = params.get('checkout');
-    if (!checkout) return;
+    const sessionId = params.get('session_id');
 
-    if (checkout === 'success') setIsPremium(true);
+    if (checkout) {
+      params.delete('checkout');
+      params.delete('session_id');
+      const qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    }
 
-    params.delete('checkout');
-    const qs = params.toString();
-    window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    if (checkout !== 'success' || !sessionId) return;
+
+    try {
+      getSupabase()
+        .functions.invoke('verify-checkout-session', { body: { sessionId } })
+        .then(({ data, error }) => {
+          if (!error && data?.premium) setIsPremium(true);
+        })
+        .catch((err) => console.error('checkout session verification failed', err));
+    } catch (err) {
+      // getSupabase() throws synchronously if VITE_SUPABASE_URL/ANON_KEY are missing —
+      // must not crash the whole app over an unverifiable checkout redirect.
+      console.error('checkout session verification failed', err);
+    }
   }, []);
 
   useEffect(() => {

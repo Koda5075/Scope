@@ -23,3 +23,9 @@ verify_jwt = false
 # anon key only. Revisit once real auth lands.
 [functions.create-checkout-session]
 verify_jwt = false
+
+# Called right after the Stripe redirect, before any session exists — same reasoning.
+# Doesn't need a Supabase session to be trustworthy: it re-checks the session id with
+# Stripe directly using the secret key, which is the actual source of truth here.
+[functions.verify-checkout-session]
+verify_jwt = false
