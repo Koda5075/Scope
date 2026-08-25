@@ -836,7 +836,7 @@ export const T = {
     seeMore: 'Mehr anzeigen',
     seeLess: 'Weniger anzeigen',
     weaponKillShare: 'Kill-Anteil',
-    weaponKillShareExplain: '{pct}% all deiner Kills stammen von der {weapon}.',
+    weaponKillShareExplain: '{pct}% aller deiner Kills stammen von der {weapon}.',
     promoBannerText: 'Scope+ schaltet deinen persönlichen KI-Coach und tiefere Statistiken frei.',
     adLabel: 'Werbung',
     adPlaceholderText: 'Hier könnte Ihre Werbung stehen',
