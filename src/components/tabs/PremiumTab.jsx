@@ -16,6 +16,15 @@ import { pluralLabel } from '../../i18n/translations.js';
 
 const METRICS = ['aim', 'consistency', 'impact', 'clutch'];
 
+// performanceScore's `label` (Aim/Consistency/Impact/Clutch) stays a stable English key --
+// it's used to look up t.recoAim/t.recoConsistency/... and to match the metric dropdown's
+// value, neither of which should change with the UI language. This maps that key to the
+// actual translated text for display only.
+const METRIC_LABEL_KEYS = { Aim: 'metricAim', Consistency: 'metricConsistency', Impact: 'metricImpact', Clutch: 'metricClutch' };
+function metricLabel(label, t) {
+  return t[METRIC_LABEL_KEYS[label]] ?? label;
+}
+
 function fmt(template, vars) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
 }
@@ -83,7 +92,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           title={t.unlock}
           description={t.perfDesc}
           ctaLabel={t.seePlans} onCtaClick={onSeePlans}
-          preview={fmt(t.previewPerf, { metric: strongest.label, value: strongest.value })}
+          preview={fmt(t.previewPerf, { metric: metricLabel(strongest.label, t), value: strongest.value })}
           isPremium={isPremium}
         >
           <Card>
@@ -91,7 +100,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
             <div className="grid grid-cols-2 gap-3 mb-4">
               {performanceScore.map((p) => (
                 <div key={p.label}>
-                  <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{p.label}</span><span>{p.value}</span></div>
+                  <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{metricLabel(p.label, t)}</span><span>{p.value}</span></div>
                   <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${p.value}%` }} /></div>
                 </div>
               ))}
@@ -107,7 +116,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
               >
                 {METRICS.map((m) => (
                   <option key={m} value={m}>
-                    {performanceScore.find((p) => p.label.toLowerCase() === m)?.label}
+                    {metricLabel(performanceScore.find((p) => p.label.toLowerCase() === m)?.label, t)}
                   </option>
                 ))}
               </select>
