@@ -6,6 +6,7 @@ import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
 import Modal from '../Modal.jsx';
 import KDAStat from '../KDAStat.jsx';
+import InfoTip from '../InfoTip.jsx';
 import Highlights from '../Highlights.jsx';
 import SessionGoal from '../SessionGoal.jsx';
 import InviteFriendsCard from '../InviteFriendsCard.jsx';
@@ -32,6 +33,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
+  const winRate = filteredGames.length ? Math.round((wins / filteredGames.length) * 100) : null;
   const best = filteredGames.reduce((acc, g) => {
     const [k, d] = g.kda.split('/').map(Number);
     return k - d > acc.diff ? { diff: k - d, label: `${k}/${d}` } : acc;
@@ -135,9 +137,13 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
               {shared ? t.shareDownloaded : t.share}
             </button>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.games}</div><div className="font-mono text-xl text-white">{filteredGames.length}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.record}</div><div className="font-mono text-xl text-accent">{wins}{t.winShort} – {losses}{t.lossShort}</div></div>
+            <div>
+              <div className="flex items-center gap-1 text-[11px] text-neutral-500 font-body mb-1">{t.winRateLabel}<InfoTip text={t.tipWinRate} /></div>
+              <div className="font-mono text-xl text-white">{winRate !== null ? `${winRate}%` : '—'}</div>
+            </div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.best}</div><div className="font-mono text-xl text-white">{best.label}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.worst}</div><div className="font-mono text-xl text-neutral-400">{worst.label}</div></div>
             <div>
@@ -201,12 +207,12 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
 
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} />
-          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} />
-          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} />
-          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} />
-          <StatReadout label={t.statFirstBloods} value={firstBloods} Icon={Skull} />
-          <StatReadout label={t.statClutches} value={clutches.won} unit={`/${clutches.played}`} Icon={Flame} />
+          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} tip={t.tipKDA} />
+          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} tip={t.tipAccuracy} />
+          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} tip={t.tipHeadshots} />
+          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} tip={t.tipACS} />
+          <StatReadout label={t.statFirstBloods} value={firstBloods} Icon={Skull} tip={t.tipFirstBloods} />
+          <StatReadout label={t.statClutches} value={clutches.won} unit={`/${clutches.played}`} Icon={Flame} tip={t.tipClutches} />
         </div>
 
         <InviteFriendsCard t={t} />

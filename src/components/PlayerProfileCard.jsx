@@ -35,10 +35,10 @@ export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <StatReadout label={t.statKDA} value={player.kda} Icon={Swords} />
-        <StatReadout label={t.statAccuracy} value={player.accuracy} unit="%" Icon={Crosshair} />
-        <StatReadout label={t.statHeadshots} value={player.headshots} unit="%" Icon={Target} />
-        <StatReadout label={t.statACS} value={player.acs} Icon={Zap} />
+        <StatReadout label={t.statKDA} value={player.kda} Icon={Swords} tip={t.tipKDA} />
+        <StatReadout label={t.statAccuracy} value={player.accuracy} unit="%" Icon={Crosshair} tip={t.tipAccuracy} />
+        <StatReadout label={t.statHeadshots} value={player.headshots} unit="%" Icon={Target} tip={t.tipHeadshots} />
+        <StatReadout label={t.statACS} value={player.acs} Icon={Zap} tip={t.tipACS} />
       </div>
 
       <button

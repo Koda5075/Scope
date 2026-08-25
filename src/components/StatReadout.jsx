@@ -1,10 +1,14 @@
 import Card from './Card.jsx';
+import InfoTip from './InfoTip.jsx';
 
-export default function StatReadout({ label, value, unit, Icon }) {
+export default function StatReadout({ label, value, unit, Icon, tip }) {
   return (
     <Card>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">{label}</span>
+        <span className="flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">
+          {label}
+          {tip && <InfoTip text={tip} />}
+        </span>
         <Icon size={14} className="text-accent" />
       </div>
       <div className="flex items-baseline gap-1">

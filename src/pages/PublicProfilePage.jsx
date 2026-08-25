@@ -87,10 +87,10 @@ export default function PublicProfilePage({ slug }) {
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-6">
-              <StatReadout label={t.statKDA} value={myStats.kda} Icon={Swords} />
-              <StatReadout label={t.statAccuracy} value={myStats.accuracy} unit="%" Icon={Crosshair} />
-              <StatReadout label={t.statHeadshots} value={myStats.headshots} unit="%" Icon={Target} />
-              <StatReadout label={t.statACS} value={myStats.acs} Icon={Zap} />
+              <StatReadout label={t.statKDA} value={myStats.kda} Icon={Swords} tip={t.tipKDA} />
+              <StatReadout label={t.statAccuracy} value={myStats.accuracy} unit="%" Icon={Crosshair} tip={t.tipAccuracy} />
+              <StatReadout label={t.statHeadshots} value={myStats.headshots} unit="%" Icon={Target} tip={t.tipHeadshots} />
+              <StatReadout label={t.statACS} value={myStats.acs} Icon={Zap} tip={t.tipACS} />
             </div>
 
             <Card className="mb-6">

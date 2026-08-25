@@ -16,12 +16,12 @@ function PlayerDetail({ p, t }) {
   return (
     <div className="px-1 pt-3 pb-1">
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
-        <StatReadout label={t.statACS} value={p.acs} Icon={Zap} />
-        <StatReadout label={t.statHeadshots} value={p.headshotPct} unit="%" Icon={Target} />
-        <StatReadout label={t.statAccuracy} value={p.accuracyPct} unit="%" Icon={Crosshair} />
-        <StatReadout label={t.statFirstBloods} value={p.firstBloods} Icon={Skull} />
-        <StatReadout label={t.statFirstDeaths} value={p.firstDeaths} Icon={ShieldOff} />
-        <StatReadout label={t.statClutches} value={p.clutchesWon} unit={`/${p.clutchesPlayed}`} Icon={Flame} />
+        <StatReadout label={t.statACS} value={p.acs} Icon={Zap} tip={t.tipACS} />
+        <StatReadout label={t.statHeadshots} value={p.headshotPct} unit="%" Icon={Target} tip={t.tipHeadshots} />
+        <StatReadout label={t.statAccuracy} value={p.accuracyPct} unit="%" Icon={Crosshair} tip={t.tipAccuracy} />
+        <StatReadout label={t.statFirstBloods} value={p.firstBloods} Icon={Skull} tip={t.tipFirstBloods} />
+        <StatReadout label={t.statFirstDeaths} value={p.firstDeaths} Icon={ShieldOff} tip={t.tipFirstDeaths} />
+        <StatReadout label={t.statClutches} value={p.clutchesWon} unit={`/${p.clutchesPlayed}`} Icon={Flame} tip={t.tipClutches} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
