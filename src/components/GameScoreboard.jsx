@@ -15,7 +15,11 @@ function pad2(n) {
 function PlayerDetail({ p, t }) {
   return (
     <div className="px-1 pt-3 pb-1">
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
+      {/* Always 3 columns, not 6 at `sm:` -- this grid lives inside a max-w-3xl modal, not
+          the full viewport, so the `sm:` breakpoint (viewport-width-based) would switch to
+          6 columns long before the modal is actually wide enough, squeezing labels like
+          "PREMIÈRES MORTS" + icon + info tip into ~80px and making them overlap. */}
+      <div className="grid grid-cols-3 gap-2 mb-3">
         <StatReadout label={t.statACS} value={p.acs} Icon={Zap} tip={t.tipACS} />
         <StatReadout label={t.statHeadshots} value={p.headshotPct} unit="%" Icon={Target} tip={t.tipHeadshots} />
         <StatReadout label={t.statAccuracy} value={p.accuracyPct} unit="%" Icon={Crosshair} tip={t.tipAccuracy} />

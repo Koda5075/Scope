@@ -12,6 +12,7 @@ import {
   timePatterns,
   rrHistory,
 } from '../../data/mockData.js';
+import { pluralLabel } from '../../i18n/translations.js';
 
 const METRICS = ['aim', 'consistency', 'impact', 'clutch'];
 
@@ -144,7 +145,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
                 <div key={tm.name} className="flex items-center justify-between px-3 py-2 border border-neutral-800 bg-neutral-950">
                   <span className="font-body text-sm text-neutral-300">{tm.name}</span>
                   <div className="flex items-center gap-4">
-                    <span className="font-mono text-xs text-neutral-500">{tm.gamesTogether} {t.synergyGamesTogether}</span>
+                    <span className="font-mono text-xs text-neutral-500">{tm.gamesTogether} {pluralLabel(tm.gamesTogether, t, 'synergyGamesTogether')}</span>
                     <span className="font-mono text-xs text-accent w-10 text-right">{tm.winRate}%</span>
                   </div>
                 </div>

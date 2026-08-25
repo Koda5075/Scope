@@ -1,4 +1,5 @@
 import { activityCalendar, getActivitySummary } from '../data/mockData.js';
+import { gamesLabel } from '../i18n/translations.js';
 
 function intensityClass(games) {
   if (games <= 0) return 'bg-neutral-900';
@@ -32,7 +33,7 @@ export default function ActivityCalendar({ t }) {
         {weeks.map((week, wi) => (
           <div key={wi} className="flex flex-col gap-1">
             {week.map((day) => (
-              <div key={day.date} title={`${day.date} — ${day.games} ${t.gamesShort}`} className={`w-2.5 h-2.5 ${intensityClass(day.games)}`} />
+              <div key={day.date} title={`${day.date} — ${day.games} ${gamesLabel(day.games, t)}`} className={`w-2.5 h-2.5 ${intensityClass(day.games)}`} />
             ))}
           </div>
         ))}

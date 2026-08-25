@@ -5,6 +5,8 @@ import Modal from '../Modal.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { weaponStats, computeAgentStats, computeMapStats } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage, getWeaponIcon } from '../../data/valorantAssets.js';
+import { gamesLabel } from '../../i18n/translations.js';
+import InfoTip from '../InfoTip.jsx';
 
 const PREVIEW_COUNT = 3;
 
@@ -29,8 +31,11 @@ function AgentRow({ a, t }) {
       </span>
       <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr ?? 0}%` }} /></div>
       <div className="flex items-center gap-3 shrink-0">
-        <span className="font-mono text-xs text-neutral-500">{a.games} {t.gamesShort}</span>
-        <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
+        <span className="font-mono text-xs text-neutral-500">{a.games} {gamesLabel(a.games, t)}</span>
+        <span className="flex items-center gap-1">
+          <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
+          <InfoTip text={t.tipAgentMapWinRate} />
+        </span>
       </div>
     </div>
   );
@@ -57,8 +62,11 @@ function MapRow({ m, t }) {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr ?? 0}%` }} /></div>
-          <span className="font-mono text-xs text-neutral-500 w-16 text-right shrink-0">{m.games} {t.gamesShort}</span>
-          <span className="font-mono text-xs text-accent w-10 text-right shrink-0">{m.wr !== null ? `${m.wr}%` : '—'}</span>
+          <span className="font-mono text-xs text-neutral-500 w-16 text-right shrink-0">{m.games} {gamesLabel(m.games, t)}</span>
+          <span className="flex items-center gap-1 shrink-0">
+            <span className="font-mono text-xs text-accent w-10 text-right">{m.wr !== null ? `${m.wr}%` : '—'}</span>
+            <InfoTip text={t.tipAgentMapWinRate} />
+          </span>
         </div>
         {m.atkWr !== undefined && m.defWr !== undefined && (
           <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-3 mt-1.5">
