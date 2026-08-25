@@ -13,7 +13,14 @@ const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')!;
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': Deno.env.get('APP_URL') ?? '*',
-  'Access-Control-Allow-Headers': 'authorization, content-type',
+  // supabase-js sends `apikey` and `x-client-info` on every call in addition to
+  // `authorization` -- omitting any of these makes the browser's CORS preflight
+  // reject the real request client-side (invisible to curl, which ignores CORS).
+  'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
+  // Deno's `Response` defaults to text/plain for a string body -- without this,
+  // supabase-js treats every response as plain text instead of parsing it as JSON,
+  // so `data` comes back as a raw string and `data.premium` is silently undefined.
+  'Content-Type': 'application/json',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
