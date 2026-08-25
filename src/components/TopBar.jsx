@@ -22,8 +22,8 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
         <button
           onClick={() => setLoggedIn((s) => !s)}
           className="w-9 h-9 flex items-center justify-center bg-black border border-accent text-accent hover:opacity-80 transition-opacity"
-          aria-label={loggedIn ? 'Se déconnecter' : 'Se connecter avec Riot'}
-          title={loggedIn ? 'KAITO#EUW1 — connecté' : t.loginBtn}
+          aria-label={loggedIn ? t.topBarLogoutAria : t.loginBtn}
+          title={loggedIn ? t.topBarConnectedTitle.replace('{name}', 'KAITO#EUW1') : t.loginBtn}
         >
           <LogIn size={16} />
         </button>
@@ -34,7 +34,7 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
           <button
             onClick={() => setShowSettings((s) => !s)}
             className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
-            aria-label="Settings"
+            aria-label={t.topBarSettingsAria}
           >
             <Settings size={16} />
           </button>
