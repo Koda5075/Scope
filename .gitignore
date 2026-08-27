@@ -8,3 +8,6 @@ supabase/.temp
 supabase/functions/.env
 .vercel
 .env*
+
+# Local scratch dumps of val-content-v1 (used to curate src/data catalogs)
+.tmp-*

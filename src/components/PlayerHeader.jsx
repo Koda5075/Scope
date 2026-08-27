@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
 import { getRankIcon } from '../data/valorantAssets.js';
+import { getPlayerTitleLabel, getSprayIcon } from '../data/valorantCosmetics.js';
 import Modal from './Modal.jsx';
 import RankPyramid from './RankPyramid.jsx';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
-export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, onAvatarClick, isPremium, onSeePlans }) {
+export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, titleId, bannerSpray, onAvatarClick, isPremium, onSeePlans }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
   const [showRankInfo, setShowRankInfo] = useState(false);
@@ -15,6 +16,9 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
   // could read as a future time. Picked once per mount, not on every render.
   const [minutesAgo] = useState(() => 5 + Math.floor(Math.random() * 55));
 
+  const titleLabel = getPlayerTitleLabel(titleId, lang);
+  const sprayIcon = bannerSpray ? getSprayIcon(bannerSpray.id) : undefined;
+
   return (
     <div className="mb-7 relative border border-neutral-800 bg-neutral-950 px-6 py-5 overflow-hidden">
       {bannerUrl && (
@@ -22,6 +26,14 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
           <img src={bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/60" />
         </>
+      )}
+      {sprayIcon && (
+        <img
+          src={sprayIcon}
+          alt=""
+          className="absolute w-16 h-16 object-contain pointer-events-none select-none -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
+          style={{ left: `${(bannerSpray.x ?? 0.5) * 100}%`, top: `${(bannerSpray.y ?? 0.5) * 100}%` }}
+        />
       )}
       <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
         {rankIcon && <img src={rankIcon} alt="" className="val-icon w-24 h-24 shrink-0" />}
@@ -68,6 +80,9 @@ export default function PlayerHeader({ t, rrCurrent, rrGoal, peakRank, avatarUrl
             <span className="font-display text-lg font-semibold tracking-wide text-white block">
               KAITO<span className="text-neutral-600">#EUW1</span>
             </span>
+            {titleLabel && (
+              <span className="text-[11px] text-accent/90 font-body block leading-tight">{titleLabel}</span>
+            )}
             <span className="text-xs text-neutral-500 font-body block">{t.lastSession.replace('{n}', minutesAgo)}</span>
           </span>
         </button>

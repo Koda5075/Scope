@@ -16,6 +16,7 @@ import ScopePlansModal from './components/ScopePlansModal.jsx';
 import Footer from './components/Footer.jsx';
 import TabLoading from './components/TabLoading.jsx';
 import { getSupabase } from './lib/supabaseClient.js';
+import { DEFAULT_TITLE_ID } from './data/valorantCosmetics.js';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
@@ -52,6 +53,12 @@ export default function ScopeDashboard() {
   const [publicVisible, setPublicVisible] = useState(() => loadStored('scope-public-visible', true, (v) => v === 'true'));
   const [avatarUrl, setAvatarUrl] = useState(() => loadStored('scope-avatar', null));
   const [bannerUrl, setBannerUrl] = useState(() => loadStored('scope-banner', null));
+  // Player title (a val-content id, or DEFAULT_TITLE_ID) and an optional banner spray
+  // ({ id, x, y } with x/y as 0..1 fractions of the banner box). Both are strictly
+  // private — same rule as avatar/banner/theme: only ever passed to the owner's own
+  // PlayerHeader and the customization modal, never to public profile / search / compare.
+  const [titleId, setTitleId] = useState(() => loadStored('scope-title', DEFAULT_TITLE_ID));
+  const [bannerSpray, setBannerSpray] = useState(() => loadStored('scope-banner-spray', null, JSON.parse));
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPlansModal, setShowPlansModal] = useState(false);
   const [isPremium, setIsPremium] = useState(() => loadStored('scope-premium', false, (v) => v === 'true'));
@@ -84,7 +91,8 @@ export default function ScopeDashboard() {
     try {
       [
         'scope-lang', 'scope-theme', 'scope-favorites', 'scope-public-visible',
-        'scope-avatar', 'scope-banner', 'scope-logged-in', 'scope-premium',
+        'scope-avatar', 'scope-banner', 'scope-title', 'scope-banner-spray',
+        'scope-logged-in', 'scope-premium',
         'scope-invite-card-dismissed', 'scope-onboarding-seen', 'scope-session-goal',
       ].forEach((key) => localStorage.removeItem(key));
       sessionStorage.removeItem('scope-promo-dismissed');
@@ -97,6 +105,8 @@ export default function ScopeDashboard() {
     setPublicVisible(true);
     setAvatarUrl(null);
     setBannerUrl(null);
+    setTitleId(DEFAULT_TITLE_ID);
+    setBannerSpray(null);
     setIsPremium(false);
     setShowSettings(false);
   }
@@ -148,10 +158,13 @@ export default function ScopeDashboard() {
       else localStorage.removeItem('scope-avatar');
       if (bannerUrl) localStorage.setItem('scope-banner', bannerUrl);
       else localStorage.removeItem('scope-banner');
+      localStorage.setItem('scope-title', titleId);
+      if (bannerSpray) localStorage.setItem('scope-banner-spray', JSON.stringify(bannerSpray));
+      else localStorage.removeItem('scope-banner-spray');
       localStorage.setItem('scope-logged-in', String(loggedIn));
       localStorage.setItem('scope-premium', String(isPremium));
     } catch (e) { /* ignore */ }
-  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, bannerUrl, loggedIn, isPremium]);
+  }, [lang, theme, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, loggedIn, isPremium]);
 
   return (
     <div
@@ -222,11 +235,14 @@ export default function ScopeDashboard() {
           <>
             <PlayerHeader
               t={t}
+              lang={lang}
               rrCurrent={rrCurrent}
               rrGoal={rrGoal}
               peakRank={mockPeakRank}
               avatarUrl={avatarUrl}
               bannerUrl={bannerUrl}
+              titleId={titleId}
+              bannerSpray={bannerSpray}
               onAvatarClick={() => setShowProfileModal(true)}
               isPremium={isPremium}
               onSeePlans={() => setShowPlansModal(true)}
@@ -275,6 +291,11 @@ export default function ScopeDashboard() {
               onAvatarChange={setAvatarUrl}
               bannerUrl={bannerUrl}
               onBannerChange={setBannerUrl}
+              titleId={titleId}
+              onTitleChange={setTitleId}
+              bannerSpray={bannerSpray}
+              onBannerSprayChange={setBannerSpray}
+              lang={lang}
               isPremium={isPremium}
               onSeePlans={() => {
                 setShowProfileModal(false);

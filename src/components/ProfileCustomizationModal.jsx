@@ -3,6 +3,97 @@ import { Upload, Trash2, Loader2, AlertTriangle, EyeOff } from 'lucide-react';
 import Avatar from './Avatar.jsx';
 import PremiumLock from './PremiumLock.jsx';
 import { getAllPlayerCards } from '../data/valorantAssets.js';
+import {
+  DEFAULT_TITLE_ID,
+  getAllPlayerTitles,
+  getPlayerTitleLabel,
+  getAllSprays,
+} from '../data/valorantCosmetics.js';
+
+function clamp01(n) {
+  return Math.min(1, Math.max(0, n));
+}
+
+// Free drag of the spray inside the banner preview: x/y are stored as 0..1 fractions of
+// the box so they survive the preview and the real header being different sizes. Pointer
+// capture keeps the drag alive if the cursor briefly leaves the image.
+function BannerSprayEditor({ bannerUrl, sprays, spray, onSprayChange, t }) {
+  const boxRef = useRef(null);
+  const draggingRef = useRef(false);
+  const pos = { x: spray?.x ?? 0.5, y: spray?.y ?? 0.5 };
+
+  function moveTo(clientX, clientY) {
+    const box = boxRef.current;
+    if (!box || !spray) return;
+    const r = box.getBoundingClientRect();
+    onSprayChange({ ...spray, x: clamp01((clientX - r.left) / r.width), y: clamp01((clientY - r.top) / r.height) });
+  }
+
+  return (
+    <>
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-2">
+        <button
+          onClick={() => onSprayChange(null)}
+          className={`shrink-0 h-14 px-3 text-[11px] font-body border-2 transition-colors ${
+            !spray ? 'border-accent text-accent' : 'border-neutral-800 text-neutral-500 hover:border-neutral-600'
+          }`}
+        >
+          {t.sprayNoneOption}
+        </button>
+        {sprays.map((sp) => (
+          <button
+            key={sp.id}
+            onClick={() => onSprayChange({ id: sp.id, x: spray?.x ?? 0.5, y: spray?.y ?? 0.5 })}
+            title={sp.label}
+            className={`shrink-0 w-14 h-14 p-1 bg-neutral-950 border-2 transition-colors ${
+              spray?.id === sp.id ? 'border-accent' : 'border-neutral-800 hover:border-neutral-600'
+            }`}
+          >
+            <img src={sp.icon} alt={sp.label} className="w-full h-full object-contain" />
+          </button>
+        ))}
+      </div>
+
+      <div
+        ref={boxRef}
+        className="relative h-24 mb-2 overflow-hidden border border-neutral-800 bg-neutral-950 select-none"
+        onPointerMove={(e) => draggingRef.current && moveTo(e.clientX, e.clientY)}
+        onPointerUp={() => (draggingRef.current = false)}
+        onPointerLeave={() => (draggingRef.current = false)}
+      >
+        {bannerUrl ? (
+          <img src={bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-[10px] text-neutral-600 font-body uppercase tracking-widest">
+            {t.bannerSectionTitle}
+          </div>
+        )}
+        {spray && (
+          <img
+            src={sprays.find((s) => s.id === spray.id)?.icon}
+            alt=""
+            draggable={false}
+            onPointerDown={(e) => {
+              draggingRef.current = true;
+              e.currentTarget.setPointerCapture?.(e.pointerId);
+              moveTo(e.clientX, e.clientY);
+            }}
+            className="absolute w-12 h-12 object-contain -translate-x-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing drop-shadow-lg"
+            style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%`, touchAction: 'none' }}
+          />
+        )}
+      </div>
+      {spray && (
+        <button
+          onClick={() => onSprayChange({ ...spray, x: 0.5, y: 0.5 })}
+          className="text-[11px] font-body text-neutral-500 hover:text-accent transition-colors mb-1"
+        >
+          {t.sprayCenterButton}
+        </button>
+      )}
+    </>
+  );
+}
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -80,7 +171,20 @@ function BannerGallery({ presetBanners, bannerUrl, onBannerChange, t }) {
   );
 }
 
-export default function ProfileCustomizationModal({ avatarUrl, onAvatarChange, bannerUrl, onBannerChange, isPremium, onSeePlans, t }) {
+export default function ProfileCustomizationModal({
+  avatarUrl,
+  onAvatarChange,
+  bannerUrl,
+  onBannerChange,
+  titleId,
+  onTitleChange,
+  bannerSpray,
+  onBannerSprayChange,
+  lang,
+  isPremium,
+  onSeePlans,
+  t,
+}) {
   const [avatarStatus, setAvatarStatus] = useState('idle'); // idle | uploading | moderating | rejected
   const [avatarPreview, setAvatarPreview] = useState(null);
   const avatarInputRef = useRef(null);
@@ -90,6 +194,9 @@ export default function ProfileCustomizationModal({ avatarUrl, onAvatarChange, b
   const bannerInputRef = useRef(null);
 
   const presetBanners = getAllPlayerCards();
+  const allTitles = getAllPlayerTitles(lang);
+  const allSprays = getAllSprays(lang);
+  const currentTitleLabel = getPlayerTitleLabel(titleId, lang);
 
   async function handleAvatarFileChange(e) {
     const file = e.target.files?.[0];
@@ -219,6 +326,34 @@ export default function ProfileCustomizationModal({ avatarUrl, onAvatarChange, b
 
       <p className="text-[11px] text-neutral-600 font-body mt-3 mb-6 leading-relaxed">{t.moderationDisclaimer}</p>
 
+      <div className="border-t border-neutral-800 pt-5 mb-6">
+        <div className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1">{t.titleSectionTitle}</div>
+        <p className="text-[11px] text-neutral-500 font-body mb-3">{t.titleSectionDesc}</p>
+
+        <div className="mb-2 font-display text-sm tracking-wide text-white">
+          KAITO<span className="text-neutral-600">#EUW1</span>
+          {currentTitleLabel && <span className="block text-[11px] text-accent/90 font-body leading-tight">{currentTitleLabel}</span>}
+        </div>
+
+        {isPremium ? (
+          <select
+            value={titleId ?? DEFAULT_TITLE_ID}
+            onChange={(e) => onTitleChange(e.target.value)}
+            aria-label={t.titleSectionTitle}
+            className="w-full bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-2 focus:border-accent outline-none"
+          >
+            <option value={DEFAULT_TITLE_ID}>{t.titleNoneOption}</option>
+            {allTitles.map((tt) => (
+              <option key={tt.id} value={tt.id}>{tt.label}</option>
+            ))}
+          </select>
+        ) : (
+          <PremiumLock title={t.unlock} description={t.titleLockDesc} ctaLabel={t.seePlans} onCtaClick={onSeePlans}>
+            <div className="h-9 w-full bg-neutral-900 border border-neutral-800" />
+          </PremiumLock>
+        )}
+      </div>
+
       <div className="border-t border-neutral-800 pt-5">
         <div className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3">{t.bannerSectionTitle}</div>
 
@@ -279,6 +414,18 @@ export default function ProfileCustomizationModal({ avatarUrl, onAvatarChange, b
             )}
 
             <p className="text-[11px] text-neutral-600 font-body mt-3 leading-relaxed">{t.bannerModerationDisclaimer}</p>
+
+            <div className="mt-5">
+              <div className="font-display text-xs tracking-wide uppercase text-neutral-400 mb-1">{t.spraySectionTitle}</div>
+              <p className="text-[11px] text-neutral-500 font-body mb-3">{t.spraySectionDesc}</p>
+              <BannerSprayEditor
+                bannerUrl={bannerPreview || bannerUrl}
+                sprays={allSprays}
+                spray={bannerSpray}
+                onSprayChange={onBannerSprayChange}
+                t={t}
+              />
+            </div>
           </>
         ) : (
           <PremiumLock title={t.unlock} description={t.bannerLockDesc} ctaLabel={t.seePlans} onCtaClick={onSeePlans}>
