@@ -82,7 +82,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <PremiumLock className="lg:col-span-2" title={t.unlock} description={t.descReco} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={recoPreview} isPremium={isPremium}>
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recoTitle}</span>
             <p className="text-sm font-body text-neutral-300 leading-relaxed max-w-3xl">{recoText}</p>
           </Card>
@@ -95,7 +95,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           preview={fmt(t.previewPerf, { metric: metricLabel(strongest.label, t), value: strongest.value })}
           isPremium={isPremium}
         >
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.scopePerformance}</span>
             <div className="grid grid-cols-2 gap-3 mb-4">
               {performanceScore.map((p) => (
@@ -147,7 +147,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           preview={fmt(t.previewSynergy, { wr: topTeammate.winRate, name: topTeammate.name })}
           isPremium={isPremium}
         >
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.synergyTitle}</span>
             <div className="flex flex-col gap-2">
               {teammates.map((tm) => (
@@ -170,7 +170,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           preview={fmt(t.previewAlerts, { rr: rrToGoal, rank: 'Diamond 3' })}
           isPremium={isPremium}
         >
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.alertsTitle}</span>
             <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-3">
               <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertDerankLabel}
@@ -201,7 +201,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           preview={fmt(t.previewRoundBreakdown, { pct: clutchPct })}
           isPremium={isPremium}
         >
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.roundBreakdownTitle}</span>
             <div className="flex flex-col gap-3 mb-4">
               <div>
@@ -229,7 +229,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
         </PremiumLock>
 
         <PremiumLock title={t.unlock} description={t.descTimePatterns} ctaLabel={t.seePlans} onCtaClick={onSeePlans} preview={timePatternsBestText} isPremium={isPremium}>
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.timePatternsTitle}</span>
             <p className="text-xs font-body text-neutral-400 mb-4">{timePatternsBestText}</p>
             <div className="flex flex-col gap-2.5">
@@ -245,7 +245,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
         </PremiumLock>
 
         <PremiumLock title={t.unlock} description={t.descExport} ctaLabel={t.seePlans} onCtaClick={onSeePlans} isPremium={isPremium}>
-          <Card>
+          <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.exportTitle}</span>
             <p className="text-xs font-body text-neutral-500 mb-3">{t.exportDesc}</p>
             <button
