@@ -6,6 +6,7 @@ import TopBar from './components/TopBar.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import LoginScreen from './components/LoginScreen.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
+import { visibleCosmetics } from './data/cosmeticUnlocks.js';
 import PlayerSearchBar from './components/PlayerSearchBar.jsx';
 import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
 import TabNav from './components/TabNav.jsx';
@@ -310,9 +311,7 @@ export default function ScopeDashboard() {
               rrGoal={rrGoal}
               peakRank={mockPeakRank}
               avatarUrl={avatarUrl}
-              bannerUrl={bannerUrl}
-              titleId={titleId}
-              bannerSpray={bannerSpray}
+              {...visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium })}
               onAvatarClick={() => setShowProfileModal(true)}
               isPremium={isPremium}
               onSeePlans={() => setShowPlansModal(true)}

@@ -10,7 +10,7 @@
 
 import { badgeDefs, isBadgeUnlocked } from './mockData.js';
 import { getAllPlayerCards } from './valorantAssets.js';
-import { getAllSprays } from './valorantCosmetics.js';
+import { getAllSprays, DEFAULT_TITLE_ID } from './valorantCosmetics.js';
 
 const badge = (badgeId) => ({ kind: 'badge', badgeId });
 const PREMIUM = { kind: 'premium' };
@@ -82,6 +82,35 @@ export function isCosmeticUnlocked(rule, isPremium) {
     return !!def && isBadgeUnlocked(def);
   }
   return false;
+}
+
+// Rule for a stored banner URL: preset banners map by name; anything else (an uploaded
+// data:/blob: banner) required Scope+ to set in the first place, so it re-locks too.
+export function bannerRuleForUrl(url) {
+  if (!url) return FREE;
+  const preset = getAllPlayerCards().find((b) => b.url === url);
+  return preset ? BANNER_RULES[preset.name] ?? FREE : PREMIUM;
+}
+
+export function sprayRuleForId(id) {
+  return id ? SPRAY_RULES[id] ?? FREE : FREE;
+}
+
+// Given the stored cosmetic prefs and the current Scope+ state, return the values that
+// should actually render right now. Scope+-exclusive picks (every non-default title,
+// the Scope+-only preset banners/sprays, any uploaded banner) fall back to "none" the
+// moment isPremium is false — the stored preference itself is never touched, so it all
+// comes straight back when Scope+ returns. Badge-unlocked cosmetics keep showing
+// regardless, because they were earned rather than rented.
+export function visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium }) {
+  const showTitle = !!isPremium && !!titleId && titleId !== DEFAULT_TITLE_ID;
+  const showBanner = isCosmeticUnlocked(bannerRuleForUrl(bannerUrl), isPremium);
+  const showSpray = isCosmeticUnlocked(sprayRuleForId(bannerSpray?.id), isPremium);
+  return {
+    titleId: showTitle ? titleId : DEFAULT_TITLE_ID,
+    bannerUrl: showBanner ? bannerUrl : null,
+    bannerSpray: showSpray ? bannerSpray : null,
+  };
 }
 
 // Short human string for a locked item's requirement. `t` is the active translation

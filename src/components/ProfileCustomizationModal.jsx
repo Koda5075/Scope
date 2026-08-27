@@ -9,6 +9,7 @@ import {
   getPlayerTitleLabel,
   getSprayIcon,
 } from '../data/valorantCosmetics.js';
+import { visibleCosmetics } from '../data/cosmeticUnlocks.js';
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -70,7 +71,7 @@ function simulateModeration() {
 // `window` for the whole drag (not just the preview box) so the spray keeps following
 // the pointer even when it leaves the box, and `preventDefault` on the move + a scroll
 // lock on the modal panel stop the page shifting under the finger mid-drag.
-function BannerSprayEditor({ bannerUrl, sprayIcon, position, onPositionChange, onDragChange, t }) {
+function BannerSprayEditor({ bannerUrl, sprayIcon, position, onPositionChange, t }) {
   const boxRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const pos = { x: position?.x ?? 0.5, y: position?.y ?? 0.5 };
@@ -83,7 +84,6 @@ function BannerSprayEditor({ bannerUrl, sprayIcon, position, onPositionChange, o
   }
 
   useEffect(() => {
-    onDragChange?.(dragging);
     if (!dragging) return undefined;
 
     const onMove = (e) => {
@@ -92,14 +92,22 @@ function BannerSprayEditor({ bannerUrl, sprayIcon, position, onPositionChange, o
       if (next) onPositionChange(next);
     };
     const stop = () => setDragging(false);
+    // Swallow scroll gestures for the duration of the drag instead of toggling the
+    // panel's `overflow` (which showed/hid its scrollbar mid-gesture and shifted the
+    // layout). Nothing about the panel changes when the drag starts or ends now.
+    const blockScroll = (e) => e.preventDefault();
 
     window.addEventListener('pointermove', onMove, { passive: false });
     window.addEventListener('pointerup', stop);
     window.addEventListener('pointercancel', stop);
+    window.addEventListener('wheel', blockScroll, { passive: false });
+    window.addEventListener('touchmove', blockScroll, { passive: false });
     return () => {
       window.removeEventListener('pointermove', onMove, { passive: false });
       window.removeEventListener('pointerup', stop);
       window.removeEventListener('pointercancel', stop);
+      window.removeEventListener('wheel', blockScroll, { passive: false });
+      window.removeEventListener('touchmove', blockScroll, { passive: false });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragging]);
@@ -160,13 +168,16 @@ export default function ProfileCustomizationModal({
 
   const [lockerOpen, setLockerOpen] = useState(false);
   const [lockerCategory, setLockerCategory] = useState('banner');
-  const [dragLock, setDragLock] = useState(false);
-  const panelRef = useRef(null);
   const closeButtonRef = useRef(null);
 
   const allTitles = getAllPlayerTitles(lang);
-  const currentTitleLabel = getPlayerTitleLabel(titleId, lang);
-  const spraySelId = bannerSpray?.id ?? null;
+  // What the header would actually render for these prefs given the current Scope+
+  // state — so the modal's own preview re-locks in step with PlayerHeader instead of
+  // showing a Scope+ title/banner/spray a lapsed subscriber can no longer use.
+  const preview = visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium });
+  const currentTitleLabel = getPlayerTitleLabel(preview.titleId, lang);
+  const previewBannerUrl = bannerPreview || preview.bannerUrl;
+  const spraySelId = preview.bannerSpray?.id ?? null;
   const sprayIcon = spraySelId ? getSprayIcon(spraySelId) : undefined;
 
   useEffect(() => {
@@ -287,12 +298,11 @@ export default function ProfileCustomizationModal({
           </div>
         </div>
 
-        {/* Main customization panel */}
+        {/* Main customization panel. scrollbar-gutter keeps the scrollbar's width
+            reserved whether or not it's visible, so nothing reflows mid-drag. */}
         <div
-          ref={panelRef}
-          className={`w-[92vw] max-w-lg max-h-[90vh] bg-[#0F0F0F] border border-neutral-800 p-5 relative ${
-            dragLock ? 'overflow-hidden' : 'overflow-y-auto'
-          }`}
+          className="w-[92vw] max-w-lg max-h-[90vh] bg-[#0F0F0F] border border-neutral-800 p-5 relative overflow-y-auto"
+          style={{ scrollbarGutter: 'stable' }}
         >
           <button
             ref={closeButtonRef}
@@ -392,9 +402,9 @@ export default function ProfileCustomizationModal({
           <div className="border-t border-neutral-800 pt-5 mb-6">
             <div className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3">{t.bannerSectionTitle}</div>
 
-            {(bannerPreview || bannerUrl) && (
+            {previewBannerUrl && (
               <div className="relative h-16 mb-3 overflow-hidden border border-neutral-800">
-                <img src={bannerPreview || bannerUrl} alt="" className="w-full h-full object-cover" />
+                <img src={previewBannerUrl} alt="" className="w-full h-full object-cover" />
               </div>
             )}
 
@@ -464,11 +474,10 @@ export default function ProfileCustomizationModal({
 
             {sprayIcon ? (
               <BannerSprayEditor
-                bannerUrl={bannerPreview || bannerUrl}
+                bannerUrl={previewBannerUrl}
                 sprayIcon={sprayIcon}
-                position={bannerSpray}
+                position={preview.bannerSpray}
                 onPositionChange={(p) => onBannerSprayChange({ ...bannerSpray, ...p })}
-                onDragChange={setDragLock}
                 t={t}
               />
             ) : (

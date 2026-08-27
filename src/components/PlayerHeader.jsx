@@ -69,23 +69,28 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
 
         <button
           onClick={onAvatarClick}
-          className="flex items-center gap-3 shrink-0 text-left group"
+          className="flex items-start gap-3 shrink-0 text-left group"
           aria-label={t.editProfile}
           title={t.editProfile}
         >
           <span className="w-16 h-16 shrink-0 bg-neutral-900 border border-neutral-700 group-hover:border-accent flex items-center justify-center font-display font-bold text-2xl text-accent overflow-hidden transition-colors">
             {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" /> : 'K'}
           </span>
-          <span>
-            <span className="font-display text-lg font-semibold tracking-wide text-white block">
-              KAITO<span className="text-neutral-600">#EUW1</span>
-            </span>
-            {titleLabel && (
-              <span className="inline-block my-1 px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.14em] text-accent bg-accent/10 border border-accent/40">
-                {titleLabel}
+          <span className="flex flex-col">
+            {/* Pseudo + title tag stay vertically centred against the 64px avatar,
+                whether or not the tag is there; "last session" hangs below without
+                pulling the centre down. */}
+            <span className="min-h-[4rem] flex flex-col justify-center gap-1.5">
+              <span className="font-display text-lg font-semibold tracking-wide text-white leading-tight">
+                KAITO<span className="text-neutral-600">#EUW1</span>
               </span>
-            )}
-            <span className="text-xs text-neutral-500 font-body block">{t.lastSession.replace('{n}', minutesAgo)}</span>
+              {titleLabel && (
+                <span className="self-start px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.14em] text-accent bg-accent/10 border border-accent/40">
+                  {titleLabel}
+                </span>
+              )}
+            </span>
+            <span className="text-xs text-neutral-500 font-body mt-1">{t.lastSession.replace('{n}', minutesAgo)}</span>
           </span>
         </button>
       </div>
