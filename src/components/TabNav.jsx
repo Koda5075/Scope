@@ -1,6 +1,6 @@
 import { Lock } from 'lucide-react';
 
-const TABS = ['overview', 'agents', 'compare', 'badges', 'progress', 'premium'];
+const TABS = ['overview', 'agents', 'compare', 'leaderboard', 'badges', 'progress', 'premium'];
 
 export default function TabNav({ tab, setTab, t }) {
   return (

@@ -631,3 +631,9 @@ export const scopePlusFeatureKeys = [
   'recoTitle', 'scopePerformance', 'synergyTitle', 'alertsTitle',
   'roundBreakdownTitle', 'timePatternsTitle', 'exportTitle',
 ];
+
+// Server status badge — mock for now, structured to plug into the real
+// `/val/status/v1/platform-data` later (already reachable with the dev key, generous
+// rate limits): that endpoint's `maintenances`/`incidents` arrays map directly to the
+// 'maintenance'/'degraded' states here, empty-both mapping to 'operational'.
+export const serverStatus = { status: 'operational' };

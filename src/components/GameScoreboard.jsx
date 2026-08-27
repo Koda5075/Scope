@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Crosshair, Target, Zap, Skull, Flame, Sword, ShieldOff } from 'lucide-react';
 import { getAgentIcon, getMapImage } from '../data/valorantAssets.js';
+import { getMatchDiagnosis } from '../lib/matchDiagnosis.js';
 import KDAStat from './KDAStat.jsx';
 import StatReadout from './StatReadout.jsx';
 
@@ -84,6 +85,7 @@ export default function GameScoreboard({ match, t }) {
     : null;
 
   const [expandedName, setExpandedName] = useState(you?.name ?? null);
+  const diagnosis = getMatchDiagnosis(match, you);
 
   return (
     <div>
@@ -100,6 +102,17 @@ export default function GameScoreboard({ match, t }) {
         <span className={`text-xs font-mono ${match.result === 'win' ? 'text-accent' : 'text-neutral-500'}`}>{match.score}</span>
         {dateTimeLabel && <span className="text-[11px] font-mono text-neutral-600">{dateTimeLabel}</span>}
       </div>
+
+      {diagnosis.length > 0 && (
+        <div className="sc-card mb-3">
+          <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-1.5">{t.matchDiagnosisTitle}</div>
+          <ul className="flex flex-col gap-1">
+            {diagnosis.map((d) => (
+              <li key={d.key} className="text-xs font-body text-neutral-300 leading-relaxed">{fmt(t[d.key], d.params)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="flex items-center gap-4 mb-2 text-[10px] font-body text-neutral-500">
         <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-accent" /> {t.yourTeamLabel}</span>

@@ -19,6 +19,7 @@ import { getSupabase } from './lib/supabaseClient.js';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
+import LeaderboardTab from './components/tabs/LeaderboardTab.jsx';
 import BadgesTab from './components/tabs/BadgesTab.jsx';
 import ProgressTab from './components/tabs/ProgressTab.jsx';
 
@@ -250,6 +251,9 @@ export default function ScopeDashboard() {
             {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
+            {tab === 'leaderboard' && (
+              <LeaderboardTab t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} filteredGames={filteredGames} />
+            )}
             {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
             {tab === 'premium' && (

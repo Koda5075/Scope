@@ -151,9 +151,24 @@ export function getAllPlayerCards() {
   return Object.entries(PLAYER_CARDS).map(([name, url]) => ({ name, url }));
 }
 
+// Checks the small hand-picked RANK_ICONS map first (existing behavior, unchanged),
+// then falls back to deriving the icon from RANK_GROUPS/RANK_TIER_BASE_UUID for any
+// tier that map doesn't cover (e.g. Immortal 3, Radiant, Ascendant) — needed once the
+// regional leaderboard mock started producing ranks beyond that original handful.
 export function getRankIcon(rankName) {
   if (!rankName) return undefined;
-  return RANK_ICONS[rankName.toUpperCase()];
+  const upper = rankName.toUpperCase();
+  if (RANK_ICONS[upper]) return RANK_ICONS[upper];
+
+  for (const group of RANK_GROUPS) {
+    for (let i = 0; i < group.subTiers; i++) {
+      const label = group.subTiers > 1 ? `${group.name} ${i + 1}` : group.name;
+      if (label.toUpperCase() === upper) {
+        return `https://media.valorant-api.com/competitivetiers/${RANK_TIER_BASE_UUID}/${group.baseTier + i}/largeicon.png`;
+      }
+    }
+  }
+  return undefined;
 }
 
 // Every rank group (Iron..Radiant) with its real sub-tier icons, for the rank pyramid.
