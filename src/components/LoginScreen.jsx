@@ -4,7 +4,14 @@ export default function LoginScreen({ t, setLoggedIn }) {
   return (
     <div className="flex flex-col items-center text-center py-20 px-4">
       <img src="/logo.png" alt="Scope" className="w-16 h-16 object-contain mb-6" />
-      <h1 className="font-display text-2xl sm:text-3xl font-bold text-white max-w-md mb-3">{t.loginTitle}</h1>
+      {/* Logged-out visitors (and crawlers with no session) land here, so this is the
+          page <h1> Google actually reads. The sr-only span carries the name + keywords
+          for search/screen readers; it's position:absolute so the visible tagline is
+          unchanged. Kept in English like index.html's title/meta, regardless of UI lang. */}
+      <h1 className="font-display text-2xl sm:text-3xl font-bold text-white max-w-md mb-3">
+        <span className="sr-only">Scope — VALORANT Stats Tracker. </span>
+        {t.loginTitle}
+      </h1>
       <p className="text-sm text-neutral-400 font-body max-w-sm mb-8">{t.loginSub}</p>
       <button
         onClick={() => setLoggedIn(true)}
