@@ -81,7 +81,9 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
               KAITO<span className="text-neutral-600">#EUW1</span>
             </span>
             {titleLabel && (
-              <span className="text-[11px] text-accent/90 font-body block leading-tight">{titleLabel}</span>
+              <span className="inline-block my-1 px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.14em] text-accent bg-accent/10 border border-accent/40">
+                {titleLabel}
+              </span>
             )}
             <span className="text-xs text-neutral-500 font-body block">{t.lastSession.replace('{n}', minutesAgo)}</span>
           </span>

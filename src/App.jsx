@@ -6,7 +6,6 @@ import TopBar from './components/TopBar.jsx';
 import LoginScreen from './components/LoginScreen.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
 import PlayerSearchBar from './components/PlayerSearchBar.jsx';
-import Modal from './components/Modal.jsx';
 import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
 import TabNav from './components/TabNav.jsx';
 import FilterBar from './components/FilterBar.jsx';
@@ -285,25 +284,24 @@ export default function ScopeDashboard() {
         <Footer t={t} lang={lang} />
 
         {showProfileModal && (
-          <Modal onClose={() => setShowProfileModal(false)} closeLabel={t.close}>
-            <ProfileCustomizationModal
-              avatarUrl={avatarUrl}
-              onAvatarChange={setAvatarUrl}
-              bannerUrl={bannerUrl}
-              onBannerChange={setBannerUrl}
-              titleId={titleId}
-              onTitleChange={setTitleId}
-              bannerSpray={bannerSpray}
-              onBannerSprayChange={setBannerSpray}
-              lang={lang}
-              isPremium={isPremium}
-              onSeePlans={() => {
-                setShowProfileModal(false);
-                setShowPlansModal(true);
-              }}
-              t={t}
-            />
-          </Modal>
+          <ProfileCustomizationModal
+            avatarUrl={avatarUrl}
+            onAvatarChange={setAvatarUrl}
+            bannerUrl={bannerUrl}
+            onBannerChange={setBannerUrl}
+            titleId={titleId}
+            onTitleChange={setTitleId}
+            bannerSpray={bannerSpray}
+            onBannerSprayChange={setBannerSpray}
+            lang={lang}
+            isPremium={isPremium}
+            onSeePlans={() => {
+              setShowProfileModal(false);
+              setShowPlansModal(true);
+            }}
+            onClose={() => setShowProfileModal(false)}
+            t={t}
+          />
         )}
 
         {showPlansModal && <ScopePlansModal onClose={() => setShowPlansModal(false)} t={t} />}

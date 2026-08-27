@@ -140,6 +140,20 @@ export const SPRAYS = [
   { id: "67af5786-4cb7-f2d7-07c6-0d874ffff5ce", names: { en: "Pixel TactiBunny Spray", fr: "Graffiti Lapin tueur en pixels", de: "Graffiti „Pixel-Taktihäschen“", es: "Grafiti Conejo tactinejo pixelado", it: "Spray Tatticoniglio pixellato", pt: "Spray Agente Coelhoso Pixelado" } },
   { id: "0dc378e3-4936-7c9f-a1ba-fd90999b3a10", names: { en: "A Prime Valentine's Gift Spray", fr: "Graffiti Cadeau de Saint-Valentin", de: "Graffiti „Ein Prime-tastisches Valentinsgeschenk“", es: "Grafiti Un excelente regalo de San Valentín", it: "Spray Regalo di San Valentino romantico", pt: "Spray Presentão de Namoro" } },
   { id: "47700b6e-439a-5a71-8b8c-c1bb0ec9a4a9", names: { en: "Party of 1 Spray", fr: "Graffiti Groupe de 1", de: "Graffiti „Zeit allein“", es: "Grafiti Mesa para uno", it: "Spray Gruppo da 1", pt: "Spray Mesa pra Um" } },
+  { id: "89565f02-495e-e6f0-5f67-959626122909", names: { en: "GGWP Spray", fr: "Graffiti GGWP", de: "Graffiti „GGWP“", es: "Grafiti GGWP", it: "Spray GGWP", pt: "Spray GGWP" } },
+  { id: "ef3977c1-4e22-e53e-d571-4ea8ed6e5fc9", names: { en: "Fragger's Fall Spray", fr: "Graffiti Chute de la fraggeuse", de: "Graffiti „Fraggers Fall“", es: "Grafiti Caída de la asesina", it: "Spray Caduta della sterminatrice", pt: "Spray Espiadinha Aérea" } },
+  { id: "e18e2511-4b7b-c2af-2793-7db054c8773a", names: { en: "Peace Out Spray", fr: "Graffiti Tchuss", de: "Graffiti „Bin weg“", es: "Grafiti Hasta nunqui", it: "Spray Pace mentale", pt: "Spray Vlw Flw" } },
+  { id: "13cc701a-4321-e105-3b66-01affe7da31a", names: { en: "Claim the Crown Spray", fr: "Graffiti La couronne est à moi", de: "Graffiti „Krone beanspruchen“", es: "Grafiti A coronarse", it: "Spray Rivendica la corona", pt: "Spray Rei do Mundo" } },
+  { id: "38b459ee-46f6-5f3b-147c-6a9492f667b2", names: { en: "I Sleep Spray", fr: "Graffiti Je dors", de: "Graffiti „Bin am Pennen“", es: "Grafiti A mimir", it: "Spray Dormo", pt: "Spray A Mimir" } },
+  { id: "3da0e460-4f94-92db-4a57-66b0ba605a2b", names: { en: "Dumpster Fire Spray", fr: "Graffiti Gros bordel", de: "Graffiti „Mülleimerbrand“", es: "Grafiti Contenedor en llamas", it: "Spray Che disastro", pt: "Spray Fogo no Parquinho" } },
+  { id: "ecaa869c-4982-51bf-c0b4-54a287120ec5", names: { en: "Radiant Riffs Spray", fr: "Graffiti Rock'n'Radiant", de: "Graffiti „Radiant-Riffs“", es: "Grafiti Riff radiante", it: "Spray Metallari radianti", pt: "Spray Melodia Radiante" } },
+  { id: "eece70be-4f84-facb-49b0-fe95290eff67", names: { en: "Salt Shaker Spray", fr: "Graffiti Salière", de: "Graffiti „Salzstreuer“", es: "Grafiti Salero", it: "Spray Saliera", pt: "Spray Saleiro" } },
+  { id: "3910377e-4449-0f51-ceff-2b8e62d23241", names: { en: "Hearts Array Spray", fr: "Graffiti Batterie de cœurs", de: "Graffiti „Herzendreierlei“", es: "Grafiti Corazones", it: "Spray Cuori al neon", pt: "Spray <3<3<3" } },
+  { id: "2571e046-4a62-7b64-1a24-3bb06c4562e1", names: { en: "Heat Wave Spray", fr: "Graffiti Classe explosive", de: "Graffiti „Hitzewelle“", es: "Grafiti Ola de calor", it: "Spray Ondata di calore", pt: "Spray Onda de Calor" } },
+  { id: "890c4f6d-4794-3d88-617b-1b906c7a8ea6", names: { en: "Clutch Spray", fr: "Graffiti Clutch", de: "Graffiti „Clutch“", es: "Grafiti Clutch", it: "Spray Clutch", pt: "Spray Clutch" } },
+  { id: "a4cd53a1-42f2-4a6e-f7b0-cdb359e8b8da", names: { en: "Silly Cat Spray", fr: "Graffiti Petit chacripant", de: "Graffiti „Alberne Katze“", es: "Grafiti Gatuno tontuno", it: "Spray Gatto sciocco", pt: "Spray Palhacito" } },
+  { id: "5b5fc918-4d57-9fa9-1a5d-1b84c43a121e", names: { en: "Rage Spray", fr: "Graffiti Rage", de: "Graffiti „Rage“", es: "Grafiti Enfado", it: "Spray Furia", pt: "Spray Raivinha" } },
+  { id: "35d8fb90-49a9-641e-ff08-b4bc20421908", names: { en: "Boom! Spray", fr: "Graffiti Boum !", de: "Graffiti „Boom!“", es: "Grafiti ¡Bum!", it: "Spray Boom!", pt: "Spray Boom!" } },
 ];
 
 function localized(entry, lang) {

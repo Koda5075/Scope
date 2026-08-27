@@ -43,6 +43,9 @@ const AGENT_ICONS = {
 // gallery. Distinct from MAP_IMAGES: player cards are the game's actual in-client
 // profile-banner cosmetic, so they're the thematically correct "official" option here,
 // vs. map splash art which was only ever a stand-in.
+// Expanded 2026-08-28 from 9 to 32 entries (all wideart URLs verified 200) so the
+// cosmetics locker grid has a real catalog to browse. Names kept in English, same
+// convention as agent/map names elsewhere.
 const PLAYER_CARDS = {
   'Dayglo Duo': 'https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/wideart.png',
   'Afternoon Asada': 'https://media.valorant-api.com/playercards/c8b2f5fd-4331-b172-f3b7-c8a26f356a1f/wideart.png',
@@ -53,6 +56,29 @@ const PLAYER_CARDS = {
   "Serpent's Celebration": 'https://media.valorant-api.com/playercards/41244f42-43f5-f795-9be8-d2b9edba458a/wideart.png',
   'The Way Forward': 'https://media.valorant-api.com/playercards/33c1f011-4eca-068c-9751-f68c788b2eee/wideart.png',
   Hivemind: 'https://media.valorant-api.com/playercards/fc209787-414b-10d0-dcac-04832fc2c654/wideart.png',
+  '.SYS': 'https://media.valorant-api.com/playercards/cfd8d9e8-4984-21ed-00a6-53916619c68f/wideart.png',
+  '5 Years: Redemption': 'https://media.valorant-api.com/playercards/26d403fe-4795-8c63-b6c6-119cd9f0c4da/wideart.png',
+  Amplify: 'https://media.valorant-api.com/playercards/8e4c97ca-4364-a7fc-9d2d-92b787499d05/wideart.png',
+  'Battle Sage': 'https://media.valorant-api.com/playercards/d12e6a8f-4a5e-5524-e3cd-5da646f6dded/wideart.png',
+  'Boot Camp // So Much More': 'https://media.valorant-api.com/playercards/3d630ad7-4d72-08a4-4a9d-30af16783d06/wideart.png',
+  'Cardio Claws': 'https://media.valorant-api.com/playercards/0b328cb9-4395-3119-a902-9f97e9fe1aef/wideart.png',
+  Clutch: 'https://media.valorant-api.com/playercards/c3e4a7e3-48c4-8476-6bf5-39892718e1f2/wideart.png',
+  'Dreamwing Lunari': 'https://media.valorant-api.com/playercards/a02c5c2c-477f-a672-f634-b6b76d352853/wideart.png',
+  'Epilogue: Bot Means Business': 'https://media.valorant-api.com/playercards/6c8c6d61-4106-16ef-5113-79b3137dcda4/wideart.png',
+  'Epilogue: Tactical Road Crossing': 'https://media.valorant-api.com/playercards/ba8823f8-4070-12e2-0d67-1cbb7497f8d6/wideart.png',
+  Force: 'https://media.valorant-api.com/playercards/4004d33f-46c0-f4f9-9b55-f8b59f267406/wideart.png',
+  Genesis: 'https://media.valorant-api.com/playercards/5488fcd7-41d5-0890-e90a-8d9099807d9b/wideart.png',
+  "Horrors I've Seen": 'https://media.valorant-api.com/playercards/dca3699e-4446-e844-10b5-57b7b8dcd03f/wideart.png',
+  'Judge Schema': 'https://media.valorant-api.com/playercards/59939bea-4b82-9ce0-0586-d4b0c8d5271d/wideart.png',
+  'Loong Kee': 'https://media.valorant-api.com/playercards/cdf51e51-401a-7d13-7736-9e8ddc0e1694/wideart.png',
+  Montage: 'https://media.valorant-api.com/playercards/ac113906-40ed-bc73-3163-dbbb3256b5b0/wideart.png',
+  Nocturnum: 'https://media.valorant-api.com/playercards/c610def6-4886-da97-665b-968437c41228/wideart.png',
+  Outlaw: 'https://media.valorant-api.com/playercards/6657a4ed-43c9-2218-4970-adbea58ede33/wideart.png',
+  'Pixel Moments: Pearl': 'https://media.valorant-api.com/playercards/19649cb5-4255-1875-abba-0f8195a2d295/wideart.png',
+  'PREMIER V25A4': 'https://media.valorant-api.com/playercards/15bd8174-4d12-ff82-3fee-42a3f2123591/wideart.png',
+  'Radiant Skincare': 'https://media.valorant-api.com/playercards/a543a50c-4e10-b912-135d-04b505b3aa4a/wideart.png',
+  'Roti Boatie': 'https://media.valorant-api.com/playercards/418ec760-480a-9ac3-3bc1-4c8779a36471/wideart.png',
+  Sidekicks: 'https://media.valorant-api.com/playercards/3e5cd6d5-4a89-23e9-fcaa-2189943a363c/wideart.png',
 };
 
 const MAP_IMAGES = {
