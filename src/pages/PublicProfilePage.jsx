@@ -62,7 +62,7 @@ export default function PublicProfilePage({ slug }) {
         .bg-accent { background: var(--accent); }
         .sc-card { background: #0F0F0F; border: 1px solid #262626; border-left: 3px solid var(--accent); padding: 16px 18px; }
         .sc-badge { background: #0F0F0F; border: 1px solid #262626; border-left: 2px solid var(--accent); }
-        .val-icon { border: 1.5px solid var(--accent); background: #0F0F0F; padding: 2px; }
+        .val-icon { border: 1.5px solid var(--accent); background: transparent; padding: 2px; }
       `}</style>
 
       <div className="max-w-2xl mx-auto px-5 py-10">

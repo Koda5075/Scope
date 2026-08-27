@@ -241,7 +241,10 @@ export default function ScopeDashboard() {
         /* Real Valorant art (agents/maps/ranks): full color, framed with a thin accent
            border like sc-card — a filter on already-small icons just blurred the detail
            out instead of integrating them with the theme. */
-        .val-icon { border: 1.5px solid var(--accent); background: var(--sc-surface); padding: 2px; }
+        /* No fill: many rank/agent/weapon PNGs have transparent or round edges, so a
+           surface-coloured box behind them showed as a pale "hole" in light mode. The
+           thin accent border stays as the intentional framing. */
+        .val-icon { border: 1.5px solid var(--accent); background: transparent; padding: 2px; }
 
         @keyframes sc-reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .sc-reveal { animation: sc-reveal 0.45s ease-out both; }
