@@ -83,7 +83,9 @@ export default function SettingsModal({
           ))}
         </nav>
 
-        <div className="flex-1 min-w-0 sm:border-l sm:border-neutral-800 sm:pl-5">
+        {/* Fixed min-height so the modal doesn't jump size between the tall Appearance
+            pane and the short Demo/Privacy/Danger panes when switching sections. */}
+        <div className="flex-1 min-w-0 sm:min-h-[24rem] sm:border-l sm:border-neutral-800 sm:pl-5">
           {section === 'appearance' && (
             <div className="flex flex-col gap-6">
               <div>
