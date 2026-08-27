@@ -1,5 +1,4 @@
-# TODO: update the sitemap URL below once a production domain is chosen.
 User-agent: *
 Allow: /
 
-Sitemap: https://scope.example/sitemap.xml
+Sitemap: https://scopestats.com/sitemap.xml

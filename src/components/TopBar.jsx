@@ -7,7 +7,18 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
       <div className="flex items-center gap-3">
         <img src="/logo.png" alt="Scope" className="w-10 h-10 object-contain" />
         <div>
-          <span className="font-display text-3xl font-bold tracking-wide text-white">SCOPE</span>
+          {/* The dashboard's page <h1>. Rendered as a plain <span> on the logged-out
+              screen so LoginScreen's own <h1> stays the single heading there — the two
+              are never mounted without one of these branches applying. The visible text
+              is just "SCOPE"; the sr-only span adds the keyword phrase for crawlers and
+              screen readers without changing the layout (it's position:absolute). */}
+          {loggedIn ? (
+            <h1 className="font-display text-3xl font-bold tracking-wide text-white">
+              SCOPE<span className="sr-only"> — VALORANT Stats Tracker</span>
+            </h1>
+          ) : (
+            <span className="font-display text-3xl font-bold tracking-wide text-white">SCOPE</span>
+          )}
           <div className="h-[2px] w-14 bg-accent mt-1" />
         </div>
       </div>
