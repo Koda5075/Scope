@@ -1,13 +1,7 @@
-import { useRef } from 'react';
 import { LogIn, Settings } from 'lucide-react';
-import SettingsPanel from './SettingsPanel.jsx';
 import NotificationsBell from './NotificationsBell.jsx';
-import { useClickOutside } from '../hooks/useClickOutside.js';
 
-export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSettings, t, lang, setLang, theme, setTheme, publicVisible, setPublicVisible, isPremium, setIsPremium, onDeleteAccount }) {
-  const settingsRef = useRef(null);
-  useClickOutside(settingsRef, showSettings, () => setShowSettings(false));
-
+export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
   return (
     <div className="flex items-start justify-between mb-6">
       <div className="flex items-center gap-3">
@@ -30,30 +24,14 @@ export default function TopBar({ loggedIn, setLoggedIn, showSettings, setShowSet
 
         {loggedIn && <NotificationsBell t={t} />}
 
-        <div className="relative" ref={settingsRef}>
-          <button
-            onClick={() => setShowSettings((s) => !s)}
-            className="w-9 h-9 flex items-center justify-center border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
-            aria-label={t.topBarSettingsAria}
-          >
-            <Settings size={16} />
-          </button>
-
-          {showSettings && (
-            <SettingsPanel
-              t={t}
-              lang={lang}
-              setLang={setLang}
-              theme={theme}
-              setTheme={setTheme}
-              publicVisible={publicVisible}
-              setPublicVisible={setPublicVisible}
-              isPremium={isPremium}
-              setIsPremium={setIsPremium}
-              onDeleteAccount={onDeleteAccount}
-            />
-          )}
-        </div>
+        <button
+          onClick={onOpenSettings}
+          className="h-9 px-3 flex items-center gap-2 border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
+          aria-label={t.topBarSettingsAria}
+        >
+          <Settings size={16} />
+          <span className="hidden sm:inline font-display text-xs uppercase tracking-wide">{t.settingsTitle}</span>
+        </button>
       </div>
     </div>
   );

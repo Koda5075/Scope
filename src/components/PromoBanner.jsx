@@ -29,7 +29,7 @@ export default function PromoBanner({ t, onSeePlans, isPremium = false }) {
   return (
     <div
       className="sc-card flex items-center justify-between gap-3 mb-4"
-      style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), #0F0F0F 70%)' }}
+      style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), var(--sc-surface) 70%)' }}
     >
       <div className="flex items-center gap-3 min-w-0">
         <Sparkles size={15} className="text-accent shrink-0" />

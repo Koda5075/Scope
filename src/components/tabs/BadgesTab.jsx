@@ -20,7 +20,7 @@ export default function BadgesTab({ t, isPremium }) {
               className={unlocked ? '' : 'opacity-50'}
               style={
                 unlocked
-                  ? { borderLeftColor: glowColor, boxShadow: `0 0 20px -6px ${glowColor}`, background: `linear-gradient(135deg, ${glowColor}14, #0F0F0F 55%)` }
+                  ? { borderLeftColor: glowColor, boxShadow: `0 0 20px -6px ${glowColor}`, background: `linear-gradient(135deg, ${glowColor}14, var(--sc-surface) 55%)` }
                   : undefined
               }
             >
@@ -28,8 +28,8 @@ export default function BadgesTab({ t, isPremium }) {
                 <div
                   className="w-12 h-12 flex items-center justify-center shrink-0 relative rounded-full"
                   style={{
-                    background: unlocked ? `${glowColor}26` : '#0F0F0F',
-                    border: `1.5px solid ${unlocked ? glowColor : '#262626'}`,
+                    background: unlocked ? `${glowColor}26` : 'var(--sc-surface)',
+                    border: `1.5px solid ${unlocked ? glowColor : 'var(--sc-line)'}`,
                     boxShadow: unlocked ? `0 0 10px -2px ${glowColor}` : 'none',
                   }}
                 >

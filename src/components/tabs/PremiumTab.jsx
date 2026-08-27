@@ -61,7 +61,7 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
     <div className="flex flex-col gap-4">
       <div
         className="sc-card"
-        style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), #0F0F0F 60%)' }}
+        style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, transparent), var(--sc-surface) 60%)' }}
       >
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
@@ -130,9 +130,9 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
                       <stop offset="100%" stopColor={accent} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="s" tick={{ fill: '#737373', fontSize: 11 }} axisLine={{ stroke: '#262626' }} tickLine={false} />
+                  <XAxis dataKey="s" tick={{ fill: '#737373', fontSize: 11 }} axisLine={{ stroke: 'var(--sc-line)' }} tickLine={false} />
                   <YAxis hide domain={[0, 100]} />
-                  <Tooltip contentStyle={{ background: '#0F0F0F', border: '1px solid #262626', fontSize: 12, fontFamily: 'JetBrains Mono' }} labelStyle={{ color: '#a3a3a3' }} />
+                  <Tooltip contentStyle={{ background: 'var(--sc-surface)', border: '1px solid var(--sc-line)', fontSize: 12, fontFamily: 'JetBrains Mono' }} labelStyle={{ color: '#a3a3a3' }} />
                   <Area type="monotone" dataKey={metric} stroke={accent} strokeWidth={2} fill="url(#perfGrad)" />
                 </AreaChart>
               </ResponsiveContainer>

@@ -103,7 +103,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
                   dataKey="s"
                   tickFormatter={(s) => `${t.sessionLabel} ${s}`}
                   tick={{ fill: '#737373', fontSize: 11 }}
-                  axisLine={{ stroke: '#262626' }}
+                  axisLine={{ stroke: 'var(--sc-line)' }}
                   tickLine={false}
                 />
                 <YAxis
@@ -114,7 +114,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
                   domain={['dataMin - 10', 'dataMax + 10']}
                 />
                 <Tooltip
-                  contentStyle={{ background: '#0F0F0F', border: '1px solid #262626', fontSize: 12, fontFamily: 'JetBrains Mono' }}
+                  contentStyle={{ background: 'var(--sc-surface)', border: '1px solid var(--sc-line)', fontSize: 12, fontFamily: 'JetBrains Mono' }}
                   labelStyle={{ color: '#a3a3a3' }}
                   labelFormatter={(s) => `${t.sessionLabel} ${s}`}
                   formatter={(value) => [`${value} RR`, '']}
