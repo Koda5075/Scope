@@ -3,7 +3,7 @@ import { LogIn } from 'lucide-react';
 export default function LoginScreen({ t, setLoggedIn }) {
   return (
     <div className="flex flex-col items-center text-center py-20 px-4">
-      <img src="/logo.png" alt="Scope" className="w-16 h-16 object-contain mb-6" />
+      <img src="/logo.png" alt="Scope" className="sc-logo w-16 h-16 object-contain mb-6" />
       {/* Logged-out visitors (and crawlers with no session) land here, so this is the
           page <h1> Google actually reads. The sr-only span carries the name + keywords
           for search/screen readers; it's position:absolute so the visible tagline is

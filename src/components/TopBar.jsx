@@ -5,7 +5,7 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
   return (
     <div className="flex items-start justify-between mb-6">
       <div className="flex items-center gap-3">
-        <img src="/logo.png" alt="Scope" className="w-10 h-10 object-contain" />
+        <img src="/logo.png" alt="Scope" className="sc-logo w-10 h-10 object-contain" />
         <div>
           {/* The dashboard's page <h1>. Rendered as a plain <span> on the logged-out
               screen so LoginScreen's own <h1> stays the single heading there — the two

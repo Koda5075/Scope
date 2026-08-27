@@ -285,6 +285,10 @@ export default function ScopeDashboard() {
         [data-scope-root][data-theme="light"] .to-neutral-950\\/60 { --tw-gradient-to: color-mix(in srgb, var(--sc-bg) 60%, transparent) !important; }
         [data-scope-root][data-theme="light"] .from-\\[\\#0F0F0F\\] { --tw-gradient-from: var(--sc-surface) !important; }
         [data-scope-root][data-theme="light"] .via-\\[\\#0F0F0F\\]\\/40 { --tw-gradient-via: color-mix(in srgb, var(--sc-surface) 40%, transparent) !important; }
+
+        /* The logo art is a flat white monochrome mark — white on the dark theme,
+           flipped to black in light mode. */
+        [data-scope-root][data-theme="light"] .sc-logo { filter: invert(1); }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">
