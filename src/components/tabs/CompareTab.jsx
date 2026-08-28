@@ -31,14 +31,14 @@ function VersusRow({ label, you, them, themLabel, youLabel = 'You', bare = false
         </span>
       </div>
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-[10px] font-body text-neutral-500 w-16 shrink-0 truncate">{youLabel}</span>
+        <span className="text-[10px] font-body text-neutral-500 w-24 shrink-0 leading-tight">{youLabel}</span>
         <div className="flex-1 sc-track h-2 overflow-hidden">
           <div className="sc-fill h-full" style={{ width: `${(you / max) * 100}%` }} />
         </div>
         <span className="font-mono text-xs text-white w-12 text-right shrink-0">{you}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-[10px] font-body text-neutral-500 w-16 shrink-0 truncate">{themLabel}</span>
+        <span className="text-[10px] font-body text-neutral-500 w-24 shrink-0 leading-tight">{themLabel}</span>
         <div className="flex-1 sc-track h-1.5 overflow-hidden">
           <div className="sc-fill-muted h-full" style={{ width: `${(them / max) * 100}%` }} />
         </div>
