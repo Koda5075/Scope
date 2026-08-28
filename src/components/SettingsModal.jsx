@@ -239,6 +239,14 @@ export default function SettingsModal({
                 />
                 {t.simulatePremiumLabel}
               </label>
+              {/* This toggle only flips local demo state and defaults to OFF. When RSO
+                  sign-in and Stripe go live, `isPremium` must be driven by the server's
+                  subscription record, not this control — it must never be able to grant
+                  Scope+ on a real account. */}
+              <p className="flex items-start gap-1.5 text-[11px] text-neutral-600 font-body mt-2 leading-relaxed">
+                <AlertTriangle size={12} className="text-neutral-600 shrink-0 mt-0.5" />
+                {t.simulatePremiumHint}
+              </p>
             </div>
           )}
 
