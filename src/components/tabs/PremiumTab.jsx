@@ -163,36 +163,6 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           </Card>
         </PremiumLock>
 
-        <PremiumLock
-          title={t.unlock}
-          description={t.descAlerts}
-          ctaLabel={t.seePlans} onCtaClick={onSeePlans}
-          preview={fmt(t.previewAlerts, { rr: rrToGoal, rank: 'Diamond 3' })}
-          isPremium={isPremium}
-        >
-          <Card className="h-full">
-            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.alertsTitle}</span>
-            <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-3">
-              <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertDerankLabel}
-            </label>
-            <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-3">
-              <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertGoalLabel}
-            </label>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.alertGoalRankLabel}</span>
-              <select
-                defaultValue="Diamond 3"
-                aria-label={t.alertGoalRankLabel}
-                className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1 focus:border-accent outline-none"
-              >
-                <option>Platinum 1</option>
-                <option>Diamond 1</option>
-                <option>Diamond 3</option>
-                <option>Immortal 1</option>
-              </select>
-            </div>
-          </Card>
-        </PremiumLock>
 
         <PremiumLock
           title={t.unlock}
@@ -244,10 +214,41 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           </Card>
         </PremiumLock>
 
+        <PremiumLock
+          title={t.unlock}
+          description={t.descAlerts}
+          ctaLabel={t.seePlans} onCtaClick={onSeePlans}
+          preview={fmt(t.previewAlerts, { rr: rrToGoal, rank: 'Diamond 3' })}
+          isPremium={isPremium}
+        >
+          <Card className="h-full">
+            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.alertsTitle}</span>
+            <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-2">
+              <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertDerankLabel}
+            </label>
+            <label className="flex items-center gap-2 text-xs font-body text-neutral-300 mb-2">
+              <input type="checkbox" defaultChecked readOnly className="accent-[var(--accent)]" />{t.alertGoalLabel}
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.alertGoalRankLabel}</span>
+              <select
+                defaultValue="Diamond 3"
+                aria-label={t.alertGoalRankLabel}
+                className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1 focus:border-accent outline-none"
+              >
+                <option>Platinum 1</option>
+                <option>Diamond 1</option>
+                <option>Diamond 3</option>
+                <option>Immortal 1</option>
+              </select>
+            </div>
+          </Card>
+        </PremiumLock>
+
         <PremiumLock title={t.unlock} description={t.descExport} ctaLabel={t.seePlans} onCtaClick={onSeePlans} isPremium={isPremium}>
           <Card className="h-full">
-            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-2 block">{t.exportTitle}</span>
-            <p className="text-xs font-body text-neutral-500 mb-3">{t.exportDesc}</p>
+            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1.5 block">{t.exportTitle}</span>
+            <p className="text-xs font-body text-neutral-500 mb-2.5">{t.exportDesc}</p>
             <button
               onClick={() => downloadCSV(buildGamesCSV(), 'scope-games.csv')}
               className="bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
