@@ -281,21 +281,41 @@ export function getActivitySummary(days = activityCalendar) {
 // derived from the filtered games, the same way the rest of Overview already is,
 // instead of staying hardcoded regardless of the global filter.
 export const recentGames = [
-  { id: 'g1', mode: 'competitive', map: 'Bind', result: 'win', score: '13-9', agent: 'Jett', kda: '24/9/6', acs: 289, daysAgo: 0, accuracy: 28, hs: 36, firstBloods: 3, clutchWon: 1, clutchPlayed: 1 },
-  { id: 'g2', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-11', agent: 'Reyna', kda: '18/10/4', acs: 245, daysAgo: 1, accuracy: 24, hs: 32, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g1', mode: 'competitive', map: 'Bind', result: 'win', score: '13-9', agent: 'Jett', kda: '21/11/6', acs: 278, daysAgo: 0, accuracy: 28, hs: 36, firstBloods: 3, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g15', mode: 'competitive', map: 'Lotus', result: 'loss', score: '7-13', agent: 'Sova', kda: '15/16/8', acs: 229, daysAgo: 0, accuracy: 18, hs: 24, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g16', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-6', agent: 'Reyna', kda: '19/10/3', acs: 271, daysAgo: 0, accuracy: 26, hs: 33, firstBloods: 2, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g2', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-11', agent: 'Reyna', kda: '18/12/4', acs: 245, daysAgo: 1, accuracy: 24, hs: 32, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
   { id: 'g3', mode: 'competitive', map: 'Haven', result: 'loss', score: '9-13', agent: 'Sova', kda: '12/15/5', acs: 198, daysAgo: 1, accuracy: 19, hs: 25, firstBloods: 1, clutchWon: 0, clutchPlayed: 0 },
   { id: 'g4', mode: 'unrated', map: 'Split', result: 'win', score: '13-8', agent: 'Jett', kda: '15/11/7', acs: 210, daysAgo: 2, accuracy: 21, hs: 27, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g17', mode: 'competitive', map: 'Breeze', result: 'loss', score: '9-13', agent: 'Reyna', kda: '16/17/6', acs: 238, daysAgo: 2, accuracy: 24, hs: 31, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g18', mode: 'unrated', map: 'Pearl', result: 'win', score: '13-5', agent: 'Reyna', kda: '12/10/4', acs: 223, daysAgo: 2, accuracy: 23, hs: 30, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
   { id: 'g5', mode: 'competitive', map: 'Bind', result: 'win', score: '13-10', agent: 'Reyna', kda: '16/13/3', acs: 225, daysAgo: 3, accuracy: 23, hs: 29, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
-  { id: 'g6', mode: 'unrated', map: 'Icebox', result: 'win', score: '13-7', agent: 'Sova', kda: '14/10/5', acs: 201, daysAgo: 4, accuracy: 20, hs: 26, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g19', mode: 'unrated', map: 'Sunset', result: 'loss', score: '8-13', agent: 'Jett', kda: '13/15/7', acs: 196, daysAgo: 3, accuracy: 20, hs: 28, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g6', mode: 'unrated', map: 'Icebox', result: 'win', score: '13-7', agent: 'Sova', kda: '14/12/5', acs: 201, daysAgo: 4, accuracy: 20, hs: 26, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g20', mode: 'competitive', map: 'Pearl', result: 'win', score: '13-9', agent: 'Jett', kda: '18/14/5', acs: 247, daysAgo: 5, accuracy: 23, hs: 29, firstBloods: 1, clutchWon: 0, clutchPlayed: 2 },
+  { id: 'g21', mode: 'competitive', map: 'Split', result: 'win', score: '13-11', agent: 'Jett', kda: '17/14/4', acs: 224, daysAgo: 5, accuracy: 22, hs: 27, firstBloods: 1, clutchWon: 1, clutchPlayed: 1 },
   { id: 'g7', mode: 'competitive', map: 'Haven', result: 'loss', score: '7-13', agent: 'Jett', kda: '8/17/2', acs: 139, daysAgo: 6, accuracy: 14, hs: 19, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g22', mode: 'competitive', map: 'Split', result: 'loss', score: '11-13', agent: 'Reyna', kda: '14/17/4', acs: 205, daysAgo: 6, accuracy: 24, hs: 33, firstBloods: 2, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g23', mode: 'competitive', map: 'Breeze', result: 'loss', score: '5-13', agent: 'Sova', kda: '10/15/6', acs: 184, daysAgo: 7, accuracy: 19, hs: 25, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g24', mode: 'unrated', map: 'Pearl', result: 'win', score: '13-10', agent: 'Reyna', kda: '15/16/3', acs: 214, daysAgo: 8, accuracy: 21, hs: 28, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
   { id: 'g8', mode: 'competitive', map: 'Bind', result: 'loss', score: '10-13', agent: 'Reyna', kda: '10/16/4', acs: 175, daysAgo: 10, accuracy: 17, hs: 23, firstBloods: 0, clutchWon: 0, clutchPlayed: 0 },
-  { id: 'g9', mode: 'unrated', map: 'Fracture', result: 'win', score: '13-9', agent: 'Sova', kda: '13/9/8', acs: 198, daysAgo: 18, accuracy: 21, hs: 27, firstBloods: 1, clutchWon: 1, clutchPlayed: 2 },
-  { id: 'g10', mode: 'competitive', map: 'Pearl', result: 'win', score: '13-6', agent: 'Jett', kda: '20/12/5', acs: 233, daysAgo: 25, accuracy: 25, hs: 33, firstBloods: 2, clutchWon: 1, clutchPlayed: 1 },
-  { id: 'g11', mode: 'deathmatch', map: 'Lotus', result: 'loss', score: '9-13', agent: 'Reyna', kda: '9/14/0', acs: 150, daysAgo: 40, accuracy: 16, hs: 21, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
-  { id: 'g12', mode: 'competitive', map: 'Sunset', result: 'win', score: '13-11', agent: 'Sova', kda: '17/11/6', acs: 219, daysAgo: 58, accuracy: 22, hs: 28, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
-  // Older than everything above — only surface when browsing a past Act (see `acts` below).
-  { id: 'g13', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-7', agent: 'Jett', kda: '19/8/5', acs: 227, daysAgo: 70, accuracy: 24, hs: 31, firstBloods: 2, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g25', mode: 'competitive', map: 'Abyss', result: 'win', score: '13-9', agent: 'Jett', kda: '16/13/6', acs: 236, daysAgo: 11, accuracy: 22, hs: 30, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g26', mode: 'competitive', map: 'Lotus', result: 'loss', score: '8-13', agent: 'Reyna', kda: '15/17/5', acs: 222, daysAgo: 13, accuracy: 25, hs: 32, firstBloods: 2, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g27', mode: 'competitive', map: 'Icebox', result: 'loss', score: '7-13', agent: 'Sova', kda: '11/16/6', acs: 195, daysAgo: 15, accuracy: 17, hs: 23, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g9', mode: 'unrated', map: 'Fracture', result: 'win', score: '13-9', agent: 'Sova', kda: '13/12/8', acs: 198, daysAgo: 18, accuracy: 21, hs: 27, firstBloods: 1, clutchWon: 1, clutchPlayed: 2 },
+  { id: 'g28', mode: 'unrated', map: 'Abyss', result: 'win', score: '13-9', agent: 'Jett', kda: '16/15/6', acs: 229, daysAgo: 20, accuracy: 19, hs: 26, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g29', mode: 'unrated', map: 'Sunset', result: 'win', score: '13-12', agent: 'Sova', kda: '18/17/9', acs: 231, daysAgo: 22, accuracy: 19, hs: 24, firstBloods: 1, clutchWon: 1, clutchPlayed: 2 },
+  { id: 'g10', mode: 'competitive', map: 'Pearl', result: 'win', score: '13-6', agent: 'Jett', kda: '18/12/5', acs: 233, daysAgo: 25, accuracy: 25, hs: 33, firstBloods: 2, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g30', mode: 'competitive', map: 'Lotus', result: 'win', score: '13-9', agent: 'Reyna', kda: '17/14/7', acs: 251, daysAgo: 28, accuracy: 25, hs: 34, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g31', mode: 'competitive', map: 'Split', result: 'win', score: '13-10', agent: 'Reyna', kda: '15/14/3', acs: 221, daysAgo: 33, accuracy: 16, hs: 21, firstBloods: 0, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g11', mode: 'deathmatch', map: 'Lotus', result: 'loss', score: '9-13', agent: 'Reyna', kda: '11/14/0', acs: 150, daysAgo: 40, accuracy: 16, hs: 21, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g32', mode: 'competitive', map: 'Haven', result: 'win', score: '13-8', agent: 'Jett', kda: '16/13/6', acs: 239, daysAgo: 44, accuracy: 21, hs: 29, firstBloods: 0, clutchWon: 1, clutchPlayed: 1 },
+  { id: 'g33', mode: 'competitive', map: 'Haven', result: 'loss', score: '6-13', agent: 'Reyna', kda: '12/16/6', acs: 207, daysAgo: 52, accuracy: 23, hs: 32, firstBloods: 1, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g12', mode: 'competitive', map: 'Sunset', result: 'win', score: '13-11', agent: 'Sova', kda: '17/13/6', acs: 219, daysAgo: 58, accuracy: 22, hs: 28, firstBloods: 2, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g34', mode: 'competitive', map: 'Breeze', result: 'win', score: '13-11', agent: 'Jett', kda: '17/16/8', acs: 244, daysAgo: 66, accuracy: 15, hs: 22, firstBloods: 1, clutchWon: 0, clutchPlayed: 0 },
+  { id: 'g13', mode: 'competitive', map: 'Ascent', result: 'win', score: '13-7', agent: 'Jett', kda: '18/11/5', acs: 227, daysAgo: 70, accuracy: 24, hs: 31, firstBloods: 2, clutchWon: 1, clutchPlayed: 1 },
   { id: 'g14', mode: 'unrated', map: 'Bind', result: 'loss', score: '8-13', agent: 'Sova', kda: '9/13/6', acs: 168, daysAgo: 82, accuracy: 18, hs: 24, firstBloods: 0, clutchWon: 0, clutchPlayed: 1 },
+  { id: 'g35', mode: 'competitive', map: 'Sunset', result: 'loss', score: '9-13', agent: 'Jett', kda: '14/16/5', acs: 213, daysAgo: 88, accuracy: 19, hs: 23, firstBloods: 2, clutchWon: 1, clutchPlayed: 2 },
 ];
 
 // Mock "Acts" — VALORANT's multi-month competitive periods (rank resets between them).
@@ -474,21 +494,31 @@ export function getMatchScoreboard(gameId) {
   const shuffledNames = seededShuffle(FILLER_NAMES, seed);
   const shuffledAgents = seededShuffle(FILLER_AGENTS, seed + 1000);
 
-  const fillers = Array.from({ length: 9 }, (_, i) => {
-    const n = seededValue(seed + i * 7);
-    return {
-      name: `${shuffledNames[i % shuffledNames.length]}#${FILLER_TAGS[(seed + i) % FILLER_TAGS.length]}`,
-      team: i < 4 ? 'A' : 'B',
-      agent: shuffledAgents[i % shuffledAgents.length],
-      kills: Math.max(2, Math.round(yourKills * (0.4 + n * 0.9))),
-      deaths: Math.max(3, Math.round(yourDeaths * (0.5 + (1 - n) * 0.8))),
-      assists: Math.max(0, Math.round(yourAssists * (0.3 + n * 1.1))),
-      acs: Math.max(80, Math.round(game.acs * (0.4 + n * 0.9))),
-    };
-  });
-
   const [teamScore, enemyScore] = game.score.split('-').map(Number);
   const totalRounds = teamScore + enemyScore;
+  const youWon = game.result === 'win';
+
+  const fillers = Array.from({ length: 9 }, (_, i) => {
+    const team = i < 4 ? 'A' : 'B';
+    // Team A is your team; a filler "won" if their team matches your result.
+    const teamWon = (team === 'A') === youWon;
+    // Kills and deaths roll on independent seeds so nobody gets handed a high-kill AND
+    // low-death line at once (the old shared `n` did exactly that). Both are a fraction
+    // of the round count, which keeps K/D in a believable band whatever the match length.
+    const kRoll = seededValue(seed + i * 7 + 11);
+    const dRoll = seededValue(seed + i * 7 + 29);
+    const killsPerRound = 0.38 + kRoll * 0.55 + (teamWon ? 0.1 : 0);
+    const deathsPerRound = 0.92 - dRoll * 0.34 - (teamWon ? 0.08 : -0.02);
+    return {
+      name: `${shuffledNames[i % shuffledNames.length]}#${FILLER_TAGS[(seed + i) % FILLER_TAGS.length]}`,
+      team,
+      agent: shuffledAgents[i % shuffledAgents.length],
+      kills: Math.max(4, Math.round(totalRounds * killsPerRound)),
+      deaths: Math.max(6, Math.round(totalRounds * Math.max(0.42, deathsPerRound))),
+      assists: Math.max(1, Math.round(totalRounds * (0.14 + seededValue(seed + i * 7 + 43) * 0.32))),
+      acs: Math.max(90, Math.round(70 + killsPerRound * 210 + seededValue(seed + i * 7 + 57) * 45)),
+    };
+  });
 
   const you = {
     name: 'KAITO#EUW1',

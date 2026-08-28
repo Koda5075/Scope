@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check } from 'lucide-react';
 import Card from '../Card.jsx';
@@ -30,6 +30,10 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
+  const GAMES_PAGE = 8;
+  const [visibleGames, setVisibleGames] = useState(GAMES_PAGE);
+  // Collapse back to the first page whenever the global filter changes the list.
+  useEffect(() => setVisibleGames(GAMES_PAGE), [filteredGames]);
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
@@ -162,7 +166,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
             {filteredGames.length === 0 ? (
               <div className="text-xs font-body text-neutral-500 py-2">{t.noGamesForFilter}</div>
             ) : (
-              filteredGames.map((g) => {
+              filteredGames.slice(0, visibleGames).map((g) => {
                 const [k, d, a] = g.kda.split('/').map(Number);
                 const mapImage = getMapImage(g.map);
                 return (
@@ -200,6 +204,15 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
               })
             )}
           </div>
+          {filteredGames.length > visibleGames && (
+            <button
+              type="button"
+              onClick={() => setVisibleGames((n) => n + GAMES_PAGE)}
+              className="mt-2.5 w-full py-2 text-[11px] font-display uppercase tracking-wide text-neutral-400 border border-neutral-800 hover:border-accent hover:text-accent transition-colors"
+            >
+              {t.seeMore} ({filteredGames.length - visibleGames})
+            </button>
+          )}
         </Card>
 
         <AdSlot t={t} isPremium={isPremium} variant="banner" />
