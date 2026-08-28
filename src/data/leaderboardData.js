@@ -33,21 +33,26 @@ const REGION_TAGS = {
 };
 
 // A real regional top-30 is Immortal/Radiant only — Diamond or below never appears at
-// this scale — so the tier bands only cover that range, most-exclusive first.
+// this scale — so the tier bands only cover that range, most-exclusive first. Each
+// band carries the RR window it spans (rrHi at the band's top rank, rrLo at its
+// bottom) so a row's rankedRating always lands inside the band its tier names — no
+// more "Immortal 1 with 500 RR".
 const TIER_BANDS = [
-  { name: 'Radiant', count: 3 },
-  { name: 'Immortal 3', count: 7 },
-  { name: 'Immortal 2', count: 10 },
-  { name: 'Immortal 1', count: 10 },
+  { name: 'Radiant', count: 3, rrHi: 950, rrLo: 780 },
+  { name: 'Immortal 3', count: 7, rrHi: 720, rrLo: 520 },
+  { name: 'Immortal 2', count: 10, rrHi: 490, rrLo: 300 },
+  { name: 'Immortal 1', count: 10, rrHi: 270, rrLo: 110 },
 ];
 
-function tierForRank(rank) {
-  let cursor = 0;
+// Which band a global rank falls in, and its 0-based position within that band.
+function bandForRank(rank) {
+  let start = 0;
   for (const band of TIER_BANDS) {
-    cursor += band.count;
-    if (rank <= cursor) return band.name;
+    if (rank <= start + band.count) return { band, posInBand: rank - start - 1 };
+    start += band.count;
   }
-  return TIER_BANDS[TIER_BANDS.length - 1].name;
+  const last = TIER_BANDS[TIER_BANDS.length - 1];
+  return { band: last, posInBand: last.count - 1 };
 }
 
 export function getLeaderboard(region) {
@@ -58,13 +63,19 @@ export function getLeaderboard(region) {
   const players = Array.from({ length: 30 }, (_, i) => {
     const rank = i + 1;
     const seed = regionSeed + rank * 13;
+    const { band, posInBand } = bandForRank(rank);
+    // Interpolate across the band's RR window by position, minus a small seeded
+    // wobble so it isn't a perfectly straight line — still monotonic overall and
+    // always within the band.
+    const span = Math.max(band.count - 1, 1);
+    const rr = Math.round(band.rrHi - (band.rrHi - band.rrLo) * (posInBand / span) - seededValue(seed) * 6);
     return {
       puuid: `lb-${region}-${rank}`,
       gameName: NAME_POOL[Math.floor(seededValue(seed + 1) * NAME_POOL.length)],
       tagLine: tagPool[Math.floor(seededValue(seed + 2) * tagPool.length)],
       leaderboardRank: rank,
-      rankedRating: Math.max(0, Math.round(680 - rank * 8 - seededValue(seed) * 5)),
-      competitiveTier: tierForRank(rank),
+      rankedRating: Math.max(0, rr),
+      competitiveTier: band.name,
     };
   });
 
