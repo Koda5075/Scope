@@ -59,6 +59,24 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const firstBloods = computeFirstBloods(filteredGames);
   const clutches = computeClutchRecord(filteredGames);
 
+  // Recent-vs-earlier momentum on the rate stats: filteredGames is most-recent-first,
+  // so split it in half and diff the aggregates. Needs >= 4 games to mean anything.
+  const half = Math.floor(filteredGames.length / 2);
+  const recentHalf = filteredGames.slice(0, half);
+  const earlierHalf = filteredGames.slice(half);
+  const statDelta = (fn, decimals = 0) => {
+    if (filteredGames.length < 4) return null;
+    const r = fn(recentHalf);
+    const e = fn(earlierHalf);
+    if (r == null || e == null) return null;
+    const p = 10 ** decimals;
+    return Math.round((r - e) * p) / p;
+  };
+  const kdaDelta = statDelta(computeAggregateKDA, 2);
+  const accuracyDelta = statDelta(computeAverageAccuracy);
+  const headshotsDelta = statDelta(computeAverageHeadshots);
+  const acsDelta = statDelta(computeAverageAcs);
+
   async function handleShare() {
     setSharing(true);
     try {
@@ -220,10 +238,10 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
 
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} tip={t.tipKDA} />
-          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} tip={t.tipAccuracy} />
-          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} tip={t.tipHeadshots} />
-          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} tip={t.tipACS} />
+          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} tip={t.tipKDA} delta={kdaDelta} deltaTip={t.statTrendTip} />
+          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} tip={t.tipAccuracy} delta={accuracyDelta} deltaTip={t.statTrendTip} />
+          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} tip={t.tipHeadshots} delta={headshotsDelta} deltaTip={t.statTrendTip} />
+          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} tip={t.tipACS} delta={acsDelta} deltaTip={t.statTrendTip} />
           <StatReadout label={t.statFirstBloods} value={firstBloods} Icon={Skull} tip={t.tipFirstBloods} />
           <StatReadout label={t.statClutches} value={clutches.won} unit={`/${clutches.played}`} Icon={Flame} tip={t.tipClutches} />
         </div>
