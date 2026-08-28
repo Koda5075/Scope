@@ -64,6 +64,10 @@ export default function ScopeDashboard() {
   // PlayerHeader and the customization modal, never to public profile / search / compare.
   const [titleId, setTitleId] = useState(() => loadStored('scope-title', DEFAULT_TITLE_ID));
   const [bannerSpray, setBannerSpray] = useState(() => loadStored('scope-banner-spray', null, JSON.parse));
+  // Banner focal point ({ x, y } as 0..1 fractions) fed straight into the header
+  // banner's object-position so a wide crop can be nudged onto the interesting part
+  // of the art instead of always centre-cropping. Framing metadata only — never gated.
+  const [bannerFocus, setBannerFocus] = useState(() => loadStored('scope-banner-focus', { x: 0.5, y: 0.5 }, JSON.parse));
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPlansModal, setShowPlansModal] = useState(false);
   const [isPremium, setIsPremium] = useState(() => loadStored('scope-premium', false, (v) => v === 'true'));
@@ -98,7 +102,7 @@ export default function ScopeDashboard() {
     try {
       [
         'scope-lang', 'scope-theme', 'scope-favorites', 'scope-public-visible',
-        'scope-avatar', 'scope-banner', 'scope-title', 'scope-banner-spray',
+        'scope-avatar', 'scope-banner', 'scope-title', 'scope-banner-spray', 'scope-banner-focus',
         'scope-theme-mode', 'scope-accent-custom', 'scope-logged-in', 'scope-premium',
         'scope-invite-card-dismissed', 'scope-onboarding-seen', 'scope-session-goal',
       ].forEach((key) => localStorage.removeItem(key));
@@ -116,6 +120,7 @@ export default function ScopeDashboard() {
     setBannerUrl(null);
     setTitleId(DEFAULT_TITLE_ID);
     setBannerSpray(null);
+    setBannerFocus({ x: 0.5, y: 0.5 });
     setIsPremium(false);
     setShowSettings(false);
   }
@@ -170,13 +175,14 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-title', titleId);
       if (bannerSpray) localStorage.setItem('scope-banner-spray', JSON.stringify(bannerSpray));
       else localStorage.removeItem('scope-banner-spray');
+      localStorage.setItem('scope-banner-focus', JSON.stringify(bannerFocus));
       localStorage.setItem('scope-theme-mode', themeMode);
       if (customAccent) localStorage.setItem('scope-accent-custom', customAccent);
       else localStorage.removeItem('scope-accent-custom');
       localStorage.setItem('scope-logged-in', String(loggedIn));
       localStorage.setItem('scope-premium', String(isPremium));
     } catch (e) { /* ignore */ }
-  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, loggedIn, isPremium]);
+  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium]);
 
   // Keep the page (and the area outside the max-w container / behind overscroll) on the
   // active surface colour, not just the app root div.
@@ -315,6 +321,7 @@ export default function ScopeDashboard() {
               peakRank={mockPeakRank}
               avatarUrl={avatarUrl}
               {...visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium })}
+              bannerFocus={bannerFocus}
               onAvatarClick={() => setShowProfileModal(true)}
               isPremium={isPremium}
               onSeePlans={() => setShowPlansModal(true)}
@@ -366,6 +373,8 @@ export default function ScopeDashboard() {
             onTitleChange={setTitleId}
             bannerSpray={bannerSpray}
             onBannerSprayChange={setBannerSpray}
+            bannerFocus={bannerFocus}
+            onBannerFocusChange={setBannerFocus}
             lang={lang}
             isPremium={isPremium}
             onSeePlans={() => {

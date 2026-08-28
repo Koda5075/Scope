@@ -143,6 +143,72 @@ function BannerSprayEditor({ bannerUrl, sprayIcon, position, onPositionChange, t
   );
 }
 
+// Same free-drag mechanic as the spray editor, but the fraction drives the header
+// banner's object-position instead of a sprite: drag to pick which part of a wide
+// crop stays framed. Pure framing — never gated behind Scope+.
+function BannerFocusEditor({ bannerUrl, focus, onFocusChange, t }) {
+  const boxRef = useRef(null);
+  const [dragging, setDragging] = useState(false);
+  const pos = { x: focus?.x ?? 0.5, y: focus?.y ?? 0.5 };
+
+  function pointToFraction(clientX, clientY) {
+    const box = boxRef.current;
+    if (!box) return null;
+    const r = box.getBoundingClientRect();
+    return { x: clamp01((clientX - r.left) / r.width), y: clamp01((clientY - r.top) / r.height) };
+  }
+
+  useEffect(() => {
+    if (!dragging) return undefined;
+    const onMove = (e) => {
+      e.preventDefault();
+      const next = pointToFraction(e.clientX, e.clientY);
+      if (next) onFocusChange(next);
+    };
+    const stop = () => setDragging(false);
+    const blockScroll = (e) => e.preventDefault();
+    window.addEventListener('pointermove', onMove, { passive: false });
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+    window.addEventListener('wheel', blockScroll, { passive: false });
+    window.addEventListener('touchmove', blockScroll, { passive: false });
+    return () => {
+      window.removeEventListener('pointermove', onMove, { passive: false });
+      window.removeEventListener('pointerup', stop);
+      window.removeEventListener('pointercancel', stop);
+      window.removeEventListener('wheel', blockScroll, { passive: false });
+      window.removeEventListener('touchmove', blockScroll, { passive: false });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragging]);
+
+  return (
+    <div
+      ref={boxRef}
+      onPointerDown={(e) => {
+        e.preventDefault();
+        const next = pointToFraction(e.clientX, e.clientY);
+        if (next) onFocusChange(next);
+        setDragging(true);
+      }}
+      className="relative h-20 overflow-hidden border border-neutral-800 bg-neutral-950 select-none cursor-grab active:cursor-grabbing"
+      style={{ touchAction: 'none' }}
+    >
+      <img
+        src={bannerUrl}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: `${pos.x * 100}% ${pos.y * 100}%` }}
+      />
+      <span
+        className="absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent bg-accent/20 pointer-events-none drop-shadow"
+        style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
+      />
+    </div>
+  );
+}
+
 export default function ProfileCustomizationModal({
   avatarUrl,
   onAvatarChange,
@@ -152,6 +218,8 @@ export default function ProfileCustomizationModal({
   onTitleChange,
   bannerSpray,
   onBannerSprayChange,
+  bannerFocus,
+  onBannerFocusChange,
   lang,
   isPremium,
   onSeePlans,
@@ -403,8 +471,20 @@ export default function ProfileCustomizationModal({
             <div className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3">{t.bannerSectionTitle}</div>
 
             {previewBannerUrl && (
-              <div className="relative h-16 mb-3 overflow-hidden border border-neutral-800">
-                <img src={previewBannerUrl} alt="" className="w-full h-full object-cover" />
+              <div className="mb-3">
+                <p className="text-[11px] text-neutral-500 font-body mb-1.5">{t.bannerFocusHint}</p>
+                <BannerFocusEditor
+                  bannerUrl={previewBannerUrl}
+                  focus={bannerFocus}
+                  onFocusChange={onBannerFocusChange}
+                  t={t}
+                />
+                <button
+                  onClick={() => onBannerFocusChange({ x: 0.5, y: 0.5 })}
+                  className="text-[11px] font-body text-neutral-500 hover:text-accent transition-colors mt-1.5"
+                >
+                  {t.bannerFocusRecenter}
+                </button>
               </div>
             )}
 

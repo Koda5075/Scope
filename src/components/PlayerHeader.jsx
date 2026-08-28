@@ -7,7 +7,7 @@ import RankPyramid from './RankPyramid.jsx';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
-export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, titleId, bannerSpray, onAvatarClick, isPremium, onSeePlans }) {
+export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, onAvatarClick, isPremium, onSeePlans }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
   const [showRankInfo, setShowRankInfo] = useState(false);
@@ -23,7 +23,12 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
     <div className="mb-7 relative border border-neutral-800 bg-neutral-950 px-6 py-5 overflow-hidden">
       {bannerUrl && (
         <>
-          <img src={bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img
+            src={bannerUrl}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: `${(bannerFocus?.x ?? 0.5) * 100}% ${(bannerFocus?.y ?? 0.5) * 100}%` }}
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/60" />
         </>
       )}
