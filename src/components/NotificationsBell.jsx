@@ -7,6 +7,14 @@ function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
 }
 
+// Per-type accent so the feed scans as categories, not one colour of row.
+const TONE_COLOR = {
+  success: 'var(--accent)',
+  warn: '#F59E0B',
+  hot: '#FB923C',
+  info: '#38BDF8',
+};
+
 export default function NotificationsBell({ t }) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState(alertsFeed);
@@ -46,9 +54,15 @@ export default function NotificationsBell({ t }) {
             <div className="flex flex-col gap-2">
               {alerts.map((a) => {
                 const Icon = a.icon;
+                const color = TONE_COLOR[a.tone] ?? 'var(--accent)';
                 return (
                   <div key={a.id} className="flex items-start gap-2.5 px-3 py-2.5 border border-neutral-800 bg-neutral-950">
-                    <Icon size={14} className="text-accent shrink-0 mt-0.5" />
+                    <span
+                      className="w-7 h-7 shrink-0 flex items-center justify-center rounded-full border"
+                      style={{ color, borderColor: color, background: `color-mix(in srgb, ${color} 14%, transparent)` }}
+                    >
+                      <Icon size={14} />
+                    </span>
                     <div className="min-w-0">
                       <div className="text-xs font-body text-neutral-200 leading-snug">{fmt(t[a.messageKey], a.params)}</div>
                       <div className="text-[10px] font-mono text-neutral-600 mt-1">

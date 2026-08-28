@@ -1,4 +1,4 @@
-import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock } from 'lucide-react';
 import { getAllAgentNames } from './valorantAssets.js';
 
 // `s` is a plain session index (1-based) rather than a pre-formatted "S1" string, so the
@@ -636,10 +636,14 @@ export function buildGamesCSV() {
 // Triggered-alerts feed backing the header bell — shaped like a generic notification
 // feed (id, icon, message template + params, daysAgo, read) so swapping this mock array
 // for a real backend feed later is a data-source change, not a UI rewrite.
+// `tone` colours the icon chip so the feed reads as distinct categories at a glance
+// (goal / risk / streak / unlock / season) rather than a wall of same-coloured rows.
 export const alertsFeed = [
-  { id: 'a1', icon: Trophy, messageKey: 'alertMsgGoalReached', params: { rank: 'Diamond 2' }, daysAgo: 0, read: false },
-  { id: 'a2', icon: ShieldAlert, messageKey: 'alertMsgDerankRisk', params: { rr: 8 }, daysAgo: 2, read: false },
-  { id: 'a3', icon: Flame, messageKey: 'alertMsgStreak', params: { n: 3 }, daysAgo: 5, read: true },
+  { id: 'a1', icon: Trophy, tone: 'success', messageKey: 'alertMsgGoalReached', params: { rank: 'Diamond 2' }, daysAgo: 0, read: false },
+  { id: 'a2', icon: ShieldAlert, tone: 'warn', messageKey: 'alertMsgDerankRisk', params: { rr: 8 }, daysAgo: 2, read: false },
+  { id: 'a3', icon: Award, tone: 'success', messageKey: 'alertMsgNewBadge', params: { badge: 'Ace Hunter' }, daysAgo: 3, read: false },
+  { id: 'a4', icon: Flame, tone: 'hot', messageKey: 'alertMsgStreak', params: { n: 3 }, daysAgo: 5, read: true },
+  { id: 'a5', icon: CalendarClock, tone: 'info', messageKey: 'alertMsgActEnding', params: { days: 6 }, daysAgo: 6, read: true },
 ];
 
 export function getUnreadAlertsCount(alerts = alertsFeed) {
