@@ -40,12 +40,12 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
           style={{ left: `${(bannerSpray.x ?? 0.5) * 100}%`, top: `${(bannerSpray.y ?? 0.5) * 100}%` }}
         />
       )}
-      {/* items-start, not items-center: the rank block (label + huge rank + RR bar +
-          peak line) is much taller than the avatar block, and centring the two against
-          the combined height made nothing look anchored. Both blocks now share a top
-          edge; the divider still stretches the full row height. */}
-      <div className="relative flex items-start gap-5 flex-wrap sm:flex-nowrap">
-        {rankIcon && <img src={rankIcon} alt="" className="val-icon w-24 h-24 shrink-0" />}
+      {/* items-center: the avatar/title/last-session block is shorter than the rank
+          block (label + huge rank + RR bar + peak line), so it's centred against the
+          row's full height rather than pinned to the top with dead space below. The
+          rank icon likewise sits centred against its own text column. */}
+      <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
+        {rankIcon && <img src={rankIcon} alt="" className="val-icon w-24 h-24 shrink-0 self-center" />}
         <div className="flex-1 min-w-[220px]">
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body">{t.rank}</span>
@@ -78,19 +78,19 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
 
         <button
           onClick={onAvatarClick}
-          className="flex items-start gap-3 shrink-0 text-left group"
+          className="flex items-center gap-3 shrink-0 text-left group self-center"
           aria-label={t.editProfile}
           title={t.editProfile}
         >
           <span className="w-16 h-16 shrink-0 bg-neutral-900 border border-neutral-700 group-hover:border-accent flex items-center justify-center font-display font-bold text-2xl text-accent overflow-hidden transition-colors">
             {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" /> : 'K'}
           </span>
-          <span className="flex flex-col gap-1">
+          <span className="flex flex-col items-start gap-1">
             <span className="font-display text-lg font-semibold tracking-wide text-white leading-tight">
               KAITO<span className="text-neutral-600">#EUW1</span>
             </span>
             {titleLabel && (
-              <span className="self-start px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.14em] text-accent bg-accent/10 border border-accent/40">
+              <span className="px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.14em] text-accent bg-accent/10 border border-accent/40">
                 {titleLabel}
               </span>
             )}
