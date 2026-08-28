@@ -8,11 +8,12 @@
 // explorer, versatile. In the current mock, nightOwl / marathon / explorer are the
 // three locked badges, so cosmetics tied to those demo the locked state.
 
-import { badgeDefs, isBadgeUnlocked } from './mockData.js';
+import { badgeDefs, isBadgeUnlocked, referralProgram } from './mockData.js';
 import { getAllPlayerCards } from './valorantAssets.js';
 import { getAllSprays, DEFAULT_TITLE_ID } from './valorantCosmetics.js';
 
 const badge = (badgeId) => ({ kind: 'badge', badgeId });
+const referral = (count) => ({ kind: 'referral', count });
 const PREMIUM = { kind: 'premium' };
 const FREE = { kind: 'free' };
 
@@ -35,7 +36,7 @@ const BANNER_RULES = {
   'V25: Prelude To Paris': PREMIUM,
   Hivemind: PREMIUM,
   'Radiant Skincare': PREMIUM,
-  'Dreamwing Lunari': PREMIUM,
+  'Dreamwing Lunari': referral(referralProgram.rewardAt), // exclusive referral reward
   'PREMIER V25A4': PREMIUM,
   Nocturnum: PREMIUM,
 };
@@ -77,6 +78,7 @@ export function getSprayLocker(lang) {
 export function isCosmeticUnlocked(rule, isPremium) {
   if (!rule || rule.kind === 'free') return true;
   if (rule.kind === 'premium') return !!isPremium;
+  if (rule.kind === 'referral') return referralProgram.referred >= rule.count;
   if (rule.kind === 'badge') {
     const def = badgeDefs.find((b) => b.id === rule.badgeId);
     return !!def && isBadgeUnlocked(def);
@@ -118,6 +120,7 @@ export function visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium })
 export function describeCosmeticLock(rule, t) {
   if (!rule || rule.kind === 'free') return '';
   if (rule.kind === 'premium') return 'Scope+';
+  if (rule.kind === 'referral') return (t.lockerLockedByReferral ?? '{n}').replace('{n}', rule.count);
   if (rule.kind === 'badge') {
     const label = t.badges?.[rule.badgeId]?.label ?? rule.badgeId;
     return (t.lockerLockedByBadge ?? '{badge}').replace('{badge}', label);

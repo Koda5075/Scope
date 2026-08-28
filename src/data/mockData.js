@@ -666,6 +666,17 @@ export const progressionTimeline = [
 // disappearing into the void.
 export const inviteStats = { invited: 12, joined: 4 };
 
+// Referral programme — a personal code and one exclusive cosmetic (a banner) unlocked
+// once `rewardAt` friends have joined through it. `referred` mirrors inviteStats.joined
+// so the number stays consistent across the invite card, settings, and the locker.
+// All local/mock like the rest until there's a real user backend.
+export const referralProgram = {
+  code: 'KAITO-SCOPE',
+  referred: inviteStats.joined,
+  rewardAt: 5,
+  rewardBannerName: 'Dreamwing Lunari',
+};
+
 // Mock Scope+ pricing — no real Stripe integration yet, so these are placeholder
 // figures rendered by the plans modal so "See plans" leads somewhere concrete.
 export const scopePlusPlans = [
