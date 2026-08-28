@@ -54,6 +54,7 @@ export default function ScopeDashboard() {
   // accounts keep the value stored but it has no effect until they subscribe.
   const [customAccent, setCustomAccent] = useState(() => loadStored('scope-accent-custom', null, (v) => (isValidHex(v) ? v : null)));
   const [showSettings, setShowSettings] = useState(false);
+  const [settingsSection, setSettingsSection] = useState('appearance');
   const [favoriteIds, setFavoriteIds] = useState(() => loadStored('scope-favorites', ['p2'], JSON.parse));
   const [publicVisible, setPublicVisible] = useState(() => loadStored('scope-public-visible', true, (v) => v === 'true'));
   const [avatarUrl, setAvatarUrl] = useState(() => loadStored('scope-avatar', null));
@@ -305,7 +306,10 @@ export default function ScopeDashboard() {
         <TopBar
           loggedIn={loggedIn}
           setLoggedIn={setLoggedIn}
-          onOpenSettings={() => setShowSettings(true)}
+          onOpenSettings={(sectionArg) => {
+            setSettingsSection(typeof sectionArg === 'string' ? sectionArg : 'appearance');
+            setShowSettings(true);
+          }}
           t={t}
         />
 
@@ -408,6 +412,7 @@ export default function ScopeDashboard() {
               setShowSettings(false);
               setShowPlansModal(true);
             }}
+            initialSection={settingsSection}
             onClose={() => setShowSettings(false)}
           />
         )}

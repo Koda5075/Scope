@@ -33,7 +33,7 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
           <LogIn size={16} />
         </button>
 
-        {loggedIn && <NotificationsBell t={t} />}
+        {loggedIn && <NotificationsBell t={t} onManage={() => onOpenSettings('notifications')} />}
 
         <button
           onClick={onOpenSettings}

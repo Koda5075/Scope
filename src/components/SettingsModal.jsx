@@ -7,6 +7,18 @@ import { inviteStats } from '../data/mockData.js';
 const MOCK_PUBLIC_SLUG = 'kaito-euw1';
 const LANGS = ['en', 'fr', 'de', 'es', 'it', 'pt'];
 
+const NOTIFY_KEYS = ['rank', 'badges', 'streaks', 'act', 'coaching'];
+const NOTIFY_STORAGE = 'scope-notify-prefs';
+
+function loadNotifyPrefs() {
+  const defaults = Object.fromEntries(NOTIFY_KEYS.map((k) => [k, true]));
+  try {
+    return { ...defaults, ...JSON.parse(localStorage.getItem(NOTIFY_STORAGE) ?? '{}') };
+  } catch {
+    return defaults;
+  }
+}
+
 function SectionTitle({ children }) {
   return <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-3">{children}</div>;
 }
@@ -30,11 +42,25 @@ export default function SettingsModal({
   onDeleteAccount,
   onSeePlans,
   onClose,
+  initialSection = 'appearance',
 }) {
-  const [section, setSection] = useState('appearance');
+  const [section, setSection] = useState(initialSection);
   const [copied, setCopied] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [hexDraft, setHexDraft] = useState(customAccent ?? '');
+  const [notifyPrefs, setNotifyPrefs] = useState(loadNotifyPrefs);
+
+  function toggleNotify(key) {
+    setNotifyPrefs((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      try {
+        localStorage.setItem(NOTIFY_STORAGE, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
 
   const customActive = isPremium && isValidHex(customAccent);
   const pickerValue = isValidHex(hexDraft) ? hexDraft : customAccent ?? THEMES[theme]?.accent ?? '#FFC300';
@@ -57,10 +83,19 @@ export default function SettingsModal({
   const NAV = [
     ['appearance', t.appearance],
     ['connection', t.settingsNavConnection],
+    ['notifications', t.settingsNavNotifications],
     ['privacy', t.settingsNavPrivacy],
     ['demo', t.demoSection],
     ['danger', t.dangerZoneTitle],
   ];
+
+  const NOTIFY_LABELS = {
+    rank: t.notifyRank,
+    badges: t.notifyBadges,
+    streaks: t.notifyStreaks,
+    act: t.notifyAct,
+    coaching: t.notifyCoaching,
+  };
 
   return (
     <Modal onClose={onClose} closeLabel={t.close} size="lg">
@@ -203,6 +238,26 @@ export default function SettingsModal({
               >
                 {loggedIn ? t.connectionSignOut : t.connectionSignIn}
               </button>
+            </div>
+          )}
+
+          {section === 'notifications' && (
+            <div>
+              <SectionTitle>{t.notifyPrefsTitle}</SectionTitle>
+              <div className="flex flex-col gap-2.5">
+                {NOTIFY_KEYS.map((key) => (
+                  <label key={key} className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={notifyPrefs[key]}
+                      onChange={() => toggleNotify(key)}
+                      className="accent-[var(--accent)]"
+                    />
+                    {NOTIFY_LABELS[key]}
+                  </label>
+                ))}
+              </div>
+              <p className="text-[11px] text-neutral-600 font-body mt-3 leading-relaxed">{t.notifyPrefsHint}</p>
             </div>
           )}
 

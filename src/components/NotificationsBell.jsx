@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 import { alertsFeed } from '../data/mockData.js';
 import { useClickOutside } from '../hooks/useClickOutside.js';
 
@@ -15,7 +15,7 @@ const TONE_COLOR = {
   info: '#38BDF8',
 };
 
-export default function NotificationsBell({ t }) {
+export default function NotificationsBell({ t, onManage }) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState(alertsFeed);
   const unreadCount = alerts.filter((a) => !a.read).length;
@@ -28,6 +28,10 @@ export default function NotificationsBell({ t }) {
       if (next) setAlerts((prev) => prev.map((a) => ({ ...a, read: true })));
       return next;
     });
+  }
+
+  function dismiss(id) {
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
   }
 
   return (
@@ -47,7 +51,17 @@ export default function NotificationsBell({ t }) {
 
       {open && (
         <div className="settings-panel absolute right-0 top-11 w-80 max-h-[70vh] overflow-y-auto p-4 z-10">
-          <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-3">{t.alertsCenterTitle}</div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">{t.alertsCenterTitle}</span>
+            {alerts.length > 0 && (
+              <button
+                onClick={() => setAlerts([])}
+                className="text-[10px] font-body text-neutral-500 hover:text-accent transition-colors"
+              >
+                {t.alertsClearAll}
+              </button>
+            )}
+          </div>
           {alerts.length === 0 ? (
             <div className="text-xs font-body text-neutral-500 py-2">{t.alertsEmpty}</div>
           ) : (
@@ -56,23 +70,39 @@ export default function NotificationsBell({ t }) {
                 const Icon = a.icon;
                 const color = TONE_COLOR[a.tone] ?? 'var(--accent)';
                 return (
-                  <div key={a.id} className="flex items-start gap-2.5 px-3 py-2.5 border border-neutral-800 bg-neutral-950">
+                  <div key={a.id} className="group flex items-start gap-2.5 px-3 py-2.5 border border-neutral-800 bg-neutral-950">
                     <span
                       className="w-7 h-7 shrink-0 flex items-center justify-center rounded-full border"
                       style={{ color, borderColor: color, background: `color-mix(in srgb, ${color} 14%, transparent)` }}
                     >
                       <Icon size={14} />
                     </span>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs font-body text-neutral-200 leading-snug">{fmt(t[a.messageKey], a.params)}</div>
                       <div className="text-[10px] font-mono text-neutral-600 mt-1">
                         {a.daysAgo === 0 ? t.alertToday : `${a.daysAgo}${t.daysAgoSuffix}`}
                       </div>
                     </div>
+                    <button
+                      onClick={() => dismiss(a.id)}
+                      aria-label={t.alertDismiss}
+                      title={t.alertDismiss}
+                      className="shrink-0 -mr-1 -mt-1 p-1 text-neutral-700 hover:text-accent transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    >
+                      <X size={12} />
+                    </button>
                   </div>
                 );
               })}
             </div>
+          )}
+          {onManage && (
+            <button
+              onClick={() => { setOpen(false); onManage(); }}
+              className="mt-3 w-full py-1.5 text-[10px] font-display uppercase tracking-wide text-neutral-500 border border-neutral-800 hover:border-accent hover:text-accent transition-colors"
+            >
+              {t.alertsManage}
+            </button>
           )}
         </div>
       )}
