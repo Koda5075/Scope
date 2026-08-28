@@ -140,7 +140,10 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
   const topWeaponShare = topWeapon && totalKills ? Math.round((topWeapon.kills / totalKills) * 100) : 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    // items-start so the shorter "Agent performance" card isn't stretched to match
+    // the taller "Map performance" card next to it (that left an empty slot under
+    // the last agent row).
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
       <Card>
         <div className="flex items-center justify-between mb-4">
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.agentPerf}</span>
