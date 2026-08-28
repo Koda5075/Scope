@@ -26,7 +26,7 @@ function isScopePlayer(p) {
 // (otherPlayers) get a "compare with me" entry point, reusing the exact same
 // profile/compare flow as the search bar's "compare with anyone" — non-Scope players
 // just display, no comparison forced.
-export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filteredGames }) {
+export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filteredGames, publicOnly = false }) {
   const [region, setRegion] = useState('eu');
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState('profile');
@@ -67,7 +67,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
         {/* Top 3 podium — bigger rank art, medal-tinted position badge, #1 highlighted */}
         <div className="grid grid-cols-3 gap-2 mb-3">
           {podium.map((p, i) => {
-            const matched = isScopePlayer(p);
+            const matched = !publicOnly && isScopePlayer(p);
             const rankIcon = getRankIcon(p.competitiveTier);
             const medal = MEDAL[i];
             return (
@@ -105,7 +105,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
 
         <div className="flex flex-col gap-1">
           {rest.map((p) => {
-            const matched = isScopePlayer(p);
+            const matched = !publicOnly && isScopePlayer(p);
             const rankIcon = getRankIcon(p.competitiveTier);
             return (
               <div

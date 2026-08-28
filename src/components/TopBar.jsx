@@ -8,7 +8,7 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
         <img src="/logo.png" alt="Scope" className="sc-logo w-10 h-10 object-contain" />
         <div>
           {/* The dashboard's page <h1>. Rendered as a plain <span> on the logged-out
-              screen so LoginScreen's own <h1> stays the single heading there — the two
+              landing so LandingView's own <h1> stays the single heading there — the two
               are never mounted without one of these branches applying. The visible text
               is just "SCOPE"; the sr-only span adds the keyword phrase for crawlers and
               screen readers without changing the layout (it's position:absolute). */}

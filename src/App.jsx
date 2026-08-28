@@ -4,7 +4,7 @@ import { THEMES, resolveAccent, deriveDim, isValidHex } from './data/themes.js';
 import { peakRank as mockPeakRank, acts, filterGames, recentGames } from './data/mockData.js';
 import TopBar from './components/TopBar.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
-import LoginScreen from './components/LoginScreen.jsx';
+import LandingView from './components/LandingView.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
 import { visibleCosmetics } from './data/cosmeticUnlocks.js';
 import PlayerSearchBar from './components/PlayerSearchBar.jsx';
@@ -310,7 +310,7 @@ export default function ScopeDashboard() {
         />
 
         {!loggedIn ? (
-          <LoginScreen t={t} setLoggedIn={setLoggedIn} />
+          <LandingView t={t} setLoggedIn={setLoggedIn} filteredGames={filteredGames} />
         ) : (
           <>
             <PlayerHeader
