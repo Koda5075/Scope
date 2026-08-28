@@ -1,10 +1,22 @@
-import { useState } from 'react';
-import { Search, Star, X, Lock, UserPlus } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Search, Star, X, Lock, UserPlus, Clock } from 'lucide-react';
 import Modal from './Modal.jsx';
 import PlayerProfileCard from './PlayerProfileCard.jsx';
 import PlayerCompareView from './PlayerCompareView.jsx';
 import { otherPlayers } from '../data/mockData.js';
 import { parseRiotId } from '../lib/riotId.js';
+
+const RECENT_KEY = 'scope-recent-searches';
+const RECENT_MAX = 6;
+
+function loadRecent() {
+  try {
+    const v = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]');
+    return Array.isArray(v) ? v.slice(0, RECENT_MAX) : [];
+  } catch {
+    return [];
+  }
+}
 
 export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filteredGames }) {
   const [query, setQuery] = useState('');
@@ -12,19 +24,54 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState('profile');
   const [inviteCopied, setInviteCopied] = useState(false);
+  const [recent, setRecent] = useState(loadRecent);
+  const [focused, setFocused] = useState(false);
 
   const favorites = otherPlayers.filter((p) => favoriteIds.includes(p.puuid));
+
+  // As-you-type matches against the players Scope already knows (connected + public).
+  // Not a real directory — that needs the Riot API — but it makes known IDs findable
+  // without typing the exact tag.
+  const suggestions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) return [];
+    return otherPlayers
+      .filter((p) => p.connected && p.isPublic && `${p.name}#${p.tag}`.toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [query]);
+
+  function pushRecent(riotId) {
+    setRecent((prev) => {
+      const next = [riotId, ...prev.filter((r) => r.toLowerCase() !== riotId.toLowerCase())].slice(0, RECENT_MAX);
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
+  function clearRecent() {
+    setRecent([]);
+    try {
+      localStorage.removeItem(RECENT_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
 
   function openPlayer(p) {
     setSelected(p);
     setView('profile');
     setResult(null);
     setQuery('');
+    setFocused(false);
+    pushRecent(`${p.name}#${p.tag}`);
   }
 
-  function handleSearch(e) {
-    e.preventDefault();
-    const parsed = parseRiotId(query);
+  function runSearch(raw) {
+    const parsed = parseRiotId(raw);
     if (!parsed) {
       setResult({ status: 'invalid' });
       return;
@@ -36,9 +83,15 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
       openPlayer(match);
     } else if (match && match.connected && !match.isPublic) {
       setResult({ status: 'private' });
+      pushRecent(`${parsed.name}#${parsed.tag}`);
     } else {
       setResult({ status: 'not_found', riotId: `${parsed.name}#${parsed.tag}` });
     }
+  }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    runSearch(query);
   }
 
   async function handleInvite() {
@@ -51,6 +104,8 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
     }
   }
 
+  const showRecentRow = focused && query.trim() === '' && !result && recent.length > 0;
+
   return (
     <div className="mb-6" data-tour="search">
       <form onSubmit={handleSearch} className="relative">
@@ -60,11 +115,56 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
         <input
           value={query}
           onChange={(e) => { setQuery(e.target.value); setResult(null); }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setTimeout(() => setFocused(false), 120)}
           placeholder={t.searchPlaceholder}
           aria-label={t.searchPlaceholder}
           className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-9 pr-3 py-2.5 text-sm font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
         />
+
+        {focused && suggestions.length > 0 && (
+          <div className="absolute z-20 left-0 right-0 top-full mt-1 border border-neutral-800 bg-neutral-950 shadow-lg">
+            {suggestions.map((p) => (
+              <button
+                key={p.puuid}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => openPlayer(p)}
+                className="flex items-center justify-between w-full px-3 py-2 text-left hover:bg-neutral-900 transition-colors"
+              >
+                <span className="text-xs font-body text-neutral-200">
+                  {p.name}<span className="text-neutral-600">#{p.tag}</span>
+                </span>
+                <span className="text-[10px] font-body text-neutral-600">{p.rank}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </form>
+
+      {showRecentRow && (
+        <div className="flex flex-wrap items-center gap-2 mt-3">
+          <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.recentSearchesTitle}</span>
+          {recent.map((r) => (
+            <button
+              key={r}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => runSearch(r)}
+              className="flex items-center gap-1.5 border border-neutral-800 hover:border-accent px-2.5 py-1 text-xs font-body text-neutral-400 hover:text-neutral-200 transition-colors"
+            >
+              <Clock size={10} className="text-neutral-600" />
+              {r}
+            </button>
+          ))}
+          <button
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={clearRecent}
+            className="text-[10px] font-body text-neutral-600 hover:text-accent transition-colors"
+          >
+            {t.clearRecentSearches}
+          </button>
+        </div>
+      )}
 
       {result?.status === 'invalid' && (
         <div className="mt-2 text-xs font-body text-neutral-500">{t.searchInvalidFormat}</div>
