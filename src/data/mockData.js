@@ -190,10 +190,13 @@ export const comparisons = [
   { metric: 'DMG/Round', you: 145, rankAvg: 130, past: 125, max: 200 },
 ];
 
+// hs is headshot %, rr is current ranked rating within the tier. Values line up with
+// the same players in otherPlayers / myStats so the friends board and the head-to-head
+// comparison above it never disagree.
 export const friends = [
-  { name: 'Nova#EUW1', acs: 261 },
-  { name: 'KAITO#EUW1', acs: 238, isYou: true },
-  { name: 'Miro#EUW1', acs: 204 },
+  { name: 'Nova#EUW1', acs: 261, kda: 1.61, hs: 34, rr: 178 },
+  { name: 'KAITO#EUW1', acs: 238, kda: 1.42, hs: 31, rr: 67, isYou: true },
+  { name: 'Miro#EUW1', acs: 204, kda: 1.18, hs: 26, rr: 121 },
 ];
 
 export const myStats = { kda: 1.42, accuracy: 24, headshots: 31, acs: 238 };

@@ -56,10 +56,18 @@ const COMPARE_METRICS = [
   { key: 'headshots', labelKey: 'statHeadshots' },
 ];
 
+const BOARD_METRICS = [
+  { key: 'acs', labelKey: 'statACS', fmt: (v) => v },
+  { key: 'kda', labelKey: 'statKDA', fmt: (v) => v.toFixed(2) },
+  { key: 'hs', labelKey: 'statHeadshots', fmt: (v) => `${v}%` },
+  { key: 'rr', labelKey: null, label: 'RR', fmt: (v) => v },
+];
+
 export default function CompareTab({ t, isPremium, filteredGames }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
+  const [boardMetric, setBoardMetric] = useState('acs');
 
   const filteredAcs = useMemo(() => computeAverageAcs(filteredGames), [filteredGames]);
   const filteredKda = useMemo(() => computeAggregateKDA(filteredGames), [filteredGames]);
@@ -77,7 +85,13 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
     if (c.metric === 'HS%') return filteredHeadshots !== null ? { ...c, you: filteredHeadshots } : c;
     return c;
   });
-  const friendsWithYou = friends.map((f) => (f.isYou ? { ...f, acs: you.acs } : f));
+  // The "you" row tracks the active filter for the stats that have a filtered
+  // equivalent (acs/kda/hs); rr has none, so it stays static.
+  const friendsWithYou = friends.map((f) =>
+    f.isYou ? { ...f, acs: you.acs, kda: you.kda, hs: you.headshots } : f
+  );
+  const activeMetric = BOARD_METRICS.find((m) => m.key === boardMetric) ?? BOARD_METRICS[0];
+  const friendsRanked = [...friendsWithYou].sort((a, b) => b[boardMetric] - a[boardMetric]);
 
   function handleSearch(e) {
     e.preventDefault();
@@ -166,10 +180,31 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
         </Card>
 
         <Card>
-          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.friendsBoard}</span>
+          <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
+            <span className="font-display text-sm tracking-wide uppercase text-neutral-300">{t.friendsBoard}</span>
+            <div className="flex gap-1">
+              {BOARD_METRICS.map((m) => {
+                const label = m.labelKey ? t[m.labelKey] : m.label;
+                return (
+                  <button
+                    key={m.key}
+                    onClick={() => setBoardMetric(m.key)}
+                    className={`px-2 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                      boardMetric === m.key
+                        ? 'border-accent text-accent bg-accent/5'
+                        : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <div className="flex flex-col gap-1.5">
-            {[...friendsWithYou].sort((a, b) => b.acs - a.acs).map((f, i) => {
+            {friendsRanked.map((f, i) => {
               const top = MEDAL[i];
+              const metricLabel = activeMetric.labelKey ? t[activeMetric.labelKey] : activeMetric.label;
               return (
                 <div
                   key={f.name}
@@ -184,7 +219,9 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
                     </span>
                     <span className={`font-body text-sm ${f.isYou ? 'text-accent' : 'text-neutral-300'}`}>{f.name}</span>
                   </div>
-                  <span className="font-mono text-sm text-white">{f.acs} <span className="text-[9px] text-neutral-600">{t.statACS}</span></span>
+                  <span className="font-mono text-sm text-white">
+                    {activeMetric.fmt(f[boardMetric])} <span className="text-[9px] text-neutral-600">{metricLabel}</span>
+                  </span>
                 </div>
               );
             })}
