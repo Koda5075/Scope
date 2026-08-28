@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Trophy } from 'lucide-react';
 import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
@@ -7,6 +7,7 @@ import PlayerCompareView from '../PlayerCompareView.jsx';
 import { LEADERBOARD_REGIONS, getLeaderboard } from '../../data/leaderboardData.js';
 import { otherPlayers } from '../../data/mockData.js';
 import { getRankIcon } from '../../data/valorantAssets.js';
+import { fetchValLeaderboard } from '../../lib/riotLive.js';
 
 const MEDAL = ['#F2C94C', '#C0C4C9', '#CD7F32']; // gold / silver / bronze for ranks 1-3
 
@@ -31,8 +32,26 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState('profile');
   const [scopeOnly, setScopeOnly] = useState(false);
+  // Mock rows render instantly; the val-leaderboard proxy swaps in real rows if a Riot
+  // key is configured server-side, otherwise the mock stays. `live` tracks which is shown.
+  const [allRows, setAllRows] = useState(() => getLeaderboard(region));
+  const [live, setLive] = useState(false);
 
-  const allRows = useMemo(() => getLeaderboard(region), [region]);
+  useEffect(() => {
+    setAllRows(getLeaderboard(region));
+    setLive(false);
+    let alive = true;
+    fetchValLeaderboard(region).then((data) => {
+      if (alive && Array.isArray(data?.players) && data.players.length) {
+        setAllRows(data.players);
+        setLive(true);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [region]);
+
   const scopeRows = useMemo(() => allRows.filter((p) => isScopePlayer(p)), [allRows]);
   const rows = scopeOnly ? scopeRows : allRows;
   // The Scope-only view is a short flat list — no podium, since it can hold 0–2 rows.
@@ -50,6 +69,12 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
         <div className="flex items-center gap-2 mb-1">
           <Trophy size={14} className="text-accent" />
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300">{t.leaderboardTitle}</span>
+          {live && (
+            <span className="flex items-center gap-1 text-[9px] font-display uppercase tracking-wide text-accent border border-accent px-1.5 py-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+              {t.leaderboardLive}
+            </span>
+          )}
         </div>
         <p className="text-xs font-body text-neutral-500 mb-4">{t.leaderboardSubtitle}</p>
 
