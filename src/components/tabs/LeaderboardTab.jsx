@@ -123,11 +123,13 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
             const matched = !publicOnly && isScopePlayer(p);
             const rankIcon = getRankIcon(p.competitiveTier);
             const medal = MEDAL[i];
+            const Cell = matched ? 'button' : 'div';
             return (
-              <div
+              <Cell
                 key={p.puuid}
-                className={`relative flex flex-col items-center text-center gap-1 px-2 pt-4 pb-3 border ${
-                  i === 0 ? 'border-accent' : 'border-neutral-800'
+                {...(matched ? { type: 'button', onClick: () => openScopeProfile(matched) } : {})}
+                className={`relative flex flex-col items-center text-center gap-1 px-2 pt-4 pb-3 border w-full transition-colors ${
+                  i === 0 ? 'border-accent' : matched ? 'border-accent hover:bg-neutral-800/60' : 'border-neutral-800'
                 }`}
                 style={{ background: `linear-gradient(180deg, ${medal}1f, transparent 70%)` }}
               >
@@ -144,14 +146,9 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
                 <span className="font-mono text-xs text-white">{p.rankedRating} RR</span>
                 <span className="text-[9px] font-body text-neutral-500">{p.competitiveTier}</span>
                 {matched && (
-                  <button
-                    onClick={() => openScopeProfile(matched)}
-                    className="text-[10px] font-body text-accent hover:underline"
-                  >
-                    {t.compareWithMe}
-                  </button>
+                  <span className="text-[10px] font-body text-accent">{t.leaderboardViewProfile}</span>
                 )}
-              </div>
+              </Cell>
             );
           })}
         </div>
@@ -161,11 +158,15 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
           {rest.map((p) => {
             const matched = !publicOnly && isScopePlayer(p);
             const rankIcon = getRankIcon(p.competitiveTier);
+            const Row = matched ? 'button' : 'div';
             return (
-              <div
+              <Row
                 key={p.puuid}
-                className={`flex items-center justify-between gap-3 px-3 py-2 border transition-colors hover:border-neutral-600 ${
-                  matched ? 'border-accent bg-neutral-900' : 'border-neutral-800 bg-neutral-950'
+                {...(matched ? { type: 'button', onClick: () => openScopeProfile(matched) } : {})}
+                className={`flex items-center justify-between gap-3 px-3 py-2 border transition-colors w-full text-left ${
+                  matched
+                    ? 'border-accent bg-neutral-900 hover:bg-neutral-800/70'
+                    : 'border-neutral-800 bg-neutral-950 hover:border-neutral-600'
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -182,15 +183,10 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
                   <span className="hidden sm:block text-[11px] font-body text-neutral-500">{p.competitiveTier}</span>
                   <span className="font-mono text-xs text-white w-12 text-right">{p.rankedRating} RR</span>
                   {matched && (
-                    <button
-                      onClick={() => openScopeProfile(matched)}
-                      className="text-[11px] font-body text-accent hover:underline whitespace-nowrap"
-                    >
-                      {t.compareWithMe}
-                    </button>
+                    <span className="text-[11px] font-body text-accent whitespace-nowrap">{t.leaderboardViewProfile}</span>
                   )}
                 </div>
-              </div>
+              </Row>
             );
           })}
         </div>
