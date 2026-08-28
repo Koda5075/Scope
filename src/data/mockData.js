@@ -682,9 +682,23 @@ export const referralProgram = {
 
 // Mock Scope+ pricing — no real Stripe integration yet, so these are placeholder
 // figures rendered by the plans modal so "See plans" leads somewhere concrete.
+const MONTHLY_PRICE = 4.99;
+const ANNUAL_PRICE = 49.99;
+
 export const scopePlusPlans = [
-  { id: 'monthly', nameKey: 'planMonthly', price: 4.99, periodKey: 'periodMonth' },
-  { id: 'annual', nameKey: 'planAnnual', price: 49.99, periodKey: 'periodYear', badge: true, perMonthEquivalent: 49.99 / 12 },
+  { id: 'monthly', nameKey: 'planMonthly', price: MONTHLY_PRICE, periodKey: 'periodMonth' },
+  {
+    id: 'annual',
+    nameKey: 'planAnnual',
+    price: ANNUAL_PRICE,
+    periodKey: 'periodYear',
+    badge: true,
+    perMonthEquivalent: ANNUAL_PRICE / 12,
+    // What the same year would cost month-by-month — the anchor the per-month figure
+    // is compared against.
+    anchorPerMonth: MONTHLY_PRICE,
+    savingPct: Math.round((1 - ANNUAL_PRICE / (MONTHLY_PRICE * 12)) * 100),
+  },
 ];
 
 // Feature list for the plans modal reuses section titles already translated elsewhere

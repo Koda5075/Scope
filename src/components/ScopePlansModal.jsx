@@ -55,8 +55,18 @@ export default function ScopePlansModal({ onClose, t }) {
               <span className="text-xs text-neutral-500 font-body">/ {t[plan.periodKey]}</span>
             </div>
             {plan.perMonthEquivalent && (
-              <div className="text-[11px] text-neutral-500 font-body mb-3">
-                {fmt(t.plansPerMonthEquiv, { price: plan.perMonthEquivalent.toFixed(2) })}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3">
+                <span className="text-[11px] text-neutral-500 font-body">
+                  {plan.anchorPerMonth && (
+                    <s className="text-neutral-600 mr-1.5">{plan.anchorPerMonth.toFixed(2)}€</s>
+                  )}
+                  {fmt(t.plansPerMonthEquiv, { price: plan.perMonthEquivalent.toFixed(2) })}
+                </span>
+                {plan.savingPct > 0 && (
+                  <span className="text-[9px] font-display font-bold uppercase tracking-wide text-accent border border-accent px-1.5 py-0.5">
+                    {fmt(t.plansSavePct, { pct: plan.savingPct })}
+                  </span>
+                )}
               </div>
             )}
             <button
