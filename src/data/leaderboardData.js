@@ -19,7 +19,18 @@ const NAME_POOL = [
   'Rook', 'Zephyr', 'Onyx', 'Peregrine', 'Sable', 'Astra', 'Corvus', 'Lumen', 'Rhea', 'Talos',
   'Wren', 'Ember', 'Frost', 'Kite', 'Orbit', 'Pyra', 'Quartz', 'Sever', 'Vale', 'Bastion',
 ];
-const TAG_POOL = ['EUW1', 'NA1', 'AP', 'KR', 'LATAM', 'BR1'];
+
+// Riot IDs on a regional leaderboard carry that region's own tag lines — an EU board
+// never shows a #KR or #BR1 tag. Keyed by the shard codes in LEADERBOARD_REGIONS so a
+// row's tag always matches the region filter it was fetched under.
+const REGION_TAGS = {
+  eu: ['EUW', 'EUNE', 'EU1', 'TR1', 'RU1'],
+  na: ['NA1', 'NA2', 'NA'],
+  ap: ['AP', 'SG2', 'OCE', 'JP1'],
+  kr: ['KR1', 'KR2', 'KR'],
+  latam: ['LAN', 'LAS', 'LA1', 'LA2'],
+  br: ['BR1', 'BR2', 'BR'],
+};
 
 // A real regional top-30 is Immortal/Radiant only — Diamond or below never appears at
 // this scale — so the tier bands only cover that range, most-exclusive first.
@@ -42,13 +53,15 @@ function tierForRank(rank) {
 export function getLeaderboard(region) {
   const regionSeed = (LEADERBOARD_REGIONS.indexOf(region) + 1) * 1000;
 
+  const tagPool = REGION_TAGS[region] ?? REGION_TAGS.eu;
+
   const players = Array.from({ length: 30 }, (_, i) => {
     const rank = i + 1;
     const seed = regionSeed + rank * 13;
     return {
       puuid: `lb-${region}-${rank}`,
       gameName: NAME_POOL[Math.floor(seededValue(seed + 1) * NAME_POOL.length)],
-      tagLine: TAG_POOL[Math.floor(seededValue(seed + 2) * TAG_POOL.length)],
+      tagLine: tagPool[Math.floor(seededValue(seed + 2) * tagPool.length)],
       leaderboardRank: rank,
       rankedRating: Math.max(0, Math.round(680 - rank * 8 - seededValue(seed) * 5)),
       competitiveTier: tierForRank(rank),
@@ -63,6 +76,11 @@ export function getLeaderboard(region) {
     const novaRow = players.find((p) => p.leaderboardRank === 22);
     novaRow.gameName = 'Nova';
     novaRow.tagLine = 'EUW1';
+    // Miro#EUW1 ('p3') is also a connected+public Scope profile — planting a second
+    // known row makes the "Scope users only" leaderboard filter show a real list.
+    const miroRow = players.find((p) => p.leaderboardRank === 27);
+    miroRow.gameName = 'Miro';
+    miroRow.tagLine = 'EUW1';
   }
 
   return players;
