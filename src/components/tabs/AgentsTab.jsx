@@ -9,6 +9,9 @@ import { gamesLabel } from '../../i18n/translations.js';
 import InfoTip from '../InfoTip.jsx';
 
 const PREVIEW_COUNT = 3;
+// One more row than maps/weapons: an AgentRow is much shorter than a MapRow, so four
+// of them leaves the "Agent performance" card level with "Map performance" beside it.
+const AGENT_PREVIEW_COUNT = 4;
 
 function SeeAllButton({ onClick, t }) {
   return (
@@ -140,17 +143,14 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
   const topWeaponShare = topWeapon && totalKills ? Math.round((topWeapon.kills / totalKills) * 100) : 0;
 
   return (
-    // items-start so the shorter "Agent performance" card isn't stretched to match
-    // the taller "Map performance" card next to it (that left an empty slot under
-    // the last agent row).
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card>
         <div className="flex items-center justify-between mb-4">
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.agentPerf}</span>
-          {agentStats.length > PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('agents')} t={t} />}
+          {agentStats.length > AGENT_PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('agents')} t={t} />}
         </div>
         <div className="flex flex-col gap-3">
-          {agentStats.slice(0, PREVIEW_COUNT).map((a) => <AgentRow key={a.name} a={a} t={t} />)}
+          {agentStats.slice(0, AGENT_PREVIEW_COUNT).map((a) => <AgentRow key={a.name} a={a} t={t} />)}
         </div>
       </Card>
 
