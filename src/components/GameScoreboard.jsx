@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Crosshair, Target, Zap, Skull, Flame, Sword, ShieldOff } from 'lucide-react';
+import { Crosshair, Target, Zap, Skull, Flame, Swords, ShieldOff } from 'lucide-react';
 import { getAgentIcon, getMapImage } from '../data/valorantAssets.js';
 import { getMatchDiagnosis } from '../lib/matchDiagnosis.js';
 import KDAStat from './KDAStat.jsx';
@@ -29,23 +29,48 @@ function PlayerDetail({ p, t }) {
         <StatReadout label={t.statClutches} value={p.clutchesWon} unit={`/${p.clutchesPlayed}`} Icon={Flame} tip={t.tipClutches} />
       </div>
 
+      {p.clutchSituations?.length > 0 && (
+        <div className="flex items-center flex-wrap gap-1.5 mb-3">
+          <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mr-1">{t.matchClutchRoundsTitle}</span>
+          {p.clutchSituations.map((c, ci) => (
+            <span
+              key={ci}
+              className={`font-mono text-[10px] px-1.5 py-0.5 border ${
+                c.won ? 'text-accent border-accent' : 'text-neutral-500 border-neutral-700 line-through'
+              }`}
+            >
+              1v{c.v}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="sc-card">
-          <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.matchDamageTitle}</div>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <div className="font-mono text-lg text-white">{p.damageDealt}</div>
-              <div className="text-[10px] text-neutral-500 font-body">{t.matchDamageDealt}</div>
-            </div>
-            <div>
-              <div className="font-mono text-lg text-neutral-400">{p.damageReceived}</div>
-              <div className="text-[10px] text-neutral-500 font-body">{t.matchDamageReceived}</div>
-            </div>
-            <div>
-              <div className="font-mono text-lg text-accent">{p.avgDamageRound}</div>
-              <div className="text-[10px] text-neutral-500 font-body">{t.matchDamagePerRound}</div>
-            </div>
+          <div className="flex items-baseline justify-between mb-2">
+            <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">{t.matchDamageTitle}</span>
+            <span className="font-mono text-lg text-accent leading-none">
+              {p.avgDamageRound}
+              <span className="text-[9px] text-neutral-500 ml-1">{t.matchDamagePerRound}</span>
+            </span>
           </div>
+          {[
+            [t.matchDamageDealt, p.damageDealt, 'bg-accent'],
+            [t.matchDamageReceived, p.damageReceived, 'bg-neutral-600'],
+          ].map(([label, value, bar]) => (
+            <div key={label} className="mb-1.5 last:mb-0">
+              <div className="flex justify-between text-[10px] font-body text-neutral-400 mb-0.5">
+                <span>{label}</span>
+                <span className="font-mono text-neutral-300">{value}</span>
+              </div>
+              <div className="sc-track h-1.5 overflow-hidden">
+                <div
+                  className={`${bar} h-full`}
+                  style={{ width: `${Math.round((value / Math.max(p.damageDealt, p.damageReceived, 1)) * 100)}%` }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="sc-card">
@@ -59,15 +84,31 @@ function PlayerDetail({ p, t }) {
 
         <div className="sc-card">
           <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-2">{t.matchRivalsTitle}</div>
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2 text-xs font-body text-neutral-300">
-              <ShieldOff size={12} className="text-neutral-500 shrink-0" />
-              {fmt(t.matchRivalToughest, { name: p.rivals.toughest.name, count: p.rivals.toughest.count })}
-            </div>
-            <div className="flex items-center gap-2 text-xs font-body text-neutral-300">
-              <Sword size={12} className="text-accent shrink-0" />
-              {fmt(t.matchRivalFavorite, { name: p.rivals.favorite.name, count: p.rivals.favorite.count })}
-            </div>
+          <div className="flex flex-col gap-2">
+            {[
+              [t.matchRivalNemesis, p.rivals.toughest, ShieldOff],
+              [t.matchRivalPrey, p.rivals.favorite, Swords],
+            ].map(([label, r, Icon]) => (
+              <div key={label} className="flex items-center gap-2">
+                {getAgentIcon(r.agent) && (
+                  <img src={getAgentIcon(r.agent)} alt="" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1 text-[9px] uppercase tracking-wide text-neutral-500 font-body">
+                    <Icon size={10} className="shrink-0" /> {label}
+                  </div>
+                  <div className="text-xs font-body text-neutral-300 truncate">{r.name}</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="font-mono text-xs">
+                    <span className="text-neutral-400">{r.theyKilledYou}</span>
+                    <span className="text-neutral-600"> – </span>
+                    <span className="text-accent">{r.youKilledThem}</span>
+                  </div>
+                  <div className="text-[8px] text-neutral-600 font-body">{t.matchRivalDuelCaption}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

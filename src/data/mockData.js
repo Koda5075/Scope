@@ -551,6 +551,12 @@ export function getMatchScoreboard(gameId) {
     const firstDeaths = Math.max(0, Math.round((1 - n3) * 4));
     const clutchesWon = n4 > 0.6 ? 1 : 0;
     const clutchesPlayed = Math.max(clutchesWon, n4 > 0.3 ? 1 : 0);
+    // Each attempted clutch gets a concrete 1vX (X in 2..5, weighted toward the easier
+    // 1v2 / 1v3), and the won ones are the first `clutchesWon`.
+    const clutchSituations = Array.from({ length: clutchesPlayed }, (_, ci) => {
+      const r = seededValue(pSeed + 610 + ci * 11);
+      return { v: 2 + Math.floor(r * r * 4), won: ci < clutchesWon };
+    });
     const damageDealt = Math.round(p.kills * (120 + n5 * 40) + p.assists * 25);
     const damageReceived = Math.round(p.deaths * (110 + (1 - n5) * 40) + 200);
     const avgDamageRound = totalRounds ? Math.round(damageDealt / totalRounds) : 0;
@@ -572,13 +578,21 @@ export function getMatchScoreboard(gameId) {
     p.firstDeaths = firstDeaths;
     p.clutchesWon = clutchesWon;
     p.clutchesPlayed = clutchesPlayed;
+    p.clutchSituations = clutchSituations;
     p.damageDealt = damageDealt;
     p.damageReceived = damageReceived;
     p.avgDamageRound = avgDamageRound;
     p.economy = { ecoRoundsWon, ecoRoundsPlayed, avgSpend };
+
+    const nemesis = enemyPool[rivalIdx];
+    const prey = enemyPool[targetIdx];
+    const hi = (r) => Math.max(2, Math.round(2 + r * 3)); // 2..5 — the dominant direction
+    const lo = (r) => Math.max(0, Math.round(r * 2)); // 0..2 — the other direction
+    // `count` stays the headline number each rival is known for (kept so
+    // getMatchDiagnosis keeps reading it), plus both directions for the duel display.
     p.rivals = {
-      toughest: { name: enemyPool[rivalIdx]?.name, count: Math.max(2, Math.round(1 + n1 * 3)) },
-      favorite: { name: enemyPool[targetIdx]?.name, count: Math.max(2, Math.round(1 + n2 * 3)) },
+      toughest: { name: nemesis?.name, agent: nemesis?.agent, theyKilledYou: hi(n1), youKilledThem: lo(n2), count: hi(n1) },
+      favorite: { name: prey?.name, agent: prey?.agent, theyKilledYou: lo(n1), youKilledThem: hi(n2), count: hi(n2) },
     };
   });
 
