@@ -30,10 +30,14 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
   const [region, setRegion] = useState('eu');
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState('profile');
+  const [scopeOnly, setScopeOnly] = useState(false);
 
-  const rows = useMemo(() => getLeaderboard(region), [region]);
-  const podium = rows.slice(0, 3);
-  const rest = rows.slice(3);
+  const allRows = useMemo(() => getLeaderboard(region), [region]);
+  const scopeRows = useMemo(() => allRows.filter((p) => isScopePlayer(p)), [allRows]);
+  const rows = scopeOnly ? scopeRows : allRows;
+  // The Scope-only view is a short flat list — no podium, since it can hold 0–2 rows.
+  const podium = scopeOnly ? [] : rows.slice(0, 3);
+  const rest = scopeOnly ? rows : rows.slice(3);
 
   function openScopeProfile(matched) {
     setSelected(matched);
@@ -49,7 +53,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
         </div>
         <p className="text-xs font-body text-neutral-500 mb-4">{t.leaderboardSubtitle}</p>
 
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body mr-1">{t.leaderboardRegionLabel}</span>
           {LEADERBOARD_REGIONS.map((r) => (
             <button
@@ -64,7 +68,31 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
           ))}
         </div>
 
+        <div className="flex items-center gap-1 mb-4">
+          {[
+            [false, t.leaderboardShowAll],
+            [true, t.leaderboardShowScope],
+          ].map(([val, label]) => (
+            <button
+              key={String(val)}
+              onClick={() => setScopeOnly(val)}
+              className={`px-2.5 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                scopeOnly === val
+                  ? 'border-accent text-accent bg-accent/5'
+                  : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {scopeOnly && rows.length === 0 && (
+          <div className="text-xs font-body text-neutral-500 py-2">{t.leaderboardNoScopeUsers}</div>
+        )}
+
         {/* Top 3 podium — bigger rank art, medal-tinted position badge, #1 highlighted */}
+        {podium.length > 0 && (
         <div className="grid grid-cols-3 gap-2 mb-3">
           {podium.map((p, i) => {
             const matched = !publicOnly && isScopePlayer(p);
@@ -102,6 +130,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
             );
           })}
         </div>
+        )}
 
         <div className="flex flex-col gap-1">
           {rest.map((p) => {
