@@ -5,8 +5,8 @@ export default function Footer({ t, lang }) {
     <footer className="mt-10">
       <div className="flex flex-col items-center gap-3 text-[11px] text-neutral-700 font-body">
         <div className="flex gap-4">
-          <a href={`/cgu.html?lang=${lang}`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.cgu}</a>
-          <a href={`/confidentialite.html?lang=${lang}`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.privacy}</a>
+          <a href={`/legal.html?lang=${lang}#cgu`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.cgu}</a>
+          <a href={`/legal.html?lang=${lang}#confidentialite`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.privacy}</a>
         </div>
         <ServerStatusBadge t={t} />
         <div>{t.sampleData}</div>
