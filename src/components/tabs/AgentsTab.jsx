@@ -100,15 +100,18 @@ function WeaponRow({ w, killShare, t }) {
         <span className="truncate">{w.name}</span>
         {w.favorite && <Star size={10} className="text-accent shrink-0" fill="currentColor" />}
       </span>
-      <div className="flex-1 sc-track h-2 overflow-hidden" title={killShareHint}><div className="sc-fill h-full" style={{ width: `${killShare}%` }} /></div>
+      <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${killShare}%` }} /></div>
       <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
         <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0">
           <span className="font-mono text-xs text-neutral-300">{w.kills}</span>
           <span className="text-[9px] text-neutral-600 uppercase tracking-wide">{t.weaponKills}</span>
         </span>
-        <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0" title={killShareHint}>
+        <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0">
           <span className="font-mono text-xs text-accent">{killShare}%</span>
-          <span className="text-[9px] text-neutral-600 uppercase tracking-wide underline decoration-dotted decoration-neutral-600 cursor-help">{t.weaponKillShare}</span>
+          <span className="flex items-center gap-1 text-[9px] text-neutral-600 uppercase tracking-wide">
+            {t.weaponKillShare}
+            <InfoTip text={killShareHint} />
+          </span>
         </span>
         <span className="flex flex-col items-start sm:items-end sm:w-14 shrink-0">
           <span className="font-mono text-xs text-white">{w.accuracy}%</span>
