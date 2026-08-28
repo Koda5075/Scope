@@ -29,3 +29,13 @@ verify_jwt = false
 # Stripe directly using the secret key, which is the actual source of truth here.
 [functions.verify-checkout-session]
 verify_jwt = false
+
+# Public read-only Riot proxies (VALORANT platform status / regional leaderboard).
+# No session exists yet, and the data is public by nature. Abuse of the daily key's
+# rate limit is bounded by the per-region in-function cache (60s / 5min) and the
+# APP_URL CORS lock, not by a JWT. Revisit once real auth lands.
+[functions.val-status]
+verify_jwt = false
+
+[functions.val-leaderboard]
+verify_jwt = false
