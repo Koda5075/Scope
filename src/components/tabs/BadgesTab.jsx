@@ -21,7 +21,11 @@ export default function BadgesTab({ t, isPremium }) {
               style={
                 unlocked
                   ? { borderLeftColor: glowColor, boxShadow: `0 0 20px -6px ${glowColor}`, background: `linear-gradient(135deg, ${glowColor}14, var(--sc-surface) 55%)` }
-                  : undefined
+                  // The accent border means "active/unlocked" everywhere else on the site
+                  // (sc-card's default) — a locked badge is the opposite of that, so it
+                  // drops the accent left border entirely rather than just fading it via
+                  // the opacity-50 on the whole card, which read as an inconsistency.
+                  : { borderLeftColor: 'var(--sc-line)' }
               }
             >
               <div className="flex items-center gap-3">

@@ -243,7 +243,7 @@ export default function ScopeDashboard() {
         .sc-fill-muted { background: #4D4D4D; }
         .sc-badge { background: var(--sc-surface); border: 1px solid var(--sc-line); border-left: 2px solid var(--accent); }
         .locked-overlay { backdrop-filter: blur(3px); background: var(--sc-overlay); }
-        .settings-panel { background: var(--sc-surface); border: 1px solid var(--sc-line); }
+        .settings-panel { background: var(--sc-surface); border: 1px solid var(--sc-line); border-top: 3px solid var(--accent); }
         .swatch { width: 22px; height: 22px; border-radius: 999px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; cursor: pointer; }
 
         /* Real Valorant art (agents/maps/ranks): full color, framed with a thin accent
