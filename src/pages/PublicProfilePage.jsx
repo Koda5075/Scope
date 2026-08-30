@@ -54,7 +54,7 @@ export default function PublicProfilePage({ slug }) {
       style={{ '--accent': THEMES[theme].accent, '--accent-dim': THEMES[theme].dim }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
+        /* Fonts load via the <link> in index.html's <head>, not @import here. */
         .font-display { font-family: 'Rajdhani', sans-serif; }
         .font-body { font-family: 'Inter', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }

@@ -38,7 +38,6 @@ export default class ErrorBoundary extends Component {
         style={{ '--accent': '#FFC939' }}
       >
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
           .font-display { font-family: 'Rajdhani', sans-serif; }
           .font-body { font-family: 'Inter', sans-serif; }
         `}</style>
