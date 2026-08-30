@@ -61,19 +61,25 @@ export default function BadgesTab({ t, isPremium }) {
                 </div>
               </div>
 
-              {unlocked && progress && (
-                <div className="mt-2.5">
-                  <div className="sc-track h-1.5 overflow-hidden">
-                    <div className="h-full transition-all" style={{ width: `${progress.progressPct}%`, background: progress.tierColor }} />
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <span className="font-mono text-[10px] text-neutral-500">{progress.value}</span>
-                    <span className="font-mono text-[10px] text-neutral-600">
-                      {progress.isMaxed ? t.tierMaxed : `${t.tierNext} ${progress.nextThreshold}`}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <div className="mt-2.5 min-h-[26px]">
+                {unlocked && progress ? (
+                  <>
+                    <div className="sc-track h-1.5 overflow-hidden">
+                      <div className="h-full transition-all" style={{ width: `${progress.progressPct}%`, background: progress.tierColor }} />
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className="font-mono text-[10px] text-neutral-500">{progress.value}</span>
+                      <span className="font-mono text-[10px] text-neutral-600">
+                        {progress.isMaxed ? t.tierMaxed : `${t.tierNext} ${progress.nextThreshold}`}
+                      </span>
+                    </div>
+                  </>
+                ) : unlocked && b.daysAgo !== undefined ? (
+                  <span className="font-mono text-[10px] text-neutral-500">
+                    {t.badgeUnlockedLabel} · {b.daysAgo === 0 ? t.alertToday : `${b.daysAgo}${t.daysAgoSuffix}`}
+                  </span>
+                ) : null}
+              </div>
             </Card>
           );
         })}
