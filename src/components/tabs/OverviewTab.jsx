@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
@@ -31,6 +31,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
+  const [statsCopied, setStatsCopied] = useState(false);
   const GAMES_PAGE = 8;
   const [visibleGames, setVisibleGames] = useState(GAMES_PAGE);
   // Collapse back to the first page whenever the global filter changes the list.
@@ -99,6 +100,23 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
       setTimeout(() => setShared(false), 1800);
     } finally {
       setSharing(false);
+    }
+  }
+
+  async function handleCopyStatsText() {
+    const streakValue = `${streaks.currentCount}${streaks.currentType === 'win' ? t.winShort : t.lossShort}`;
+    const lines = [
+      `**${t.sessionSummary}**`,
+      `${t.games}: ${filteredGames.length} | ${t.record}: ${wins}${t.winShort}-${losses}${t.lossShort} | ${t.winRateLabel}: ${winRate !== null ? `${winRate}%` : '—'}`,
+      `${t.best}: ${best.label} | ${t.worst}: ${worst.label}`,
+      `${t.streakLabel}: ${streakValue} (${t.bestStreak}: ${streaks.bestWinStreak}${t.winShort})`,
+    ];
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'));
+      setStatsCopied(true);
+      setTimeout(() => setStatsCopied(false), 1800);
+    } catch {
+      /* ignore — clipboard unavailable */
     }
   }
 
@@ -171,14 +189,23 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
         <Card>
           <div className="flex items-center justify-between mb-3">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.sessionSummary}</span>
-            <button
-              onClick={handleShare}
-              disabled={sharing}
-              className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors disabled:opacity-50"
-            >
-              {shared ? <Check size={12} className="text-accent" /> : <Share2 size={12} />}
-              {shared ? t.shareDownloaded : t.share}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleCopyStatsText}
+                className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors"
+              >
+                {statsCopied ? <Check size={12} className="text-accent" /> : <Copy size={12} />}
+                {statsCopied ? t.statsCopied : t.copyStatsButton}
+              </button>
+              <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors disabled:opacity-50"
+              >
+                {shared ? <Check size={12} className="text-accent" /> : <Share2 size={12} />}
+                {shared ? t.shareDownloaded : t.share}
+              </button>
+            </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.games}</div><div className="font-mono text-xl text-white">{filteredGames.length}</div></div>
@@ -197,6 +224,11 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
               <div className="text-[10px] text-neutral-600 font-mono mt-0.5">{t.bestStreak}: {streaks.bestWinStreak}{t.winShort}</div>
             </div>
           </div>
+          {filteredGames.length > 0 && filteredGames.length < 5 && (
+            <div className="text-[10px] text-neutral-600 font-body mt-3">
+              {t.smallSampleNote.replace('{n}', filteredGames.length)}
+            </div>
+          )}
         </Card>
 
         <Card>

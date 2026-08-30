@@ -9,7 +9,7 @@ import PlayerHeader from './components/PlayerHeader.jsx';
 import { visibleCosmetics } from './data/cosmeticUnlocks.js';
 import PlayerSearchBar from './components/PlayerSearchBar.jsx';
 import ProfileCustomizationModal from './components/ProfileCustomizationModal.jsx';
-import TabNav from './components/TabNav.jsx';
+import TabNav, { TABS } from './components/TabNav.jsx';
 import FilterBar from './components/FilterBar.jsx';
 import PromoBanner from './components/PromoBanner.jsx';
 import OnboardingTour from './components/OnboardingTour.jsx';
@@ -202,6 +202,24 @@ export default function ScopeDashboard() {
   useEffect(() => {
     document.documentElement.style.background = resolvedThemeMode === 'light' ? '#FAF9F7' : '#000000';
   }, [resolvedThemeMode]);
+
+  // Digit keys 1-7 jump straight to the matching tab, in TabNav's own order — skipped
+  // while typing in any input/textarea/select (or when logged out, since tabs aren't
+  // shown yet) so it never hijacks a plain "1" typed into the Riot ID search or a
+  // settings field.
+  useEffect(() => {
+    if (!loggedIn) return;
+    function handleKeyDown(e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target;
+      const isTyping = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable;
+      if (isTyping) return;
+      const index = Number(e.key) - 1;
+      if (Number.isInteger(index) && TABS[index]) setTab(TABS[index]);
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [loggedIn]);
 
   return (
     <div
