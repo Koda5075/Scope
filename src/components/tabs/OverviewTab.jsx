@@ -194,7 +194,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
                     className="flex items-center justify-between gap-3 px-3 py-2 border border-neutral-800 hover:border-accent bg-neutral-950 transition-colors text-left flex-wrap sm:flex-nowrap"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className={`w-1.5 h-1.5 shrink-0 ${g.result === 'win' ? 'bg-accent' : 'bg-neutral-600'}`} />
+                      <span className={`w-2 h-2 shrink-0 rounded-full ${g.result === 'win' ? 'bg-accent' : 'bg-red-500'}`} />
                       {mapImage && <img src={mapImage.splash} alt="" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
                       <span className="font-display text-sm font-semibold text-white truncate">{g.map}</span>
                       <span
