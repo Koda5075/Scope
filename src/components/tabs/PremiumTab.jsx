@@ -98,12 +98,19 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           <Card className="h-full">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.scopePerformance}</span>
             <div className="grid grid-cols-2 gap-3 mb-4">
-              {performanceScore.map((p) => (
-                <div key={p.label}>
-                  <div className="flex justify-between text-[11px] text-neutral-400 mb-1"><span>{metricLabel(p.label, t)}</span><span>{p.value}</span></div>
-                  <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${p.value}%` }} /></div>
-                </div>
-              ))}
+              {performanceScore.map((p) => {
+                const isWeakest = p.label === weakest.label;
+                return (
+                  <div key={p.label}>
+                    <div className={`flex justify-between text-[11px] mb-1 ${isWeakest ? 'text-red-400' : 'text-neutral-400'}`}>
+                      <span>{metricLabel(p.label, t)}</span><span>{p.value}</span>
+                    </div>
+                    <div className="sc-track h-1.5 overflow-hidden">
+                      <div className={`h-full ${isWeakest ? '' : 'sc-fill'}`} style={{ width: `${p.value}%`, ...(isWeakest ? { background: '#EF4444' } : {}) }} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="flex items-center justify-between mb-2">
