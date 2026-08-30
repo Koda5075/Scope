@@ -25,7 +25,7 @@ function VersusRow({ label, you, them, themLabel, youLabel = 'You', bare = false
     <>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-[11px] text-neutral-400 font-body">{label}</span>
-        <span className={`flex items-center gap-1 text-[11px] font-mono ${ahead ? 'text-accent' : 'text-neutral-500'}`}>
+        <span className={`flex items-center gap-1 text-[11px] font-mono ${ahead ? 'text-accent' : 'text-red-500'}`}>
           {ahead ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
           {fmtDelta(you - them)}
         </span>
