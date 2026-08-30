@@ -199,8 +199,9 @@ export default function ScopeDashboard() {
       style={{ '--accent': accent, '--accent-dim': accentDim, background: 'var(--sc-bg)', color: 'var(--sc-text)' }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
-
+        /* Fonts are loaded via a <link> in index.html's <head> (not @import here) so the
+           browser's HTML parser can start fetching them immediately instead of waiting
+           for React to mount and inject this stylesheet. */
         .font-display { font-family: 'Rajdhani', sans-serif; }
         .font-body { font-family: 'Inter', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
@@ -336,6 +337,7 @@ export default function ScopeDashboard() {
           t={t}
         />
 
+        <main>
         {!loggedIn ? (
           <LandingView t={t} setLoggedIn={setLoggedIn} filteredGames={filteredGames} />
         ) : (
@@ -387,6 +389,7 @@ export default function ScopeDashboard() {
             <OnboardingTour t={t} />
           </>
         )}
+        </main>
 
         <Footer t={t} lang={lang} />
 
