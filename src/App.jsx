@@ -49,7 +49,19 @@ export default function ScopeDashboard() {
   const [tab, setTab] = useState('overview');
   const [lang, setLang] = useState(() => loadStored('scope-lang', 'en', (v) => (T[v] ? v : 'en')));
   const [theme, setTheme] = useState(() => loadStored('scope-theme', 'yellow', (v) => (THEMES[v] ? v : 'yellow')));
-  const [themeMode, setThemeMode] = useState(() => loadStored('scope-theme-mode', 'dark', (v) => (v === 'light' ? 'light' : 'dark')));
+  // themeMode is the stored preference (dark|light|auto); resolvedThemeMode below is what
+  // actually gets applied to data-theme/resolveAccent, since the CSS overrides only ever
+  // check for the literal string "light" — 'auto' always needs a value that follows the
+  // OS's prefers-color-scheme, not the CSS's own default.
+  const [themeMode, setThemeMode] = useState(() => loadStored('scope-theme-mode', 'dark', (v) => (['light', 'auto'].includes(v) ? v : 'dark')));
+  const [systemPrefersDark, setSystemPrefersDark] = useState(() => window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? true);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e) => setSystemPrefersDark(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  const resolvedThemeMode = themeMode === 'auto' ? (systemPrefersDark ? 'dark' : 'light') : themeMode;
   // Scope+ only: a free-choice accent hex that overrides the preset when set. Non-Scope+
   // accounts keep the value stored but it has no effect until they subscribe.
   const [customAccent, setCustomAccent] = useState(() => loadStored('scope-accent-custom', null, (v) => (isValidHex(v) ? v : null)));
@@ -81,7 +93,7 @@ export default function ScopeDashboard() {
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
-  const accent = resolveAccent({ theme, customAccent, isPremium, mode: themeMode });
+  const accent = resolveAccent({ theme, customAccent, isPremium, mode: resolvedThemeMode });
   const accentDim =
     isPremium && isValidHex(customAccent) ? deriveDim(accent) : THEMES[theme]?.dim ?? THEMES.yellow.dim;
   const selectedAct = acts.find((a) => a.id === actId) ?? acts[0];
@@ -188,13 +200,13 @@ export default function ScopeDashboard() {
   // Keep the page (and the area outside the max-w container / behind overscroll) on the
   // active surface colour, not just the app root div.
   useEffect(() => {
-    document.documentElement.style.background = themeMode === 'light' ? '#FAF9F7' : '#000000';
-  }, [themeMode]);
+    document.documentElement.style.background = resolvedThemeMode === 'light' ? '#FAF9F7' : '#000000';
+  }, [resolvedThemeMode]);
 
   return (
     <div
       data-scope-root
-      data-theme={themeMode}
+      data-theme={resolvedThemeMode}
       className="min-h-screen w-full font-body"
       style={{ '--accent': accent, '--accent-dim': accentDim, background: 'var(--sc-bg)', color: 'var(--sc-text)' }}
     >

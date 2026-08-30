@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, AlertTriangle, Lock, Moon, Sun } from 'lucide-react';
+import { Check, AlertTriangle, Lock, Moon, Sun, Monitor } from 'lucide-react';
 import Modal from './Modal.jsx';
 import { THEMES, isValidHex } from '../data/themes.js';
 import { inviteStats } from '../data/mockData.js';
@@ -129,6 +129,7 @@ export default function SettingsModal({
                   {[
                     ['dark', t.themeModeDark, Moon],
                     ['light', t.themeModeLight, Sun],
+                    ['auto', t.themeModeAuto, Monitor],
                   ].map(([mode, label, Icon]) => (
                     <button
                       key={mode}

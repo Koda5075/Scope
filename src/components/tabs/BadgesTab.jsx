@@ -1,13 +1,54 @@
+import { useState } from 'react';
 import { Lock } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { badgeDefs, getBadgeProgress, isBadgeUnlocked } from '../../data/mockData.js';
 
+const FILTERS = ['all', 'unlocked', 'locked'];
+
 export default function BadgesTab({ t, isPremium }) {
+  const [filter, setFilter] = useState('all');
+  const unlockedCount = badgeDefs.filter(isBadgeUnlocked).length;
+  const visibleBadges = badgeDefs.filter((b) => {
+    if (filter === 'unlocked') return isBadgeUnlocked(b);
+    if (filter === 'locked') return !isBadgeUnlocked(b);
+    return true;
+  });
+
   return (
     <div className="flex flex-col gap-3">
+      <Card>
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300">
+            {unlockedCount}/{badgeDefs.length} {t.badgesUnlockedLabel}
+          </span>
+          <div className="flex gap-1">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-2 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                  filter === f
+                    ? 'border-accent text-accent bg-accent/5'
+                    : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                }`}
+              >
+                {t[`badgesFilter${f === 'all' ? 'All' : f === 'unlocked' ? 'Unlocked' : 'Locked'}`]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="sc-track h-1.5 overflow-hidden">
+          <div className="sc-fill h-full transition-all" style={{ width: `${(unlockedCount / badgeDefs.length) * 100}%` }} />
+        </div>
+      </Card>
+
+      {visibleBadges.length === 0 && (
+        <div className="text-xs font-body text-neutral-500 py-2">{t.badgesNoneForFilter}</div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {badgeDefs.map((b) => {
+        {visibleBadges.map((b) => {
           const Icon = b.icon;
           const info = t.badges[b.id];
           const progress = getBadgeProgress(b);
