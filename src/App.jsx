@@ -287,9 +287,12 @@ export default function ScopeDashboard() {
         [data-scope-root][data-theme="light"] .text-neutral-300 { color: #33302C !important; }
         [data-scope-root][data-theme="light"] .text-neutral-400 { color: #52504B !important; }
         [data-scope-root][data-theme="light"] .text-neutral-500 { color: #6B675F !important; }
-        [data-scope-root][data-theme="light"] .text-neutral-600 { color: #8A857C !important; }
+        /* #8A857C/#A8A29A measured at 3.49:1 / 2.40:1 against the light surface — both
+           well under WCAG AA's 4.5:1 for normal text. Darkened to #6C6861/#726E69
+           (5.27:1 / 4.81:1) while keeping the same warm-stone tint. */
+        [data-scope-root][data-theme="light"] .text-neutral-600 { color: #6C6861 !important; }
         [data-scope-root][data-theme="light"] .text-neutral-700,
-        [data-scope-root][data-theme="light"] .text-neutral-800 { color: #A8A29A !important; }
+        [data-scope-root][data-theme="light"] .text-neutral-800 { color: #726E69 !important; }
 
         /* Banner fade in PlayerHeader / GameScoreboard fades to the surface, not to black. */
         [data-scope-root][data-theme="light"] .from-neutral-950 { --tw-gradient-from: var(--sc-bg) !important; }
@@ -319,7 +322,9 @@ export default function ScopeDashboard() {
         [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-300 { color: #D4D4D4 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-400 { color: #A3A3A3 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-500 { color: #8A8A8A !important; }
-        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-600 { color: #707070 !important; }
+        /* #707070 measured at 4.00:1 against the banner's #0A0A0A — just under AA's
+           4.5:1. #808080 clears it (5.01:1). */
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-600 { color: #808080 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .border-neutral-700,
         [data-scope-root][data-theme="light"] .sc-rank-banner .border-neutral-800 { border-color: #333333 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .bg-neutral-900 { background-color: #171717 !important; }
