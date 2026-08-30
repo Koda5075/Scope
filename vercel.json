@@ -1,4 +1,10 @@
 {
+  "images": {
+    "sizes": [24, 32, 44, 48, 64, 96, 112, 128, 224, 256, 384, 512, 768],
+    "domains": ["media.valorant-api.com"],
+    "minimumCacheTTL": 2678400,
+    "formats": ["image/avif", "image/webp"]
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],

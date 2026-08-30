@@ -22,7 +22,7 @@ import {
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
   computeFirstBloods, computeClutchRecord, performanceScore,
 } from '../../data/mockData.js';
-import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
+import { getAgentIcon, getMapImage, optimizeImg } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
@@ -248,7 +248,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <span className={`w-2 h-2 shrink-0 rounded-full ${g.result === 'win' ? 'bg-accent' : 'bg-red-500'}`} />
-                      {mapImage && <img src={mapImage.splash} alt="" loading="lazy" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
+                      {mapImage && <img src={optimizeImg(mapImage.splash, 48)} alt="" loading="lazy" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
                       <span className="font-display text-sm font-semibold text-white truncate">{g.map}</span>
                       <span
                         className={`font-body text-[10px] uppercase tracking-wide px-1.5 py-0.5 shrink-0 border ${
@@ -258,7 +258,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
                         {t[MODE_LABEL_KEY[g.mode]]}
                       </span>
                       <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 shrink-0">
-                        {getAgentIcon(g.agent) && <img src={getAgentIcon(g.agent)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
+                        {getAgentIcon(g.agent) && <img src={optimizeImg(getAgentIcon(g.agent), 32)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
                         {g.agent}
                       </span>
                     </div>

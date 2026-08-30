@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Crosshair, Target, Zap, Skull, Flame, Swords, ShieldOff } from 'lucide-react';
-import { getAgentIcon, getMapImage } from '../data/valorantAssets.js';
+import { getAgentIcon, getMapImage, optimizeImg } from '../data/valorantAssets.js';
 import { getMatchDiagnosis } from '../lib/matchDiagnosis.js';
 import KDAStat from './KDAStat.jsx';
 import StatReadout from './StatReadout.jsx';
@@ -91,7 +91,7 @@ function PlayerDetail({ p, t }) {
             ].map(([label, r, Icon]) => (
               <div key={label} className="flex items-center gap-2">
                 {getAgentIcon(r.agent) && (
-                  <img src={getAgentIcon(r.agent)} alt="" loading="lazy" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />
+                  <img src={optimizeImg(getAgentIcon(r.agent), 32)} alt="" loading="lazy" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1 text-[9px] uppercase tracking-wide text-neutral-500 font-body">
@@ -132,7 +132,7 @@ export default function GameScoreboard({ match, t }) {
     <div>
       {mapImage && (
         <div className="relative -mx-5 -mt-5 mb-4 h-28 overflow-hidden">
-          <img src={mapImage.splash} alt="" className="w-full h-full object-cover" />
+          <img src={optimizeImg(mapImage.splash, 768)} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent" />
         </div>
       )}
@@ -178,7 +178,7 @@ export default function GameScoreboard({ match, t }) {
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${p.team === you?.team ? 'bg-accent' : 'bg-neutral-600'}`} />
                   <span className={`font-body text-xs truncate ${p.isYou ? 'text-accent' : 'text-neutral-300'}`}>{p.name}</span>
                   <span className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-600 shrink-0">
-                    {getAgentIcon(p.agent) && <img src={getAgentIcon(p.agent)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
+                    {getAgentIcon(p.agent) && <img src={optimizeImg(getAgentIcon(p.agent), 32)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
                     {p.agent}
                   </span>
                 </div>

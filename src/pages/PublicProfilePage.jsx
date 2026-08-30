@@ -7,7 +7,7 @@ import Avatar from '../components/Avatar.jsx';
 import { T } from '../i18n/translations.js';
 import { THEMES } from '../data/themes.js';
 import { myStats, peakRank, badgeDefs } from '../data/mockData.js';
-import { getRankIcon } from '../data/valorantAssets.js';
+import { getRankIcon, optimizeImg } from '../data/valorantAssets.js';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
@@ -80,7 +80,7 @@ export default function PublicProfilePage({ slug }) {
                   KAITO<span className="text-neutral-600">#EUW1</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-neutral-500 font-body mt-1.5">
-                  {getRankIcon(CURRENT_RANK) && <img src={getRankIcon(CURRENT_RANK)} alt="" className="val-icon w-6 h-6" />}
+                  {getRankIcon(CURRENT_RANK) && <img src={optimizeImg(getRankIcon(CURRENT_RANK), 24)} alt="" className="val-icon w-6 h-6" />}
                   {CURRENT_RANK} · {t.peakRankLabel} {peakRank}
                 </div>
               </div>

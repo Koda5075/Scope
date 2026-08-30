@@ -148,6 +148,19 @@ const RANK_GROUPS = [
   { name: 'Radiant', baseTier: 27, subTiers: 1, color: '#FFF3B0' },
 ];
 
+// Proxies Riot's raw art (media.valorant-api.com — splash.png alone runs ~5.4MB,
+// displayicon.png ~460KB, neither ever resized or re-encoded at the source) through
+// Vercel's Image Optimization endpoint: re-encoded to WebP/AVIF and resized to `width`
+// instead of shipping the full-resolution PNG to a 24px icon slot. Only active on a real
+// Vercel deployment (import.meta.env.PROD) — /_vercel/image isn't served by the Vite dev
+// server, so local dev hits the CDN URL directly. `width` should be the image's actual
+// rendered CSS width in px (a whole number from vercel.json's images.sizes) — pass the
+// larger of the two dimensions for non-square art like map splashes.
+export function optimizeImg(url, width) {
+  if (!url || !import.meta.env.PROD) return url;
+  return `/_vercel/image?url=${encodeURIComponent(url)}&w=${width}&q=75`;
+}
+
 export function getAgentIcon(name) {
   return AGENT_ICONS[name];
 }

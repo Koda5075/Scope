@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
-import { getRankIcon } from '../data/valorantAssets.js';
+import { getRankIcon, optimizeImg } from '../data/valorantAssets.js';
 import { getPlayerTitleLabel, getSprayIcon } from '../data/valorantCosmetics.js';
 import Modal from './Modal.jsx';
 import RankPyramid from './RankPyramid.jsx';
@@ -49,7 +49,7 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
           row's full height rather than pinned to the top with dead space below. The
           rank icon likewise sits centred against its own text column. */}
       <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
-        {rankIcon && <img src={rankIcon} alt="" className="val-icon w-24 h-24 shrink-0 self-center" />}
+        {rankIcon && <img src={optimizeImg(rankIcon, 96)} alt="" className="val-icon w-24 h-24 shrink-0 self-center" />}
         <div className="flex-1 min-w-[220px]">
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body">{t.rank}</span>
@@ -72,7 +72,7 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
             </span>
             <span className="flex items-center gap-1.5 text-xs font-mono text-neutral-600">
               {t.peakRankLabel}
-              {peakRankIcon && <img src={peakRankIcon} alt="" className="val-icon w-5 h-5" />}
+              {peakRankIcon && <img src={optimizeImg(peakRankIcon, 24)} alt="" className="val-icon w-5 h-5" />}
               <span className="text-neutral-400">{peakRank}</span>
             </span>
           </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Lock } from 'lucide-react';
-import { getFlatRankTiers } from '../data/valorantAssets.js';
+import { getFlatRankTiers, optimizeImg } from '../data/valorantAssets.js';
 
 // Illustrative player-distribution estimate per individual tier — there's no real
 // player-distribution API to pull from, so this is a plausible, roughly pyramid-shaped
@@ -45,7 +45,7 @@ export default function RankPyramid({ t, isPremium, onSeePlans }) {
                 style={{ background: `${tier.color}14` }}
                 aria-expanded={isOpen}
               >
-                <img src={tier.icon} alt={tier.label} className="val-icon w-9 h-9 rounded-full object-cover shrink-0" />
+                <img src={optimizeImg(tier.icon, 44)} alt={tier.label} className="val-icon w-9 h-9 rounded-full object-cover shrink-0" />
                 <span className="flex-1 min-w-0 flex items-baseline justify-between gap-2">
                   <span className="font-display text-sm font-bold uppercase tracking-wide" style={{ color: tier.color }}>
                     {tier.label}

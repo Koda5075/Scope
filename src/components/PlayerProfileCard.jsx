@@ -1,7 +1,7 @@
 import { Star, Swords, Crosshair, Target, Zap } from 'lucide-react';
 import StatReadout from './StatReadout.jsx';
 import Avatar from './Avatar.jsx';
-import { getRankIcon } from '../data/valorantAssets.js';
+import { getRankIcon, optimizeImg } from '../data/valorantAssets.js';
 
 export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite, onCompare, t }) {
   const rankIcon = getRankIcon(player.rank);
@@ -17,7 +17,7 @@ export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite
               <span className="text-neutral-600">#{player.tag}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-neutral-500 font-body mt-1.5">
-              {rankIcon && <img src={rankIcon} alt="" className="val-icon w-6 h-6" />}
+              {rankIcon && <img src={optimizeImg(rankIcon, 24)} alt="" className="val-icon w-6 h-6" />}
               {player.rank} · {t.peakRankLabel} {player.peakRank}
             </div>
           </div>
