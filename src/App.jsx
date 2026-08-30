@@ -300,6 +300,29 @@ export default function ScopeDashboard() {
         /* The logo art is a flat white monochrome mark — white on the dark theme,
            flipped to black in light mode. */
         [data-scope-root][data-theme="light"] .sc-logo { filter: invert(1); }
+
+        /* The rank banner is a hero strip: its background is dark VALORANT card art
+           built for light text, so it stays a dark band in both themes. In light
+           mode the token remaps are cancelled inside it — otherwise the scrim faded
+           to cream and washed the art out. */
+        [data-scope-root][data-theme="light"] .sc-rank-banner {
+          background-color: #0A0A0A !important;
+          border-color: #262626 !important;
+        }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .from-neutral-950 { --tw-gradient-from: #0A0A0A !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .via-neutral-950\\/85 { --tw-gradient-via: rgba(10, 10, 10, 0.85) !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .to-neutral-950\\/60 { --tw-gradient-to: rgba(10, 10, 10, 0.6) !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-white,
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-100,
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-200 { color: #FAFAFA !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-300 { color: #D4D4D4 !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-400 { color: #A3A3A3 !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-500 { color: #8A8A8A !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .text-neutral-600 { color: #707070 !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .border-neutral-700,
+        [data-scope-root][data-theme="light"] .sc-rank-banner .border-neutral-800 { border-color: #333333 !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .bg-neutral-900 { background-color: #171717 !important; }
+        [data-scope-root][data-theme="light"] .sc-rank-banner .sc-track { background: #1A1A1A !important; border-color: #2A2A2A !important; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">

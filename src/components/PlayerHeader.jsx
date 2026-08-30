@@ -20,7 +20,11 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
   const sprayIcon = bannerSpray ? getSprayIcon(bannerSpray.id) : undefined;
 
   return (
-    <div className="mb-7 relative border border-neutral-800 bg-neutral-950 px-6 py-5 overflow-hidden">
+    <div
+      className={`mb-7 relative border border-neutral-800 bg-neutral-950 px-6 py-5 overflow-hidden ${
+        bannerUrl ? 'sc-rank-banner' : ''
+      }`}
+    >
       {bannerUrl && (
         <>
           <img
