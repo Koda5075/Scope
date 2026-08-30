@@ -3,6 +3,7 @@ import { Sparkles } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Card from '../Card.jsx';
 import PremiumLock from '../PremiumLock.jsx';
+import InfoTip from '../InfoTip.jsx';
 import {
   performanceScore,
   performanceHistory,
@@ -24,6 +25,11 @@ const METRIC_LABEL_KEYS = { Aim: 'metricAim', Consistency: 'metricConsistency', 
 function metricLabel(label, t) {
   return t[METRIC_LABEL_KEYS[label]] ?? label;
 }
+
+// Scope Performance's four metrics are Scope's own derived 0-100 scores, not raw game
+// stats, so unlike ACS/KDA/etc. there's no existing player intuition for what they mean
+// — worth a tooltip each, unlike e.g. "Aim" which could otherwise read as self-explanatory.
+const METRIC_TIP_KEYS = { Aim: 'tipScopeAim', Consistency: 'tipScopeConsistency', Impact: 'tipScopeImpact', Clutch: 'tipScopeClutch' };
 
 function fmt(template, vars) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
@@ -103,7 +109,8 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
                 return (
                   <div key={p.label}>
                     <div className={`flex justify-between text-[11px] mb-1 ${isWeakest ? 'text-red-400' : 'text-neutral-400'}`}>
-                      <span>{metricLabel(p.label, t)}</span><span>{p.value}</span>
+                      <span className="flex items-center gap-1">{metricLabel(p.label, t)}<InfoTip text={t[METRIC_TIP_KEYS[p.label]]} /></span>
+                      <span>{p.value}</span>
                     </div>
                     <div className="sc-track h-1.5 overflow-hidden">
                       <div className={`h-full ${isWeakest ? '' : 'sc-fill'}`} style={{ width: `${p.value}%`, ...(isWeakest ? { background: '#EF4444' } : {}) }} />
