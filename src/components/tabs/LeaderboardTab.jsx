@@ -129,9 +129,12 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
                 key={p.puuid}
                 {...(matched ? { type: 'button', onClick: () => openScopeProfile(matched) } : {})}
                 className={`relative flex flex-col items-center text-center gap-1 px-2 pt-4 pb-3 border w-full transition-colors ${
-                  i === 0 ? 'border-accent' : matched ? 'border-accent hover:bg-neutral-800/60' : 'border-neutral-800'
+                  i === 0 ? 'border-accent' : matched ? 'hover:bg-neutral-800/60' : ''
                 }`}
-                style={{ background: `linear-gradient(180deg, ${medal}1f, transparent 70%)` }}
+                style={{
+                  borderColor: i === 0 ? undefined : medal,
+                  background: `linear-gradient(180deg, ${medal}${i === 0 ? '26' : '38'}, transparent 70%)`,
+                }}
               >
                 <span
                   className="absolute top-1.5 left-1.5 font-display text-[10px] font-bold px-1.5 py-0.5"
