@@ -1,0 +1,22 @@
+# Scope
+
+> Scope tracks your VALORANT stats and turns them into a clear read on your game — rank progress, agent and map performance, badges, and a personal coach with Scope+.
+
+Scope is a VALORANT stats tracker and companion app. It reads a player's match
+history and rank data and surfaces it as rank progress, agent/map performance
+breakdowns, head-to-head comparisons against other players, a regional
+leaderboard, a badge/achievement system, and a daily-activity streak. Scope+
+is an optional paid tier that adds a personalized weekly coaching
+recommendation derived from the player's own performance metrics (Aim,
+Consistency, Impact, Clutch), plus deeper breakdowns (round-type winrate,
+clutch record, time-of-day patterns, teammate synergy) and data export.
+
+## Site
+
+- [Homepage](https://scopestats.com/) — the dashboard: rank, recent games, activity, badges, leaderboard, comparisons, and Scope+.
+- [Legal](https://scopestats.com/legal.html) — terms of service and privacy policy.
+
+## Notes for automated agents
+
+- The dashboard shows a player's own data once logged in; logged-out visitors see a landing/marketing view instead.
+- A player who has made their profile public is reachable at `https://scopestats.com/u/<riot-id-slug>`.
