@@ -274,6 +274,42 @@ export function getActivitySummary(days = activityCalendar) {
   return { totalGames, mostActiveDate: mostActive.date, mostActiveGames: mostActive.games, activeDays };
 }
 
+// Streak freezes are earned at streak milestones rather than sold, so the retention
+// system stays free/non-pay-to-win (Scope+ sells coaching, not "lives"). Held count is
+// capped at 3 — generous enough to forgive a real day off, not so generous the streak
+// stops meaning anything. Flat mock constant for now (no live day-by-day backend yet to
+// persist how many have actually been spent), same treatment as CURRENT_RANK/peakRank
+// elsewhere in the mock dataset.
+export const STREAK_FREEZES_AVAILABLE = 2;
+export const STREAK_FREEZES_MAX = 3;
+export const STREAK_MILESTONES = [3, 7, 14, 30, 100, 365];
+
+// Daily activity streak (distinct from getStreaks' win/loss run) — consecutive calendar
+// days with at least one game, walked back from today. A held freeze silently bridges a
+// single missed day (mirrors Duolingo's "streak freeze": the gap doesn't break the
+// count) but two misses in a row exceed what one freeze covers, so the streak still
+// ends there — freezes forgive a real accident, not a multi-day break.
+export function getActivityStreak(days = activityCalendar, freezesAvailable = STREAK_FREEZES_AVAILABLE) {
+  let streak = 0;
+  let freezesUsed = 0;
+  let budget = freezesAvailable;
+  for (let i = days.length - 1; i >= 0; i--) {
+    if (days[i].games > 0) {
+      streak++;
+      continue;
+    }
+    const priorActive = i > 0 && days[i - 1].games > 0;
+    if (budget > 0 && priorActive) {
+      budget--;
+      freezesUsed++;
+      streak++;
+      continue;
+    }
+    break;
+  }
+  return { streak, freezesUsed, freezesRemaining: freezesAvailable - freezesUsed };
+}
+
 // First 7 entries (daysAgo 0-6) intentionally reproduce the numbers that used to be
 // hardcoded in OverviewTab's session summary (7 games, 5W-2L, best 24/9, worst 8/17),
 // so the default filter (all modes, last 7 days) renders identically to before. The

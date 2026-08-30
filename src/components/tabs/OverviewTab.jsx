@@ -4,6 +4,7 @@ import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check } from 'luc
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
+import StreakFlame from '../StreakFlame.jsx';
 import Modal from '../Modal.jsx';
 import KDAStat from '../KDAStat.jsx';
 import InfoTip from '../InfoTip.jsx';
@@ -103,6 +104,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
 
   return (
     <>
+      <StreakFlame t={t} />
       <Highlights t={t} filteredGames={filteredGames} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 flex flex-col gap-4">
@@ -246,6 +248,10 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
           <StatReadout label={t.statClutches} value={clutches.won} unit={`/${clutches.played}`} Icon={Flame} tip={t.tipClutches} />
         </div>
 
+        <Card>
+          <ActivityCalendar t={t} />
+        </Card>
+
         <InviteFriendsCard t={t} />
 
         <SessionGoal t={t} />
@@ -275,10 +281,6 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
               );
             })}
           </div>
-        </Card>
-
-        <Card>
-          <ActivityCalendar t={t} />
         </Card>
 
         <AdSlot t={t} isPremium={isPremium} variant="rectangle" />

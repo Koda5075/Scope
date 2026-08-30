@@ -21,10 +21,10 @@ export default function ActivityCalendar({ t }) {
         <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.activityTitle}</span>
         <div className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-600">
           <span>{t.activityLess}</span>
-          <span className="w-2.5 h-2.5 bg-neutral-900" />
-          <span className="w-2.5 h-2.5 sc-fill-muted" />
-          <span className="w-2.5 h-2.5 sc-fill-dim" />
-          <span className="w-2.5 h-2.5 sc-fill" />
+          <span className="w-3 h-3 bg-neutral-900" />
+          <span className="w-3 h-3 sc-fill-muted" />
+          <span className="w-3 h-3 sc-fill-dim" />
+          <span className="w-3 h-3 sc-fill" />
           <span>{t.activityMore}</span>
         </div>
       </div>
@@ -33,7 +33,7 @@ export default function ActivityCalendar({ t }) {
         {weeks.map((week, wi) => (
           <div key={wi} className="flex flex-col gap-1">
             {week.map((day) => (
-              <div key={day.date} title={`${day.date} — ${day.games} ${gamesLabel(day.games, t)}`} className={`w-2.5 h-2.5 ${intensityClass(day.games)}`} />
+              <div key={day.date} title={`${day.date} — ${day.games} ${gamesLabel(day.games, t)}`} className={`w-3 h-3 ${intensityClass(day.games)}`} />
             ))}
           </div>
         ))}
