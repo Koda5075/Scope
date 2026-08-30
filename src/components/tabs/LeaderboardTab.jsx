@@ -142,7 +142,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
                 >
                   {p.leaderboardRank}
                 </span>
-                {rankIcon && <img src={rankIcon} alt="" className="val-icon w-11 h-11 rounded-full object-cover" />}
+                {rankIcon && <img src={rankIcon} alt="" loading="lazy" className="val-icon w-11 h-11 rounded-full object-cover" />}
                 <span className={`font-body text-xs truncate w-full ${matched ? 'text-accent' : 'text-neutral-200'}`}>
                   {p.gameName}<span className="text-neutral-600">#{p.tagLine}</span>
                 </span>
@@ -174,7 +174,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="font-mono text-xs text-neutral-500 w-6 shrink-0 text-right">{p.leaderboardRank}</span>
-                  {rankIcon && <img src={rankIcon} alt="" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />}
+                  {rankIcon && <img src={rankIcon} alt="" loading="lazy" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />}
                   <span className={`font-body text-sm truncate ${matched ? 'text-accent' : 'text-neutral-300'}`}>
                     {p.gameName}<span className="text-neutral-600">#{p.tagLine}</span>
                   </span>

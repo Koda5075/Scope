@@ -44,9 +44,9 @@ export default function ProgressTab({ t, isPremium }) {
                     </div>
                     <p className="text-xs text-neutral-400 font-body">{fmt(t[m.descKey], m.descParams)}</p>
                   </div>
-                  {rankIcon && <img src={rankIcon} alt="" className="val-icon w-9 h-9 shrink-0" />}
+                  {rankIcon && <img src={rankIcon} alt="" loading="lazy" className="val-icon w-9 h-9 shrink-0" />}
                   {!rankIcon && mapImg && (
-                    <img src={mapImg.splash} alt="" className="val-icon w-16 h-9 rounded object-cover shrink-0" />
+                    <img src={mapImg.splash} alt="" loading="lazy" className="val-icon w-16 h-9 rounded object-cover shrink-0" />
                   )}
                 </div>
               </div>

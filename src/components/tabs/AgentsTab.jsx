@@ -29,7 +29,7 @@ function AgentRow({ a, t }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <span className="font-display text-sm text-white flex items-center gap-2 sm:w-32 sm:shrink-0">
-        {getAgentIcon(a.name) && <img src={getAgentIcon(a.name)} alt="" className="val-icon w-11 h-11 rounded-full object-cover shrink-0" />}
+        {getAgentIcon(a.name) && <img src={getAgentIcon(a.name)} alt="" loading="lazy" className="val-icon w-11 h-11 rounded-full object-cover shrink-0" />}
         {a.name}
       </span>
       <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr ?? 0}%` }} /></div>
@@ -48,7 +48,7 @@ function MapRow({ m, t }) {
   return (
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
       {getMapImage(m.name) && (
-        <img src={getMapImage(m.name).splash} alt="" className="val-icon w-full h-24 sm:w-28 sm:h-16 rounded object-cover shrink-0" />
+        <img src={getMapImage(m.name).splash} alt="" loading="lazy" className="val-icon w-full h-24 sm:w-28 sm:h-16 rounded object-cover shrink-0" />
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
@@ -57,7 +57,7 @@ function MapRow({ m, t }) {
             <div className="flex items-center gap-1.5 shrink-0">
               <span className="text-[10px] text-neutral-600 font-body">{t.bestOnMap}</span>
               {getAgentIcon(m.bestAgent) && (
-                <img src={getAgentIcon(m.bestAgent)} alt="" className="val-icon w-5 h-5 rounded-full object-cover" />
+                <img src={getAgentIcon(m.bestAgent)} alt="" loading="lazy" className="val-icon w-5 h-5 rounded-full object-cover" />
               )}
               <span className="text-[10px] font-display text-neutral-300">{m.bestAgent}</span>
             </div>
@@ -99,7 +99,7 @@ function WeaponRow({ w, killShare, t }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <span className="font-display text-sm text-white flex items-center gap-1.5 sm:w-32 sm:shrink-0">
-        {getWeaponIcon(w.name) && <img src={getWeaponIcon(w.name)} alt="" className="val-icon w-9 h-9 object-contain shrink-0" />}
+        {getWeaponIcon(w.name) && <img src={getWeaponIcon(w.name)} alt="" loading="lazy" className="val-icon w-9 h-9 object-contain shrink-0" />}
         <span className="truncate">{w.name}</span>
         {w.favorite && <Star size={10} className="text-accent shrink-0" fill="currentColor" />}
       </span>
