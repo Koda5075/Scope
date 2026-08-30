@@ -69,6 +69,11 @@ export default function ScopePlansModal({ onClose, t }) {
                 )}
               </div>
             )}
+            {plan.noteKey && (
+              <div className="mb-3">
+                <span className="text-[11px] text-neutral-500 font-body">{t[plan.noteKey]}</span>
+              </div>
+            )}
             <button
               onClick={() => handleChoose(plan.id)}
               disabled={loadingPlan !== null}

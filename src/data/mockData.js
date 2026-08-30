@@ -686,7 +686,7 @@ const MONTHLY_PRICE = 4.99;
 const ANNUAL_PRICE = 49.99;
 
 export const scopePlusPlans = [
-  { id: 'monthly', nameKey: 'planMonthly', price: MONTHLY_PRICE, periodKey: 'periodMonth' },
+  { id: 'monthly', nameKey: 'planMonthly', price: MONTHLY_PRICE, periodKey: 'periodMonth', noteKey: 'plansFlexibleNote' },
   {
     id: 'annual',
     nameKey: 'planAnnual',
