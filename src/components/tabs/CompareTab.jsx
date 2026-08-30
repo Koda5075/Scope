@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Search, ArrowUpRight, ArrowDownRight, Copy, Check } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import {
@@ -68,6 +68,17 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
   const [boardMetric, setBoardMetric] = useState('acs');
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  async function copyInviteLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.origin);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1500);
+    } catch {
+      /* ignore — clipboard unavailable */
+    }
+  }
 
   const filteredAcs = useMemo(() => computeAverageAcs(filteredGames), [filteredGames]);
   const filteredKda = useMemo(() => computeAggregateKDA(filteredGames), [filteredGames]);
@@ -134,7 +145,18 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
 
         {error === 'invalid' && <div className="text-xs font-body text-neutral-500 mb-3">{t.searchInvalidFormat}</div>}
         {error === 'private' && <div className="text-xs font-body text-neutral-500 mb-3">{t.searchPrivateDesc}</div>}
-        {error === 'not_found' && <div className="text-xs font-body text-neutral-500 mb-3">{t.searchNotOnScopeDesc}</div>}
+        {error === 'not_found' && (
+          <div className="mb-3">
+            <div className="text-xs font-body text-neutral-500 mb-2">{t.searchNotOnScopeDesc}</div>
+            <button
+              onClick={copyInviteLink}
+              className="flex items-center gap-1.5 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-3 py-2 hover:opacity-90 transition-opacity"
+            >
+              {linkCopied ? <Check size={12} /> : <Copy size={12} />}
+              {linkCopied ? t.linkCopied : t.inviteButton}
+            </button>
+          </div>
+        )}
 
         {player && (
           <div>

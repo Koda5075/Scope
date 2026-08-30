@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
@@ -20,7 +20,7 @@ const GameScoreboard = lazy(() => import('../GameScoreboard.jsx'));
 import {
   rrHistory, badgeDefs, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, getStreaks,
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
-  computeFirstBloods, computeClutchRecord,
+  computeFirstBloods, computeClutchRecord, performanceScore,
 } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
@@ -102,9 +102,28 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
     }
   }
 
+  // Pinned for Scope+ subscribers only, next to the streak — the weekly coach
+  // recommendation is otherwise only visible by opening the Scope+ tab, so it never
+  // shows up as a reason to come back on a given day. Same weakest-metric logic as
+  // PremiumTab's own card, just truncated to a one-line teaser here.
+  const coachWeakest = performanceScore.reduce((min, p) => (p.value < min.value ? p : min), performanceScore[0]);
+  const coachRecoText = t[`reco${coachWeakest.label}`];
+  const coachRecoPreview = coachRecoText.split('. ')[0] + '.';
+
   return (
     <>
       <StreakFlame t={t} />
+      {isPremium && (
+        <Card className="mb-4">
+          <div className="flex items-start gap-3">
+            <Sparkles size={14} className="text-accent shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block mb-1">{t.recoTitle}</span>
+              <p className="text-xs font-body text-neutral-400 leading-relaxed">{coachRecoPreview}</p>
+            </div>
+          </div>
+        </Card>
+      )}
       <Highlights t={t} filteredGames={filteredGames} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 flex flex-col gap-4">

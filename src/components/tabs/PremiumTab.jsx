@@ -115,18 +115,21 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
 
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">{t.perfHistoryTitle}</span>
-              <select
-                value={metric}
-                onChange={(e) => setMetric(e.target.value)}
-                aria-label={t.perfHistoryTitle}
-                className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1 focus:border-accent outline-none"
-              >
-                {METRICS.map((m) => (
-                  <option key={m} value={m}>
-                    {metricLabel(performanceScore.find((p) => p.label.toLowerCase() === m)?.label, t)}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] text-neutral-600">/100</span>
+                <select
+                  value={metric}
+                  onChange={(e) => setMetric(e.target.value)}
+                  aria-label={t.perfHistoryTitle}
+                  className="bg-neutral-950 border border-neutral-800 text-xs font-body text-neutral-300 px-2 py-1 focus:border-accent outline-none"
+                >
+                  {METRICS.map((m) => (
+                    <option key={m} value={m}>
+                      {metricLabel(performanceScore.find((p) => p.label.toLowerCase() === m)?.label, t)}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="h-28">
               <ResponsiveContainer width="100%" height="100%">
