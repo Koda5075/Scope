@@ -82,6 +82,16 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
         </div>
         <p className="text-xs font-body text-neutral-500 mb-4">{t.leaderboardSubtitle}</p>
 
+        {/* Diamond doesn't place on a real regional top-30 (Immortal/Radiant-only at
+            that scale, see TIER_BANDS in leaderboardData.js) — so "where do I stand"
+            can't highlight an actual row here without faking one. Reuses the exact
+            15% the "Top 15%" badge already tracks, so this and that badge can't drift
+            into quoting two different percentiles for the same underlying standing. */}
+        <div className="flex items-center gap-2.5 mb-4 px-3 py-2.5 border border-accent bg-accent/5">
+          <Trophy size={14} className="text-accent shrink-0" />
+          <span className="text-xs font-body text-neutral-200">{t.leaderboardYourStanding.replace('{pct}', 15)}</span>
+        </div>
+
         <div className="relative mb-3 max-w-xs">
           <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600" />
           <input

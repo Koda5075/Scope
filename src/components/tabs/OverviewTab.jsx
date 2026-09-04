@@ -28,7 +28,7 @@ import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/sh
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 const WELCOME_SEEN_KEY = 'scope-welcome-seen';
 
-export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
+export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
@@ -106,6 +106,18 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const accuracyDelta = statDelta(computeAverageAccuracy);
   const headshotsDelta = statDelta(computeAverageHeadshots);
   const acsDelta = statDelta(computeAverageAcs);
+
+  // Same delta signs already driving each StatReadout's own up/down arrow, just
+  // grouped into one "what's going well vs what needs attention" glance above the
+  // grid instead of six same-weight cards the reader has to scan individually.
+  const deltaStats = [
+    { label: t.statKDA, delta: kdaDelta },
+    { label: t.statAccuracy, delta: accuracyDelta },
+    { label: t.statHeadshots, delta: headshotsDelta },
+    { label: t.statACS, delta: acsDelta },
+  ];
+  const improvingStats = deltaStats.filter((s) => s.delta > 0).map((s) => s.label);
+  const decliningStats = deltaStats.filter((s) => s.delta < 0).map((s) => s.label);
 
   // Auto-generated one-line headline: picks whichever tracked stat improved the most
   // (ACS first as the most representative "impact" number when it ties with others),
@@ -379,6 +391,16 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
       </div>
 
       <div className="flex flex-col gap-4">
+        {(improvingStats.length > 0 || decliningStats.length > 0) && (
+          <div className="flex flex-col gap-1 text-[11px] font-body">
+            {improvingStats.length > 0 && (
+              <span className="text-accent">{t.overviewGoingWell.replace('{stats}', improvingStats.join(', '))}</span>
+            )}
+            {decliningStats.length > 0 && (
+              <span className="text-neutral-500">{t.overviewNeedsAttention.replace('{stats}', decliningStats.join(', '))}</span>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} tip={t.tipKDA} delta={kdaDelta} deltaTip={t.statTrendTip} />
           <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} tip={t.tipAccuracy} delta={accuracyDelta} deltaTip={t.statTrendTip} />
@@ -392,7 +414,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
           <ActivityCalendar t={t} />
         </Card>
 
-        <InviteFriendsCard t={t} />
+        <InviteFriendsCard t={t} customCode={referralCode} />
 
         <SessionGoal t={t} />
 

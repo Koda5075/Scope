@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Check } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Card from '../Card.jsx';
 import PremiumLock from '../PremiumLock.jsx';
@@ -12,6 +12,7 @@ import {
   roundBreakdown,
   timePatterns,
   rrHistory,
+  scopePlusFeatureKeys,
 } from '../../data/mockData.js';
 import { pluralLabel } from '../../i18n/translations.js';
 
@@ -83,6 +84,16 @@ export default function PremiumTab({ t, accent, onSeePlans, isPremium }) {
           >
             {t.seePlans}
           </button>
+        </div>
+        {/* What's actually included wasn't legible before this — the hero copy only
+            argued the coaching angle, leaving the cosmetics/tips/ad-removal perks
+            unstated even though each is real and already visible elsewhere in the app. */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 mt-4 pt-4 border-t border-white/10">
+          {scopePlusFeatureKeys.map((key) => (
+            <div key={key} className="flex items-center gap-1.5 text-[11px] font-body text-neutral-300">
+              <Check size={11} className="text-accent shrink-0" /> {t[key]}
+            </div>
+          ))}
         </div>
       </div>
 

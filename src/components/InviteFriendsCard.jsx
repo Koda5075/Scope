@@ -5,7 +5,7 @@ import { inviteStats, referralProgram } from '../data/mockData.js';
 
 const STORAGE_KEY = 'scope-invite-card-dismissed';
 
-export default function InviteFriendsCard({ t }) {
+export default function InviteFriendsCard({ t, customCode }) {
   const [dismissed, setDismissed] = useState(() => {
     try {
       return sessionStorage.getItem(STORAGE_KEY) === 'true';
@@ -36,7 +36,8 @@ export default function InviteFriendsCard({ t }) {
     }
   }
 
-  const { code, referred, rewardAt, rewardBannerName } = referralProgram;
+  const { referred, rewardAt, rewardBannerName } = referralProgram;
+  const code = customCode?.trim() || referralProgram.code;
   const done = referred >= rewardAt;
   const pct = Math.min(100, Math.round((referred / rewardAt) * 100));
   const rewardLine = done

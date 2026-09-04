@@ -34,13 +34,18 @@ export const badgeDefs = [
   { id: 'streak5', icon: Flame, tiers: [3, 5, 10, 30], value: 8 },
   { id: 'newTier', icon: TrendingUp, unlocked: true, daysAgo: 82 },
   { id: 'top15', icon: Trophy, unlocked: true, daysAgo: 45 },
-  { id: 'comeback', icon: RotateCcw, unlocked: true, daysAgo: 12 },
-  { id: 'nightOwl', icon: Moon, unlocked: false, secret: true },
-  { id: 'earlyBird', icon: Sunrise, unlocked: true, daysAgo: 63 },
+  // Converted from one-off boolean achievements to tiered counters — same "extend the
+  // existing tier system to more badges" direction as `specialist`/`teamPlayer`/etc.,
+  // rather than a second, parallel badge mechanic.
+  { id: 'comeback', icon: RotateCcw, tiers: [1, 3, 5, 10], value: 2 },
+  { id: 'nightOwl', icon: Moon, tiers: [3, 10, 25, 50], value: 0, secret: true },
+  { id: 'earlyBird', icon: Sunrise, tiers: [3, 10, 25, 50], value: 14 },
   { id: 'marathon', icon: Hourglass, unlocked: false },
   { id: 'supportStar', icon: HeartHandshake, tiers: [200, 500, 1000, 2000], value: 740 },
   { id: 'rivalSlayer', icon: Crosshair, tiers: [1, 5, 15, 30], value: 4 },
-  { id: 'explorer', icon: Compass, unlocked: false, secret: true },
+  // value = distinct maps with games > 0 in `mapStats` below (8 of 13) — real, not
+  // invented, so this one's already past its first tier rather than starting at 0.
+  { id: 'explorer', icon: Compass, tiers: [4, 7, 10, 13], value: 8, secret: true },
   { id: 'versatile', icon: Shuffle, tiers: [3, 6, 10, 15], value: 7 },
 ];
 
@@ -781,6 +786,7 @@ export const scopePlusPlans = [
 export const scopePlusFeatureKeys = [
   'recoTitle', 'scopePerformance', 'synergyTitle', 'alertsTitle',
   'roundBreakdownTitle', 'timePatternsTitle', 'exportTitle',
+  'customAccentLabel', 'scopePlusFeatureCosmetics', 'scopePlusFeatureExtraTips', 'scopePlusFeatureNoAds',
 ];
 
 // Server status badge — mock for now, structured to plug into the real

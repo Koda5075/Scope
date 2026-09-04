@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Plus, X, TrendingUp, Zap, Flame } from 'lucide-react';
+import { Plus, X, TrendingUp, Zap, Flame, Trophy } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { progressionTimeline } from '../../data/mockData.js';
+import { progressionTimeline, badgeDefs, getBadgeProgress, TIER_NAMES } from '../../data/mockData.js';
 import { getRankIcon, getMapImage, optimizeImg } from '../../data/valorantAssets.js';
 
 function fmt(template, vars = {}) {
@@ -67,6 +67,15 @@ export default function ProgressTab({ t, isPremium }) {
     .sort((a, b) => b.daysAgo - a.daysAgo)
     .filter((m) => filter === 'all' || m.type === filter);
 
+  // Same "closest to its next tier" pick Highlights already surfaces on Overview —
+  // ties Progress to the badge system Koda asked for instead of it staying a purely
+  // passive history, without inventing a second progress mechanic to maintain.
+  const closestBadge = badgeDefs
+    .filter((b) => !b.secret)
+    .map((b) => ({ b, progress: getBadgeProgress(b) }))
+    .filter((x) => x.progress && !x.progress.isMaxed)
+    .sort((a, b) => b.progress.progressPct - a.progress.progressPct)[0];
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -99,6 +108,19 @@ export default function ProgressTab({ t, isPremium }) {
           </div>
         </div>
         <p className="text-[11px] text-neutral-500 font-body mb-5">{t.progressSub}</p>
+
+        {closestBadge && (
+          <div className="flex items-center gap-2.5 mb-5 px-3 py-2.5 border border-accent bg-accent/5">
+            <Trophy size={14} className="text-accent shrink-0" />
+            <span className="text-xs font-body text-neutral-200">
+              {fmt(t.highlightBadgeClose, {
+                pct: closestBadge.progress.progressPct,
+                tier: TIER_NAMES[closestBadge.progress.tierIndex + 1],
+                badge: t.badges[closestBadge.b.id].label,
+              })}
+            </span>
+          </div>
+        )}
 
         {showAddForm && (
           <form onSubmit={handleAddMilestone} className="flex flex-col gap-2 mb-5 p-3 border border-neutral-800 bg-neutral-950">

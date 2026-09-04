@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, AlertTriangle, Lock, Moon, Sun, Monitor } from 'lucide-react';
+import { Check, AlertTriangle, Lock, Moon, Sun, Monitor, CircleDot } from 'lucide-react';
 import Modal from './Modal.jsx';
 import { THEMES, isValidHex } from '../data/themes.js';
 import { inviteStats, recentGames } from '../data/mockData.js';
@@ -67,6 +67,8 @@ export default function SettingsModal({
   setDndEnabled,
   incognitoSearch,
   setIncognitoSearch,
+  referralCode,
+  setReferralCode,
   loggedIn,
   setLoggedIn,
   isPremium,
@@ -86,6 +88,11 @@ export default function SettingsModal({
   // tree (charts included) on every keystroke, which is heavy enough to visibly drop
   // characters when typed quickly.
   const [nicknameDraft, setNicknameDraft] = useState(nickname ?? '');
+  // Same local-draft-until-blur pattern as nicknameDraft above, plus a format check
+  // (4-12 chars, letters/digits/dashes) — there's no real backend to verify the code is
+  // actually unique account-wide, so this only ever validates shape, not uniqueness.
+  const [referralCodeDraft, setReferralCodeDraft] = useState(referralCode || 'KAITO-SCOPE');
+  const referralCodeValid = /^[A-Za-z0-9-]{4,12}$/.test(referralCodeDraft);
   const [notifyPrefs, setNotifyPrefs] = useState(loadNotifyPrefs);
 
   function toggleNotify(key) {
@@ -164,9 +171,10 @@ export default function SettingsModal({
             <div className="flex flex-col gap-6">
               <div>
                 <SectionTitle>{t.themeModeLabel}</SectionTitle>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {[
                     ['dark', t.themeModeDark, Moon],
+                    ['dim', t.themeModeDim, CircleDot],
                     ['light', t.themeModeLight, Sun],
                     ['auto', t.themeModeAuto, Monitor],
                   ].map(([mode, label, Icon]) => (
@@ -376,6 +384,26 @@ export default function SettingsModal({
               </button>
               <div className="text-[11px] text-neutral-500 font-body mt-2 mb-5">
                 {t.inviteStatsText.replace('{joined}', inviteStats.joined)}
+              </div>
+
+              <div className="pt-5 border-t border-neutral-800 mb-5">
+                <SectionTitle>{t.referralCodeLabel}</SectionTitle>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input
+                    type="text"
+                    value={referralCodeDraft}
+                    onChange={(e) => setReferralCodeDraft(e.target.value.toUpperCase())}
+                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft); }}
+                    maxLength={12}
+                    aria-label={t.referralCodeLabel}
+                    spellCheck={false}
+                    className={`w-40 bg-neutral-950 border text-xs font-mono tracking-wider text-neutral-200 px-2.5 py-1.5 outline-none transition-colors ${
+                      referralCodeValid ? 'border-neutral-800 focus:border-accent' : 'border-red-600'
+                    }`}
+                  />
+                  {!referralCodeValid && <span className="text-[11px] font-body text-red-500">{t.referralCodeFormatError}</span>}
+                </div>
+                <p className="text-[11px] text-neutral-600 font-body mt-1.5">{t.referralCodeHint}</p>
               </div>
 
               <div className="pt-5 border-t border-neutral-800 mb-5">

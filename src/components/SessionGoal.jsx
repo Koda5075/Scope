@@ -1,25 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Target, X, TrendingUp, Swords, Zap, Crosshair, Skull } from 'lucide-react';
 import Card from './Card.jsx';
+import { rrHistory } from '../data/mockData.js';
 
 const STORAGE_KEY = 'scope-session-goal';
+
+// Recent-sessions average, the same "your own trend, not a guess" reasoning as the
+// stat-delta arrows elsewhere on Overview — +10 above it is a stretch goal, not just
+// matching what already happened.
+const RECENT_RR_AVG = Math.round(rrHistory.slice(-3).reduce((sum, r) => sum + r.rr, 0) / 3);
 
 // Current values + units the goal types track against — same mock numbers already
 // shown elsewhere on Overview (RR progress chart, StatReadout grid), kept in sync here
 // rather than re-derived, since all of these are hardcoded demo snapshots today.
+// `suggested` seeds the draft target so setting a goal is a one-click accept-or-tweak
+// instead of a blank field — rr's is grounded in real recent-session history (the only
+// type with a per-session array to average); the rest use a flat "a bit more than now"
+// bump since there's no equivalent history for them yet.
 const GOAL_TYPES = [
-  { key: 'rr', labelKey: 'sessionGoalTypeRR', current: 67, unit: '', step: 1, Icon: TrendingUp },
-  { key: 'kda', labelKey: 'statKDA', current: 1.42, unit: '', step: 0.01, Icon: Swords },
-  { key: 'acs', labelKey: 'statACS', current: 238, unit: '', step: 1, Icon: Zap },
-  { key: 'accuracy', labelKey: 'statAccuracy', current: 24, unit: '%', step: 1, Icon: Crosshair },
-  { key: 'headshots', labelKey: 'statHeadshots', current: 31, unit: '%', step: 1, Icon: Target },
-  { key: 'firstBloods', labelKey: 'statFirstBloods', current: 9, unit: '', step: 1, Icon: Skull },
+  { key: 'rr', labelKey: 'sessionGoalTypeRR', current: 67, unit: '', step: 1, Icon: TrendingUp, suggested: RECENT_RR_AVG + 10 },
+  { key: 'kda', labelKey: 'statKDA', current: 1.42, unit: '', step: 0.01, Icon: Swords, suggested: 1.56 },
+  { key: 'acs', labelKey: 'statACS', current: 238, unit: '', step: 1, Icon: Zap, suggested: 257 },
+  { key: 'accuracy', labelKey: 'statAccuracy', current: 24, unit: '%', step: 1, Icon: Crosshair, suggested: 27 },
+  { key: 'headshots', labelKey: 'statHeadshots', current: 31, unit: '%', step: 1, Icon: Target, suggested: 34 },
+  { key: 'firstBloods', labelKey: 'statFirstBloods', current: 9, unit: '', step: 1, Icon: Skull, suggested: 11 },
 ];
 
 export default function SessionGoal({ t }) {
   const [goal, setGoal] = useState(null);
   const [draftType, setDraftType] = useState('rr');
-  const [draftTarget, setDraftTarget] = useState('');
+  const [draftTarget, setDraftTarget] = useState(String(GOAL_TYPES[0].suggested));
 
   useEffect(() => {
     try {
@@ -27,6 +37,13 @@ export default function SessionGoal({ t }) {
       if (saved) setGoal(JSON.parse(saved));
     } catch { /* ignore */ }
   }, []);
+
+  // Reseeds the draft with that type's own suggestion on every switch — so "pick a
+  // different metric" still lands on a one-click-ready number instead of an empty field.
+  useEffect(() => {
+    const config = GOAL_TYPES.find((g) => g.key === draftType);
+    setDraftTarget(String(config?.suggested ?? ''));
+  }, [draftType]);
 
   function persist(next) {
     setGoal(next);
@@ -76,6 +93,7 @@ export default function SessionGoal({ t }) {
               );
             })}
           </div>
+          <p className="text-[10px] text-neutral-600 font-body -mt-1">{t.sessionGoalSuggestedHint}</p>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[11px] font-body text-neutral-600">
               {t.sessionGoalCurrent}: <span className="font-mono text-neutral-400">{draftConfig.current}{draftConfig.unit}</span>
@@ -105,7 +123,7 @@ export default function SessionGoal({ t }) {
 
   return (
     <Card>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Target size={14} className="text-accent" />
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300">{t.sessionGoalTitle}</span>
@@ -114,16 +132,27 @@ export default function SessionGoal({ t }) {
           <X size={13} />
         </button>
       </div>
-      <div className="flex items-baseline justify-between mb-1.5">
+      <div className="flex items-baseline justify-between mb-2">
         <span className="text-xs text-neutral-400 font-body">{t[config.labelKey]}</span>
         <span className="font-mono text-sm text-white">{config.current}{config.unit} / {goal.target}{config.unit}</span>
       </div>
-      <div className="sc-track h-2 overflow-hidden">
-        <div className="sc-fill h-full transition-all" style={{ width: `${pct}%` }} />
+
+      {/* The gauge itself: bigger and more prominent than a generic thin progress bar,
+          with 25/50/75 tick marks so "how far along" reads at a glance, and the percent
+          moved inline as the headline number rather than buried in the caption below. */}
+      <div className="flex items-baseline gap-2 mb-1.5">
+        <span className="font-display text-3xl font-bold text-accent leading-none">{pct}%</span>
+        {reached && <span className="font-display text-[10px] font-bold uppercase tracking-wide text-accent">{t.sessionGoalReached}</span>}
       </div>
-      <p className="text-[11px] text-neutral-500 font-body mt-2">
-        {reached ? t.sessionGoalReached : t.sessionGoalProgress.replace('{pct}', pct)}
-      </p>
+      <div className="relative sc-track h-4 overflow-hidden">
+        <div className="sc-fill h-full transition-all" style={{ width: `${pct}%` }} />
+        {[25, 50, 75].map((tick) => (
+          <span key={tick} className="absolute top-0 bottom-0 w-px bg-black/40" style={{ left: `${tick}%` }} />
+        ))}
+      </div>
+      {!reached && (
+        <p className="text-[11px] text-neutral-500 font-body mt-2">{t.sessionGoalProgress.replace('{pct}', pct)}</p>
+      )}
     </Card>
   );
 }

@@ -80,7 +80,7 @@ export default function ScopeDashboard() {
   // actually gets applied to data-theme/resolveAccent, since the CSS overrides only ever
   // check for the literal string "light" — 'auto' always needs a value that follows the
   // OS's prefers-color-scheme, not the CSS's own default.
-  const [themeMode, setThemeMode] = useState(() => loadStored('scope-theme-mode', 'dark', (v) => (['light', 'auto'].includes(v) ? v : 'dark')));
+  const [themeMode, setThemeMode] = useState(() => loadStored('scope-theme-mode', 'dark', (v) => (['light', 'dim', 'auto'].includes(v) ? v : 'dark')));
   const [systemPrefersDark, setSystemPrefersDark] = useState(() => window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? true);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -97,6 +97,7 @@ export default function ScopeDashboard() {
   const [nickname, setNickname] = useState(() => loadStored('scope-nickname', ''));
   const [dndEnabled, setDndEnabled] = useState(() => loadStored('scope-dnd', false, (v) => v === 'true'));
   const [incognitoSearch, setIncognitoSearch] = useState(() => loadStored('scope-incognito-search', false, (v) => v === 'true'));
+  const [referralCode, setReferralCode] = useState(() => loadStored('scope-referral-code', ''));
   const [showSettings, setShowSettings] = useState(false);
   const [settingsSection, setSettingsSection] = useState('appearance');
   const [favoriteIds, setFavoriteIds] = useState(() => loadStored('scope-favorites', ['p2'], JSON.parse));
@@ -165,6 +166,7 @@ export default function ScopeDashboard() {
         'scope-invite-card-dismissed', 'scope-onboarding-seen', 'scope-session-goal',
         'scope-large-text', 'scope-high-contrast', 'scope-nickname', 'scope-dnd', 'scope-incognito-search',
         'scope-welcome-seen', 'scope-compare-history', 'scope-custom-milestones', 'scope-recent-searches',
+        'scope-referral-code',
       ].forEach((key) => localStorage.removeItem(key));
       sessionStorage.removeItem('scope-promo-dismissed');
     } catch (e) { /* ignore */ }
@@ -187,6 +189,7 @@ export default function ScopeDashboard() {
     setNickname('');
     setDndEnabled(false);
     setIncognitoSearch(false);
+    setReferralCode('');
     setShowSettings(false);
   }
 
@@ -251,8 +254,9 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-nickname', nickname);
       localStorage.setItem('scope-dnd', String(dndEnabled));
       localStorage.setItem('scope-incognito-search', String(incognitoSearch));
+      localStorage.setItem('scope-referral-code', referralCode);
     } catch (e) { /* ignore */ }
-  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium, largeText, highContrast, nickname, dndEnabled, incognitoSearch]);
+  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium, largeText, highContrast, nickname, dndEnabled, incognitoSearch, referralCode]);
 
   // Large-text (Settings > Accessibility) changes the root font-size directly, since
   // Tailwind's text-xs/sm/etc. utilities are all rem-based against the <html> element —
@@ -264,7 +268,8 @@ export default function ScopeDashboard() {
   // Keep the page (and the area outside the max-w container / behind overscroll) on the
   // active surface colour, not just the app root div.
   useEffect(() => {
-    document.documentElement.style.background = resolvedThemeMode === 'light' ? '#FAF9F7' : '#000000';
+    document.documentElement.style.background =
+      resolvedThemeMode === 'light' ? '#FAF9F7' : resolvedThemeMode === 'dim' ? '#1E1E1E' : '#000000';
   }, [resolvedThemeMode]);
 
   // Keeps <html lang> in sync with the actually-displayed language — it was hardcoded
@@ -434,6 +439,36 @@ export default function ScopeDashboard() {
         [data-scope-root][data-theme="light"] .sc-rank-banner .bg-neutral-900 { background-color: #171717 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .sc-track { background: #1A1A1A !important; border-color: #2A2A2A !important; }
 
+        /* --- Dim mode: a softer dark theme (mid-grey surfaces instead of near-black),
+           not a light-mode inversion — text stays the same light-on-dark as regular
+           dark mode, so unlike light mode this only needs to remap backgrounds/borders,
+           never text colours or the rank-banner's own dedicated overrides. --- */
+        [data-scope-root][data-theme="dim"] {
+          --sc-bg: #1E1E1E;
+          --sc-surface: #2A2A2A;
+          --sc-inset: #242424;
+          --sc-track: #383838;
+          --sc-track-border: #484848;
+          --sc-line: #3A3A3A;
+          --sc-overlay: rgba(20, 20, 20, 0.68);
+          --sc-scroll-track: #2E2E2E;
+          --accent-text: var(--accent);
+        }
+        [data-scope-root][data-theme="dim"] .bg-black { background-color: var(--sc-bg) !important; }
+        [data-scope-root][data-theme="dim"] .bg-neutral-950 { background-color: var(--sc-surface) !important; }
+        [data-scope-root][data-theme="dim"] .bg-neutral-900 { background-color: var(--sc-inset) !important; }
+        [data-scope-root][data-theme="dim"] .bg-neutral-800 { background-color: var(--sc-track) !important; }
+        [data-scope-root][data-theme="dim"] .bg-\\[\\#0F0F0F\\] { background-color: var(--sc-surface) !important; }
+        [data-scope-root][data-theme="dim"] .bg-neutral-950\\/60 { background-color: color-mix(in srgb, var(--sc-surface) 60%, transparent) !important; }
+        [data-scope-root][data-theme="dim"] .hover\\:bg-neutral-900:hover { background-color: var(--sc-inset) !important; }
+        [data-scope-root][data-theme="dim"] .border-neutral-800,
+        [data-scope-root][data-theme="dim"] .border-neutral-700 { border-color: var(--sc-line) !important; }
+        [data-scope-root][data-theme="dim"] .from-neutral-950 { --tw-gradient-from: var(--sc-bg) !important; }
+        [data-scope-root][data-theme="dim"] .via-neutral-950\\/85 { --tw-gradient-via: color-mix(in srgb, var(--sc-bg) 85%, transparent) !important; }
+        [data-scope-root][data-theme="dim"] .to-neutral-950\\/60 { --tw-gradient-to: color-mix(in srgb, var(--sc-bg) 60%, transparent) !important; }
+        [data-scope-root][data-theme="dim"] .from-\\[\\#0F0F0F\\] { --tw-gradient-from: var(--sc-surface) !important; }
+        [data-scope-root][data-theme="dim"] .via-\\[\\#0F0F0F\\]\\/40 { --tw-gradient-via: color-mix(in srgb, var(--sc-surface) 40%, transparent) !important; }
+
         /* High-contrast mode (Settings > Accessibility) — additive on top of whichever
            theme is active, dark or light: stronger line/border colour and pure text
            tones instead of the softer neutral-500/600 greys used for secondary text. */
@@ -502,7 +537,7 @@ export default function ScopeDashboard() {
 
             {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />}
 
-            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} />}
+            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
             {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
@@ -569,6 +604,8 @@ export default function ScopeDashboard() {
             setDndEnabled={setDndEnabled}
             incognitoSearch={incognitoSearch}
             setIncognitoSearch={setIncognitoSearch}
+            referralCode={referralCode}
+            setReferralCode={setReferralCode}
             publicVisible={publicVisible}
             setPublicVisible={setPublicVisible}
             loggedIn={loggedIn}
