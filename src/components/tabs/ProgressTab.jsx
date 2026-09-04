@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { progressionTimeline } from '../../data/mockData.js';
@@ -7,16 +8,41 @@ function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
 }
 
+const FILTERS = ['all', 'rank', 'record', 'streak'];
+
 export default function ProgressTab({ t, isPremium }) {
+  const [filter, setFilter] = useState('all');
   // Oldest first so the timeline reads top-to-bottom as a story ending at "today".
-  const timeline = [...progressionTimeline].sort((a, b) => b.daysAgo - a.daysAgo);
+  const timeline = [...progressionTimeline]
+    .sort((a, b) => b.daysAgo - a.daysAgo)
+    .filter((m) => filter === 'all' || m.type === filter);
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1 block">{t.tabs.progress}</span>
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.tabs.progress}</span>
+          <div className="flex gap-1">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-2 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                  filter === f
+                    ? 'border-accent text-accent bg-accent/5'
+                    : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                }`}
+              >
+                {t[`timelineFilter${f.charAt(0).toUpperCase()}${f.slice(1)}`]}
+              </button>
+            ))}
+          </div>
+        </div>
         <p className="text-[11px] text-neutral-500 font-body mb-5">{t.progressSub}</p>
 
+        {timeline.length === 0 ? (
+          <div className="text-xs font-body text-neutral-500 py-2">{t.timelineNoneForFilter}</div>
+        ) : (
         <div className="relative pl-9">
           <div className="absolute left-[15px] top-2 bottom-2 w-px bg-neutral-800" />
           {timeline.map((m, i) => {
@@ -53,6 +79,7 @@ export default function ProgressTab({ t, isPremium }) {
             );
           })}
         </div>
+        )}
       </Card>
 
       <AdSlot t={t} isPremium={isPremium} variant="banner" />

@@ -693,12 +693,14 @@ export function getUnreadAlertsCount(alerts = alertsFeed) {
 // from the same underlying data where possible (bestWinStreak from getStreaks) so it
 // stays consistent with the rest of the mock dataset rather than being invented in
 // isolation.
+// `type` groups milestones for the Progress tab's timeline filter — 'rank' for
+// tier/rank changes, 'record' for one-off personal bests, 'streak' for win/day streaks.
 export const progressionTimeline = [
-  { id: 'm1', daysAgo: 82, icon: TrendingUp, titleKey: 'timelineFirstDiamondTitle', descKey: 'timelineFirstDiamondDesc', descParams: { rank: 'DIAMOND 1' } },
-  { id: 'm2', daysAgo: 58, icon: Zap, titleKey: 'timelineBestClimbTitle', descKey: 'timelineBestClimbDesc', descParams: { rr: 17, map: 'Sunset' } },
-  { id: 'm3', daysAgo: 25, icon: Swords, titleKey: 'timelineFirstAceTitle', descKey: 'timelineFirstAceDesc', descParams: { map: 'Bind' } },
-  { id: 'm4', daysAgo: 10, icon: Flame, titleKey: 'timelineStreakTitle', descKey: 'timelineStreakDesc', descParams: { n: getStreaks().bestWinStreak, map: 'Ascent' } },
-  { id: 'm5', daysAgo: 0, icon: Trophy, titleKey: 'timelineTodayTitle', descKey: 'timelineTodayDesc', descParams: { rank: 'Diamond 2' } },
+  { id: 'm1', daysAgo: 82, icon: TrendingUp, titleKey: 'timelineFirstDiamondTitle', descKey: 'timelineFirstDiamondDesc', descParams: { rank: 'DIAMOND 1' }, type: 'rank' },
+  { id: 'm2', daysAgo: 58, icon: Zap, titleKey: 'timelineBestClimbTitle', descKey: 'timelineBestClimbDesc', descParams: { rr: 17, map: 'Sunset' }, type: 'record' },
+  { id: 'm3', daysAgo: 25, icon: Swords, titleKey: 'timelineFirstAceTitle', descKey: 'timelineFirstAceDesc', descParams: { map: 'Bind' }, type: 'record' },
+  { id: 'm4', daysAgo: 10, icon: Flame, titleKey: 'timelineStreakTitle', descKey: 'timelineStreakDesc', descParams: { n: getStreaks().bestWinStreak, map: 'Ascent' }, type: 'streak' },
+  { id: 'm5', daysAgo: 0, icon: Trophy, titleKey: 'timelineTodayTitle', descKey: 'timelineTodayDesc', descParams: { rank: 'Diamond 2' }, type: 'rank' },
 ];
 
 // Invite-tracking stat — shown in Settings so sharing has a visible payoff instead of
