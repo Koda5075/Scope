@@ -2,7 +2,29 @@ import { useState } from 'react';
 import { Check, AlertTriangle, Lock, Moon, Sun, Monitor } from 'lucide-react';
 import Modal from './Modal.jsx';
 import { THEMES, isValidHex } from '../data/themes.js';
-import { inviteStats } from '../data/mockData.js';
+import { inviteStats, recentGames } from '../data/mockData.js';
+
+// Downloads a Blob under `filename` via a throwaway object URL — no server round-trip
+// needed since everything being exported already lives in mock data on the client.
+function downloadAsFile(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportGamesAsJson() {
+  downloadAsFile(JSON.stringify(recentGames, null, 2), 'scope-games.json', 'application/json');
+}
+
+function exportGamesAsCsv() {
+  const columns = ['id', 'map', 'mode', 'agent', 'result', 'kda', 'acs', 'score'];
+  const rows = recentGames.map((g) => columns.map((c) => g[c]).join(','));
+  downloadAsFile([columns.join(','), ...rows].join('\n'), 'scope-games.csv', 'text/csv');
+}
 
 const MOCK_PUBLIC_SLUG = 'kaito-euw1';
 const LANGS = ['en', 'fr', 'de', 'es', 'it', 'pt'];
@@ -33,8 +55,18 @@ export default function SettingsModal({
   setThemeMode,
   customAccent,
   setCustomAccent,
+  largeText,
+  setLargeText,
+  highContrast,
+  setHighContrast,
   publicVisible,
   setPublicVisible,
+  nickname,
+  setNickname,
+  dndEnabled,
+  setDndEnabled,
+  incognitoSearch,
+  setIncognitoSearch,
   loggedIn,
   setLoggedIn,
   isPremium,
@@ -48,6 +80,12 @@ export default function SettingsModal({
   const [copied, setCopied] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [hexDraft, setHexDraft] = useState(customAccent ?? '');
+  // Local draft, committed to the App-level `nickname` state only on blur — same reason
+  // hexDraft above stays local rather than calling setCustomAccent per keystroke: nickname
+  // is read by PlayerHeader, so wiring the input directly to it re-renders the entire app
+  // tree (charts included) on every keystroke, which is heavy enough to visibly drop
+  // characters when typed quickly.
+  const [nicknameDraft, setNicknameDraft] = useState(nickname ?? '');
   const [notifyPrefs, setNotifyPrefs] = useState(loadNotifyPrefs);
 
   function toggleNotify(key) {
@@ -82,6 +120,7 @@ export default function SettingsModal({
 
   const NAV = [
     ['appearance', t.appearance],
+    ['accessibility', t.settingsNavAccessibility],
     ['connection', t.settingsNavConnection],
     ['notifications', t.settingsNavNotifications],
     ['privacy', t.settingsNavPrivacy],
@@ -227,18 +266,63 @@ export default function SettingsModal({
             </div>
           )}
 
+          {section === 'accessibility' && (
+            <div className="flex flex-col gap-6">
+              <div>
+                <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-1">
+                  <input
+                    type="checkbox"
+                    checked={largeText}
+                    onChange={(e) => setLargeText(e.target.checked)}
+                    className="accent-[var(--accent)]"
+                  />
+                  {t.largeTextLabel}
+                </label>
+                <p className="text-[11px] text-neutral-600 font-body">{t.largeTextDesc}</p>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-1">
+                  <input
+                    type="checkbox"
+                    checked={highContrast}
+                    onChange={(e) => setHighContrast(e.target.checked)}
+                    className="accent-[var(--accent)]"
+                  />
+                  {t.highContrastLabel}
+                </label>
+                <p className="text-[11px] text-neutral-600 font-body">{t.highContrastDesc}</p>
+              </div>
+            </div>
+          )}
+
           {section === 'connection' && (
-            <div>
-              <SectionTitle>{t.settingsNavConnection}</SectionTitle>
-              <p className="text-xs font-body text-neutral-300 mb-4">
-                {loggedIn ? t.connectionConnectedAs.replace('{name}', 'KAITO#EUW1') : t.connectionNotConnected}
-              </p>
-              <button
-                onClick={() => setLoggedIn((s) => !s)}
-                className="bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
-              >
-                {loggedIn ? t.connectionSignOut : t.connectionSignIn}
-              </button>
+            <div className="flex flex-col gap-6">
+              <div>
+                <SectionTitle>{t.settingsNavConnection}</SectionTitle>
+                <p className="text-xs font-body text-neutral-300 mb-4">
+                  {loggedIn ? t.connectionConnectedAs.replace('{name}', 'KAITO#EUW1') : t.connectionNotConnected}
+                </p>
+                <button
+                  onClick={() => setLoggedIn((s) => !s)}
+                  className="bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
+                >
+                  {loggedIn ? t.connectionSignOut : t.connectionSignIn}
+                </button>
+              </div>
+
+              <div>
+                <SectionTitle>{t.nicknameLabel}</SectionTitle>
+                <input
+                  type="text"
+                  value={nicknameDraft}
+                  onChange={(e) => setNicknameDraft(e.target.value)}
+                  onBlur={() => setNickname(nicknameDraft)}
+                  placeholder={t.nicknamePlaceholder}
+                  aria-label={t.nicknameLabel}
+                  maxLength={24}
+                  className="w-full max-w-xs bg-neutral-950 border border-neutral-800 focus:border-accent outline-none px-3 py-2 text-xs font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
+                />
+              </div>
             </div>
           )}
 
@@ -259,6 +343,19 @@ export default function SettingsModal({
                 ))}
               </div>
               <p className="text-[11px] text-neutral-600 font-body mt-3 leading-relaxed">{t.notifyPrefsHint}</p>
+
+              <div className="mt-5 pt-5 border-t border-neutral-800">
+                <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-1">
+                  <input
+                    type="checkbox"
+                    checked={dndEnabled}
+                    onChange={(e) => setDndEnabled(e.target.checked)}
+                    className="accent-[var(--accent)]"
+                  />
+                  {t.dndLabel}
+                </label>
+                <p className="text-[11px] text-neutral-600 font-body">{t.dndDesc}</p>
+              </div>
             </div>
           )}
 
@@ -277,8 +374,40 @@ export default function SettingsModal({
               <button onClick={handleCopyLink} className="text-[11px] font-body text-accent hover:underline">
                 {copied ? t.linkCopied : t.copyLink}
               </button>
-              <div className="text-[11px] text-neutral-500 font-body mt-2">
+              <div className="text-[11px] text-neutral-500 font-body mt-2 mb-5">
                 {t.inviteStatsText.replace('{joined}', inviteStats.joined)}
+              </div>
+
+              <div className="pt-5 border-t border-neutral-800 mb-5">
+                <label className="flex items-center gap-2 text-xs font-body text-neutral-300 cursor-pointer mb-1">
+                  <input
+                    type="checkbox"
+                    checked={incognitoSearch}
+                    onChange={(e) => setIncognitoSearch(e.target.checked)}
+                    className="accent-[var(--accent)]"
+                  />
+                  {t.incognitoSearchLabel}
+                </label>
+                <p className="text-[11px] text-neutral-600 font-body">{t.incognitoSearchDesc}</p>
+              </div>
+
+              <div className="pt-5 border-t border-neutral-800">
+                <SectionTitle>{t.exportDataLabel}</SectionTitle>
+                <p className="text-[11px] text-neutral-500 font-body mb-3">{t.exportDataDesc}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={exportGamesAsJson}
+                    className="text-[11px] font-display uppercase tracking-wide px-3 py-1.5 border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
+                  >
+                    {t.exportJson}
+                  </button>
+                  <button
+                    onClick={exportGamesAsCsv}
+                    className="text-[11px] font-display uppercase tracking-wide px-3 py-1.5 border border-neutral-800 text-neutral-400 hover:text-accent hover:border-accent transition-colors"
+                  >
+                    {t.exportCsv}
+                  </button>
+                </div>
               </div>
             </div>
           )}

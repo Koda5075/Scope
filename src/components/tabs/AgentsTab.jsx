@@ -28,17 +28,17 @@ function SeeAllButton({ onClick, t }) {
 function AgentRow({ a, t, isLastPlayed }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-      <span className="font-display text-sm text-white flex items-center gap-2 sm:w-32 sm:shrink-0">
+      <span className="font-display text-sm text-white flex items-center gap-2 sm:w-32 sm:shrink-0 min-w-0">
         {getAgentIcon(a.name) && <img src={optimizeImg(getAgentIcon(a.name), 44)} alt="" loading="lazy" className="val-icon w-11 h-11 rounded-full object-cover shrink-0" />}
         <span className="truncate">{a.name}</span>
-        {isLastPlayed && (
-          <span className="shrink-0 text-[8px] font-display uppercase tracking-wide px-1 py-0.5 border border-accent text-accent">
-            {t.agentLastPlayedBadge}
-          </span>
-        )}
       </span>
       <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr ?? 0}%` }} /></div>
       <div className="flex items-center gap-3 shrink-0">
+        {isLastPlayed && (
+          <span className="text-[8px] font-display uppercase tracking-wide px-1 py-0.5 border border-accent text-accent whitespace-nowrap">
+            {t.agentLastPlayedBadge}
+          </span>
+        )}
         <span className="font-mono text-xs text-neutral-500">{a.games} {gamesLabel(a.games, t)}</span>
         <span className="flex items-center gap-1">
           <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
@@ -145,7 +145,11 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
   // a nudge to try something new rather than a stat, so a stable pick (first
   // alphabetically past the ones already played) beats re-rolling on every render.
   const untriedAgent = useMemo(() => {
-    const played = new Set(agentStats.map((a) => a.name));
+    // computeAgentStats seeds its map from every agent in the game (so the "See all"
+    // modal has a full roster to show, zeroed out), not just ones actually played — a
+    // plain name lookup would always find every name "already played". Games > 0 is
+    // the real signal for "tried this one".
+    const played = new Set(agentStats.filter((a) => a.games > 0).map((a) => a.name));
     return getAllAgentNames().find((name) => !played.has(name)) ?? null;
   }, [agentStats]);
   // Sorted by kills, same "most relevant first" convention as agentStats/mapStats above

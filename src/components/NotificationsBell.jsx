@@ -15,10 +15,13 @@ const TONE_COLOR = {
   info: '#38BDF8',
 };
 
-export default function NotificationsBell({ t, onManage }) {
+export default function NotificationsBell({ t, onManage, dndEnabled }) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState(alertsFeed);
-  const unreadCount = alerts.filter((a) => !a.read).length;
+  // Do Not Disturb (Settings > Notifications) mutes the badge without hiding the feed
+  // itself — alerts still land and are readable once opened, they just stop announcing
+  // themselves with a count while it's on.
+  const unreadCount = dndEnabled ? 0 : alerts.filter((a) => !a.read).length;
   const panelRef = useRef(null);
   useClickOutside(panelRef, open, () => setOpen(false));
 

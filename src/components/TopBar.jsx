@@ -1,7 +1,7 @@
 import { LogIn, Settings } from 'lucide-react';
 import NotificationsBell from './NotificationsBell.jsx';
 
-export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
+export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, dndEnabled, t }) {
   return (
     <div className="flex items-start justify-between mb-6">
       <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, t }) {
           <LogIn size={16} />
         </button>
 
-        {loggedIn && <NotificationsBell t={t} onManage={() => onOpenSettings('notifications')} />}
+        {loggedIn && <NotificationsBell t={t} onManage={() => onOpenSettings('notifications')} dndEnabled={dndEnabled} />}
 
         <button
           onClick={onOpenSettings}

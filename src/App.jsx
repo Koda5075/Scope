@@ -90,6 +90,11 @@ export default function ScopeDashboard() {
   // Scope+ only: a free-choice accent hex that overrides the preset when set. Non-Scope+
   // accounts keep the value stored but it has no effect until they subscribe.
   const [customAccent, setCustomAccent] = useState(() => loadStored('scope-accent-custom', null, (v) => (isValidHex(v) ? v : null)));
+  const [largeText, setLargeText] = useState(() => loadStored('scope-large-text', false, (v) => v === 'true'));
+  const [highContrast, setHighContrast] = useState(() => loadStored('scope-high-contrast', false, (v) => v === 'true'));
+  const [nickname, setNickname] = useState(() => loadStored('scope-nickname', ''));
+  const [dndEnabled, setDndEnabled] = useState(() => loadStored('scope-dnd', false, (v) => v === 'true'));
+  const [incognitoSearch, setIncognitoSearch] = useState(() => loadStored('scope-incognito-search', false, (v) => v === 'true'));
   const [showSettings, setShowSettings] = useState(false);
   const [settingsSection, setSettingsSection] = useState('appearance');
   const [favoriteIds, setFavoriteIds] = useState(() => loadStored('scope-favorites', ['p2'], JSON.parse));
@@ -112,9 +117,22 @@ export default function ScopeDashboard() {
   // Mode + Period (and, when period is 'act', the Act/Episode) — one shared filter
   // state for the whole dashboard, rendered once above the tabs, instead of a copy
   // local to whichever tab happened to need it first.
-  const [filterMode, setFilterMode] = useState('all');
-  const [filterPeriod, setFilterPeriod] = useState('7d');
-  const [actId, setActId] = useState(() => acts.find((a) => a.current)?.id ?? acts[0].id);
+  // A filtered view can be shared via ?mode=&period=&act= (see FilterBar's "copy
+  // filtered link" button) — read once at mount so a pasted link opens straight into the
+  // same Mode/Period/Act the sender had, instead of resetting to the defaults below.
+  const urlFilterParams = new URLSearchParams(window.location.search);
+  const [filterMode, setFilterMode] = useState(() => {
+    const m = urlFilterParams.get('mode');
+    return ['all', 'competitive', 'unrated', 'deathmatch'].includes(m) ? m : 'all';
+  });
+  const [filterPeriod, setFilterPeriod] = useState(() => {
+    const p = urlFilterParams.get('period');
+    return ['7d', '30d', 'act', 'all'].includes(p) ? p : '7d';
+  });
+  const [actId, setActId] = useState(() => {
+    const a = urlFilterParams.get('act');
+    return (a && acts.some((act) => act.id === a)) ? a : acts.find((act) => act.current)?.id ?? acts[0].id;
+  });
   const rrCurrent = 67;
   const rrGoal = 100;
   const t = T[lang];
@@ -143,6 +161,8 @@ export default function ScopeDashboard() {
         'scope-avatar', 'scope-banner', 'scope-title', 'scope-banner-spray', 'scope-banner-focus',
         'scope-theme-mode', 'scope-accent-custom', 'scope-logged-in', 'scope-premium',
         'scope-invite-card-dismissed', 'scope-onboarding-seen', 'scope-session-goal',
+        'scope-large-text', 'scope-high-contrast', 'scope-nickname', 'scope-dnd', 'scope-incognito-search',
+        'scope-welcome-seen', 'scope-compare-history', 'scope-custom-milestones', 'scope-recent-searches',
       ].forEach((key) => localStorage.removeItem(key));
       sessionStorage.removeItem('scope-promo-dismissed');
     } catch (e) { /* ignore */ }
@@ -160,6 +180,11 @@ export default function ScopeDashboard() {
     setBannerSpray(null);
     setBannerFocus({ x: 0.5, y: 0.5 });
     setIsPremium(false);
+    setLargeText(false);
+    setHighContrast(false);
+    setNickname('');
+    setDndEnabled(false);
+    setIncognitoSearch(false);
     setShowSettings(false);
   }
 
@@ -219,8 +244,20 @@ export default function ScopeDashboard() {
       else localStorage.removeItem('scope-accent-custom');
       localStorage.setItem('scope-logged-in', String(loggedIn));
       localStorage.setItem('scope-premium', String(isPremium));
+      localStorage.setItem('scope-large-text', String(largeText));
+      localStorage.setItem('scope-high-contrast', String(highContrast));
+      localStorage.setItem('scope-nickname', nickname);
+      localStorage.setItem('scope-dnd', String(dndEnabled));
+      localStorage.setItem('scope-incognito-search', String(incognitoSearch));
     } catch (e) { /* ignore */ }
-  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium]);
+  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium, largeText, highContrast, nickname, dndEnabled, incognitoSearch]);
+
+  // Large-text (Settings > Accessibility) changes the root font-size directly, since
+  // Tailwind's text-xs/sm/etc. utilities are all rem-based against the <html> element —
+  // scaling a nested div's own font-size wouldn't cascade into them at all.
+  useEffect(() => {
+    document.documentElement.style.fontSize = largeText ? '112.5%' : '';
+  }, [largeText]);
 
   // Keep the page (and the area outside the max-w container / behind overscroll) on the
   // active surface colour, not just the app root div.
@@ -259,6 +296,7 @@ export default function ScopeDashboard() {
     <div
       data-scope-root
       data-theme={resolvedThemeMode}
+      data-contrast={highContrast ? 'high' : undefined}
       className="min-h-screen w-full font-body"
       style={{ '--accent': accent, '--accent-dim': accentDim, background: 'var(--sc-bg)', color: 'var(--sc-text)' }}
     >
@@ -393,6 +431,19 @@ export default function ScopeDashboard() {
         [data-scope-root][data-theme="light"] .sc-rank-banner .border-neutral-800 { border-color: #333333 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .bg-neutral-900 { background-color: #171717 !important; }
         [data-scope-root][data-theme="light"] .sc-rank-banner .sc-track { background: #1A1A1A !important; border-color: #2A2A2A !important; }
+
+        /* High-contrast mode (Settings > Accessibility) — additive on top of whichever
+           theme is active, dark or light: stronger line/border colour and pure text
+           tones instead of the softer neutral-500/600 greys used for secondary text. */
+        [data-scope-root][data-contrast="high"] {
+          --sc-line: var(--accent) !important;
+        }
+        [data-scope-root][data-contrast="high"] .border-neutral-800,
+        [data-scope-root][data-contrast="high"] .border-neutral-700 { border-color: var(--sc-line) !important; }
+        [data-scope-root][data-contrast="high"] .text-neutral-500,
+        [data-scope-root][data-contrast="high"] .text-neutral-600 { color: #FFFFFF !important; }
+        [data-scope-root][data-contrast="high"][data-theme="light"] .text-neutral-500,
+        [data-scope-root][data-contrast="high"][data-theme="light"] .text-neutral-600 { color: #000000 !important; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-5 py-8">
@@ -403,6 +454,7 @@ export default function ScopeDashboard() {
             setSettingsSection(typeof sectionArg === 'string' ? sectionArg : 'appearance');
             setShowSettings(true);
           }}
+          dndEnabled={dndEnabled}
           t={t}
         />
 
@@ -418,13 +470,20 @@ export default function ScopeDashboard() {
               rrGoal={rrGoal}
               peakRank={mockPeakRank}
               avatarUrl={avatarUrl}
+              nickname={nickname}
               {...visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium })}
               bannerFocus={bannerFocus}
               onAvatarClick={() => setShowProfileModal(true)}
               isPremium={isPremium}
               onSeePlans={() => setShowPlansModal(true)}
             />
-            <PlayerSearchBar t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} filteredGames={filteredGames} />
+            <PlayerSearchBar
+              t={t}
+              favoriteIds={favoriteIds}
+              onToggleFavorite={toggleFavorite}
+              filteredGames={filteredGames}
+              incognitoSearch={incognitoSearch}
+            />
 
             <FilterBar
               t={t}
@@ -496,6 +555,16 @@ export default function ScopeDashboard() {
             setThemeMode={setThemeMode}
             customAccent={customAccent}
             setCustomAccent={setCustomAccent}
+            largeText={largeText}
+            setLargeText={setLargeText}
+            highContrast={highContrast}
+            setHighContrast={setHighContrast}
+            nickname={nickname}
+            setNickname={setNickname}
+            dndEnabled={dndEnabled}
+            setDndEnabled={setDndEnabled}
+            incognitoSearch={incognitoSearch}
+            setIncognitoSearch={setIncognitoSearch}
             publicVisible={publicVisible}
             setPublicVisible={setPublicVisible}
             loggedIn={loggedIn}

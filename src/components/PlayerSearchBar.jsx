@@ -18,7 +18,7 @@ function loadRecent() {
   }
 }
 
-export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filteredGames }) {
+export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filteredGames, incognitoSearch = false }) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -50,6 +50,7 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
   }, [query, favoriteIds, recent]);
 
   function pushRecent(riotId) {
+    if (incognitoSearch) return;
     setRecent((prev) => {
       const next = [riotId, ...prev.filter((r) => r.toLowerCase() !== riotId.toLowerCase())].slice(0, RECENT_MAX);
       try {

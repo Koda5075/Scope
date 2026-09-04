@@ -7,7 +7,7 @@ import RankPyramid from './RankPyramid.jsx';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
-export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, onAvatarClick, isPremium, onSeePlans }) {
+export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, avatarUrl, nickname, bannerUrl, titleId, bannerSpray, bannerFocus, onAvatarClick, isPremium, onSeePlans }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
   const [showRankInfo, setShowRankInfo] = useState(false);
@@ -88,7 +88,7 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
           </span>
           <span className="flex flex-col items-start gap-1">
             <span className="font-display text-lg font-semibold tracking-wide text-white leading-tight">
-              KAITO<span className="text-neutral-600">#EUW1</span>
+              {nickname?.trim() || 'KAITO'}<span className="text-neutral-600">#EUW1</span>
             </span>
             {titleLabel && (
               <span className="px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.14em] text-accent bg-accent/10 border border-accent/40">

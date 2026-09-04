@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { Link2, Check } from 'lucide-react';
+
 // Segmented pill control — same visual language as the title grid / theme toggle /
 // language picker, replacing the raw <select>s that felt unfinished.
 function Segmented({ label, value, onChange, options }) {
@@ -29,6 +32,20 @@ function Segmented({ label, value, onChange, options }) {
 }
 
 export default function FilterBar({ t, mode, setMode, period, setPeriod, acts, actId, setActId }) {
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  async function copyFilteredLink() {
+    const params = new URLSearchParams({ mode, period });
+    if (period === 'act') params.set('act', actId);
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1500);
+    } catch {
+      /* ignore — clipboard unavailable */
+    }
+  }
+
   return (
     <div className="flex flex-wrap gap-x-6 gap-y-3 mb-4">
       <Segmented
@@ -68,6 +85,14 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod, acts, a
           </select>
         </div>
       )}
+      <button
+        type="button"
+        onClick={copyFilteredLink}
+        className="flex items-center gap-1.5 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors"
+      >
+        {linkCopied ? <Check size={12} className="text-accent" /> : <Link2 size={12} />}
+        {linkCopied ? t.linkCopied : t.copyFilterLink}
+      </button>
     </div>
   );
 }
