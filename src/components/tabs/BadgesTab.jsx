@@ -54,6 +54,10 @@ export default function BadgesTab({ t, isPremium }) {
           const progress = getBadgeProgress(b);
           const unlocked = isBadgeUnlocked(b);
           const glowColor = progress ? progress.tierColor : 'var(--accent)';
+          // Secret badges keep their name/description hidden until unlocked, for the
+          // surprise-reveal effect — everything else about the card (locked styling,
+          // lock icon) stays the same as a normal locked badge.
+          const isHiddenSecret = b.secret && !unlocked;
 
           return (
             <Card
@@ -78,8 +82,8 @@ export default function BadgesTab({ t, isPremium }) {
                     boxShadow: unlocked ? `0 0 10px -2px ${glowColor}` : 'none',
                   }}
                 >
-                  <Icon size={20} style={{ color: unlocked ? glowColor : '#737373' }} />
-                  {!unlocked && (
+                  {isHiddenSecret ? <Lock size={16} className="text-neutral-600" /> : <Icon size={20} style={{ color: unlocked ? glowColor : '#737373' }} />}
+                  {!unlocked && !isHiddenSecret && (
                     <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-neutral-900 border border-neutral-700 flex items-center justify-center rounded-full">
                       <Lock size={9} className="text-neutral-400" />
                     </span>
@@ -87,7 +91,9 @@ export default function BadgesTab({ t, isPremium }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <div className={`font-display text-sm font-semibold ${unlocked ? 'text-white' : 'text-neutral-400'}`}>{info.label}</div>
+                    <div className={`font-display text-sm font-semibold ${unlocked ? 'text-white' : 'text-neutral-400'}`}>
+                      {isHiddenSecret ? t.badgeSecretLabel : info.label}
+                    </div>
                     {unlocked && progress && (
                       <span
                         className="font-display text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 shrink-0 rounded-sm"
@@ -102,7 +108,7 @@ export default function BadgesTab({ t, isPremium }) {
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-neutral-500 font-body">{info.sub}</div>
+                  <div className="text-[11px] text-neutral-500 font-body">{isHiddenSecret ? t.badgeSecretSub : info.sub}</div>
                 </div>
               </div>
 

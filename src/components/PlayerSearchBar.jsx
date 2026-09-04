@@ -31,14 +31,23 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
 
   // As-you-type matches against the players Scope already knows (connected + public).
   // Not a real directory — that needs the Riot API — but it makes known IDs findable
-  // without typing the exact tag.
+  // without typing the exact tag. Favorites first, then anyone recently searched, then
+  // everyone else — same "people you actually care about" ordering as the favorites/
+  // recent-searches rows below the input, just applied to the live suggestion list too.
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (q.length < 2) return [];
+    const recentLower = recent.map((r) => r.toLowerCase());
+    const rank = (p) => {
+      if (favoriteIds.includes(p.puuid)) return 0;
+      if (recentLower.includes(`${p.name}#${p.tag}`.toLowerCase())) return 1;
+      return 2;
+    };
     return otherPlayers
       .filter((p) => p.connected && p.isPublic && `${p.name}#${p.tag}`.toLowerCase().includes(q))
+      .sort((a, b) => rank(a) - rank(b))
       .slice(0, 5);
-  }, [query]);
+  }, [query, favoriteIds, recent]);
 
   function pushRecent(riotId) {
     setRecent((prev) => {
@@ -61,9 +70,9 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
     }
   }
 
-  function openPlayer(p) {
+  function openPlayer(p, initialView = 'profile') {
     setSelected(p);
-    setView('profile');
+    setView(initialView);
     setResult(null);
     setQuery('');
     setFocused(false);
@@ -125,18 +134,27 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
         {focused && suggestions.length > 0 && (
           <div className="absolute z-20 left-0 right-0 top-full mt-1 border border-neutral-800 bg-neutral-950 shadow-lg">
             {suggestions.map((p) => (
-              <button
-                key={p.puuid}
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => openPlayer(p)}
-                className="flex items-center justify-between w-full px-3 py-2 text-left hover:bg-neutral-900 transition-colors"
-              >
-                <span className="text-xs font-body text-neutral-200">
-                  {p.name}<span className="text-neutral-600">#{p.tag}</span>
-                </span>
-                <span className="text-[10px] font-body text-neutral-600">{p.rank}</span>
-              </button>
+              <div key={p.puuid} className="group flex items-center justify-between w-full px-3 py-2 hover:bg-neutral-900 transition-colors">
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => openPlayer(p)}
+                  className="flex-1 min-w-0 flex items-center justify-between gap-2 text-left"
+                >
+                  <span className="text-xs font-body text-neutral-200 truncate">
+                    {p.name}<span className="text-neutral-600">#{p.tag}</span>
+                  </span>
+                  <span className="text-[10px] font-body text-neutral-600 shrink-0">{p.rank}</span>
+                </button>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => openPlayer(p, 'compare')}
+                  className="shrink-0 ml-2 text-[10px] font-body text-neutral-600 group-hover:text-accent hover:underline transition-colors"
+                >
+                  {t.searchCompareInline}
+                </button>
+              </div>
             ))}
           </div>
         )}

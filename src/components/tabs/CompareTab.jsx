@@ -63,12 +63,57 @@ const BOARD_METRICS = [
   { key: 'rr', labelKey: null, label: 'RR', fmt: (v) => v },
 ];
 
+const HISTORY_KEY = 'scope-compare-history';
+const HISTORY_MAX = 6;
+
+function loadCompareHistory() {
+  try {
+    const v = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]');
+    return Array.isArray(v) ? v.slice(0, HISTORY_MAX) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function CompareTab({ t, isPremium, filteredGames }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
   const [boardMetric, setBoardMetric] = useState('acs');
   const [linkCopied, setLinkCopied] = useState(false);
+  const [history, setHistory] = useState(loadCompareHistory);
+
+  function pushHistory(riotId) {
+    setHistory((prev) => {
+      const next = [riotId, ...prev.filter((r) => r.toLowerCase() !== riotId.toLowerCase())].slice(0, HISTORY_MAX);
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
+  function clearHistory() {
+    setHistory([]);
+    try {
+      localStorage.removeItem(HISTORY_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function selectFromHistory(riotId) {
+    const parsed = parseRiotId(riotId);
+    const match = parsed && otherPlayers.find(
+      (p) => p.name.toLowerCase() === parsed.name.toLowerCase() && p.tag.toLowerCase() === parsed.tag.toLowerCase()
+    );
+    if (match) {
+      setPlayer(match);
+      setError(null);
+    }
+  }
 
   async function copyInviteLink() {
     try {
@@ -118,6 +163,7 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
       setPlayer(match);
       setError(null);
       setQuery('');
+      pushHistory(`${match.name}#${match.tag}`);
     } else if (match && match.connected) {
       setError('private');
     } else {
@@ -142,6 +188,24 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
             className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-9 pr-3 py-2.5 text-sm font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
           />
         </form>
+
+        {history.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.compareHistoryTitle}</span>
+            {history.map((r) => (
+              <button
+                key={r}
+                onClick={() => selectFromHistory(r)}
+                className="border border-neutral-800 hover:border-accent px-2.5 py-1 text-xs font-body text-neutral-400 hover:text-neutral-200 transition-colors"
+              >
+                {r}
+              </button>
+            ))}
+            <button onClick={clearHistory} className="text-[10px] font-body text-neutral-600 hover:text-accent transition-colors">
+              {t.compareHistoryClear}
+            </button>
+          </div>
+        )}
 
         {error === 'invalid' && <div className="text-xs font-body text-neutral-500 mb-3">{t.searchInvalidFormat}</div>}
         {error === 'private' && <div className="text-xs font-body text-neutral-500 mb-3">{t.searchPrivateDesc}</div>}

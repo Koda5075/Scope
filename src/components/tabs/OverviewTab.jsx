@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
@@ -26,6 +26,7 @@ import { getAgentIcon, getMapImage, optimizeImg } from '../../data/valorantAsset
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
+const WELCOME_SEEN_KEY = 'scope-welcome-seen';
 
 export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
@@ -36,6 +37,24 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const [visibleGames, setVisibleGames] = useState(GAMES_PAGE);
   // Collapse back to the first page whenever the global filter changes the list.
   useEffect(() => setVisibleGames(GAMES_PAGE), [filteredGames]);
+
+  // Shown once, ever — first thing a brand-new account sees on Overview, separate from
+  // the onboarding tour (which walks through the UI; this just says hello).
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      return localStorage.getItem(WELCOME_SEEN_KEY) !== 'true';
+    } catch {
+      return false;
+    }
+  });
+  function dismissWelcome() {
+    setShowWelcome(false);
+    try { localStorage.setItem(WELCOME_SEEN_KEY, 'true'); } catch { /* ignore */ }
+  }
+
+  // Last game recorded — same "relative time, not a baked-in clock" reasoning as
+  // PlayerHeader's account-level lastSession, just for the most recent match specifically.
+  const [lastGameMinutesAgo] = useState(() => 3 + Math.floor(Math.random() * 40));
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
@@ -78,6 +97,21 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
   const accuracyDelta = statDelta(computeAverageAccuracy);
   const headshotsDelta = statDelta(computeAverageHeadshots);
   const acsDelta = statDelta(computeAverageAcs);
+
+  // Auto-generated one-line headline: picks whichever tracked stat improved the most
+  // (ACS first as the most representative "impact" number when it ties with others),
+  // falling back to a neutral games-played line once there isn't enough of a sample
+  // for statDelta to return anything at all.
+  const headlineCandidates = [
+    { stat: t.statACS, delta: acsDelta },
+    { stat: t.statAccuracy, delta: accuracyDelta, unit: '%' },
+    { stat: t.statHeadshots, delta: headshotsDelta, unit: '%' },
+    { stat: t.statKDA, delta: kdaDelta },
+  ].filter((c) => c.delta !== null && c.delta > 0);
+  const bestHeadline = headlineCandidates.sort((a, b) => b.delta - a.delta)[0];
+  const sessionHeadline = bestHeadline
+    ? t.sessionHeadlineGood.replace('{stat}', bestHeadline.stat).replace('{delta}', `+${bestHeadline.delta}${bestHeadline.unit ?? ''}`)
+    : t.sessionHeadlineNeutral.replace('{games}', filteredGames.length);
 
   async function handleShare() {
     setSharing(true);
@@ -130,6 +164,22 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
 
   return (
     <>
+      {showWelcome && (
+        <Card className="mb-4">
+          <div className="flex items-start gap-3">
+            <Sparkles size={14} className="text-accent shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block mb-1">
+                {t.welcomeBannerTitle.replace('{name}', 'KAITO')}
+              </span>
+              <p className="text-xs font-body text-neutral-400 leading-relaxed">{t.welcomeBannerDesc}</p>
+            </div>
+            <button onClick={dismissWelcome} aria-label={t.close} className="shrink-0 text-neutral-600 hover:text-accent transition-colors">
+              <X size={14} />
+            </button>
+          </div>
+        </Card>
+      )}
       <StreakFlame t={t} />
       {isPremium && (
         <Card className="mb-4">
@@ -187,7 +237,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
         </Card>
 
         <Card>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-1.5 flex-wrap gap-y-1">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.sessionSummary}</span>
             <div className="flex items-center gap-3">
               <button
@@ -207,6 +257,12 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
               </button>
             </div>
           </div>
+          {filteredGames.length > 0 && (
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+              <p className="text-xs font-body text-neutral-400 leading-relaxed">{sessionHeadline}</p>
+              <span className="font-mono text-[10px] text-neutral-600 shrink-0">{t.lastGameLabel.replace('{n}', lastGameMinutesAgo)}</span>
+            </div>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.games}</div><div className="font-mono text-xl text-white">{filteredGames.length}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.record}</div><div className="font-mono text-xl text-accent">{wins}{t.winShort} – {losses}{t.lossShort}</div></div>

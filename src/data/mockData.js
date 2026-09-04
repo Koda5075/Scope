@@ -1,4 +1,4 @@
-import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock, Footprints } from 'lucide-react';
 import { getAllAgentNames } from './valorantAssets.js';
 
 // `s` is a plain session index (1-based) rather than a pre-formatted "S1" string, so the
@@ -22,6 +22,9 @@ export const TIER_COLORS = ['#CD7F32', '#C0C4C9', '#F2C94C', '#7DD3E8'];
 // numeric threshold to derive it from — a mix of true/false so the Badges tab has real
 // locked entries to show, not just achievements.
 export const badgeDefs = [
+  // Auto-unlocked the moment an account exists, so the Badges tab already has one
+  // unlocked entry on day one instead of a wall of locked cards.
+  { id: 'firstSteps', icon: Footprints, unlocked: true, daysAgo: 94 },
   { id: 'teamPlayer', icon: Users, tiers: [10, 25, 50, 100], value: 38 },
   { id: 'aceX3', icon: Swords, tiers: [1, 3, 10, 25], value: 7 },
   { id: 'headshots200', icon: Target, tiers: [100, 500, 1000, 2500], value: 640 },
@@ -29,12 +32,12 @@ export const badgeDefs = [
   { id: 'newTier', icon: TrendingUp, unlocked: true, daysAgo: 82 },
   { id: 'top15', icon: Trophy, unlocked: true, daysAgo: 45 },
   { id: 'comeback', icon: RotateCcw, unlocked: true, daysAgo: 12 },
-  { id: 'nightOwl', icon: Moon, unlocked: false },
+  { id: 'nightOwl', icon: Moon, unlocked: false, secret: true },
   { id: 'earlyBird', icon: Sunrise, unlocked: true, daysAgo: 63 },
   { id: 'marathon', icon: Hourglass, unlocked: false },
   { id: 'supportStar', icon: HeartHandshake, tiers: [200, 500, 1000, 2000], value: 740 },
   { id: 'rivalSlayer', icon: Crosshair, tiers: [1, 5, 15, 30], value: 4 },
-  { id: 'explorer', icon: Compass, unlocked: false },
+  { id: 'explorer', icon: Compass, unlocked: false, secret: true },
   { id: 'versatile', icon: Shuffle, tiers: [3, 6, 10, 15], value: 7 },
 ];
 
