@@ -4,7 +4,7 @@ import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { weaponStats, computeAgentStats, computeMapStats } from '../../data/mockData.js';
-import { getAgentIcon, getMapImage, getWeaponIcon, optimizeImg } from '../../data/valorantAssets.js';
+import { getAgentIcon, getMapImage, getWeaponIcon, getAllAgentNames, optimizeImg } from '../../data/valorantAssets.js';
 import { gamesLabel } from '../../i18n/translations.js';
 import InfoTip from '../InfoTip.jsx';
 
@@ -25,12 +25,17 @@ function SeeAllButton({ onClick, t }) {
   );
 }
 
-function AgentRow({ a, t }) {
+function AgentRow({ a, t, isLastPlayed }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <span className="font-display text-sm text-white flex items-center gap-2 sm:w-32 sm:shrink-0">
         {getAgentIcon(a.name) && <img src={optimizeImg(getAgentIcon(a.name), 44)} alt="" loading="lazy" className="val-icon w-11 h-11 rounded-full object-cover shrink-0" />}
-        {a.name}
+        <span className="truncate">{a.name}</span>
+        {isLastPlayed && (
+          <span className="shrink-0 text-[8px] font-display uppercase tracking-wide px-1 py-0.5 border border-accent text-accent">
+            {t.agentLastPlayedBadge}
+          </span>
+        )}
       </span>
       <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${a.wr ?? 0}%` }} /></div>
       <div className="flex items-center gap-3 shrink-0">
@@ -133,6 +138,16 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
   // dataset, so it stays an all-time snapshot.
   const agentStats = useMemo(() => computeAgentStats(filteredGames), [filteredGames]);
   const mapStats = useMemo(() => computeMapStats(filteredGames), [filteredGames]);
+  // filteredGames is most-recent-first (same convention Overview relies on), so its
+  // first entry's agent is simply the last one actually played under the current filter.
+  const lastPlayedAgent = filteredGames[0]?.agent;
+  // One agent from the full roster the player hasn't played at all yet, if any —
+  // a nudge to try something new rather than a stat, so a stable pick (first
+  // alphabetically past the ones already played) beats re-rolling on every render.
+  const untriedAgent = useMemo(() => {
+    const played = new Set(agentStats.map((a) => a.name));
+    return getAllAgentNames().find((name) => !played.has(name)) ?? null;
+  }, [agentStats]);
   // Sorted by kills, same "most relevant first" convention as agentStats/mapStats above
   // — the full weapon roster is grouped by category in mockData.js for readability, so
   // array order alone would otherwise put a rarely-used Shorty ahead of the Vandal in
@@ -150,8 +165,20 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
           {agentStats.length > AGENT_PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('agents')} t={t} />}
         </div>
         <div className="flex flex-col gap-3">
-          {agentStats.slice(0, AGENT_PREVIEW_COUNT).map((a) => <AgentRow key={a.name} a={a} t={t} />)}
+          {agentStats.slice(0, AGENT_PREVIEW_COUNT).map((a) => (
+            <AgentRow key={a.name} a={a} t={t} isLastPlayed={a.name === lastPlayedAgent} />
+          ))}
         </div>
+        {untriedAgent && (
+          <div className="flex items-center gap-2.5 mt-4 pt-3 border-t border-neutral-800">
+            {getAgentIcon(untriedAgent) && (
+              <img src={optimizeImg(getAgentIcon(untriedAgent), 40)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover shrink-0" />
+            )}
+            <p className="text-xs font-body text-neutral-400 leading-relaxed">
+              {t.agentSuggestionText.replace('{agent}', untriedAgent)}
+            </p>
+          </div>
+        )}
       </Card>
 
       <Card>

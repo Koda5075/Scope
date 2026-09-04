@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, Search } from 'lucide-react';
 import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
 import PlayerProfileCard from '../PlayerProfileCard.jsx';
@@ -32,6 +32,7 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState('profile');
   const [scopeOnly, setScopeOnly] = useState(false);
+  const [nameFilter, setNameFilter] = useState('');
   // Mock rows render instantly; the val-leaderboard proxy swaps in real rows if a Riot
   // key is configured server-side, otherwise the mock stays. `live` tracks which is shown.
   const [allRows, setAllRows] = useState(() => getLeaderboard(region));
@@ -54,9 +55,12 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
 
   const scopeRows = useMemo(() => allRows.filter((p) => isScopePlayer(p)), [allRows]);
   const rows = scopeOnly ? scopeRows : allRows;
-  // The Scope-only view is a short flat list — no podium, since it can hold 0–2 rows.
-  const podium = scopeOnly ? [] : rows.slice(0, 3);
-  const rest = scopeOnly ? rows : rows.slice(3);
+  const query = nameFilter.trim().toLowerCase();
+  const matchesQuery = (p) => !query || `${p.gameName}#${p.tagLine}`.toLowerCase().includes(query);
+  // A name search flattens the podium into the regular list — searching for a specific
+  // player shouldn't depend on whether they happen to be in the top 3 or not.
+  const podium = scopeOnly || query ? [] : rows.slice(0, 3);
+  const rest = (scopeOnly || query ? rows : rows.slice(3)).filter(matchesQuery);
 
   function openScopeProfile(matched) {
     setSelected(matched);
@@ -77,6 +81,17 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
           )}
         </div>
         <p className="text-xs font-body text-neutral-500 mb-4">{t.leaderboardSubtitle}</p>
+
+        <div className="relative mb-3 max-w-xs">
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600" />
+          <input
+            value={nameFilter}
+            onChange={(e) => setNameFilter(e.target.value)}
+            placeholder={t.leaderboardSearchPlaceholder}
+            aria-label={t.leaderboardSearchPlaceholder}
+            className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-8 pr-3 py-1.5 text-xs font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
+          />
+        </div>
 
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body mr-1">{t.leaderboardRegionLabel}</span>
