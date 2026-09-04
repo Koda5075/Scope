@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Lock } from 'lucide-react';
-import { getFlatRankTiers, optimizeImg } from '../data/valorantAssets.js';
+import { getRankLadder, optimizeImg } from '../data/valorantAssets.js';
 
 // Illustrative player-distribution estimate per individual tier — there's no real
 // player-distribution API to pull from, so this is a plausible, roughly pyramid-shaped
@@ -20,45 +20,76 @@ const DISTRIBUTION_PCT = {
   Radiant: 0.4,
 };
 
-const TIERS = [...getFlatRankTiers()].reverse(); // Radiant first (best) down to Iron 1 (most common).
+// Row width, as a % of the pyramid's own max width — narrowest at the apex (Radiant,
+// fewest players) and widest at the base (Iron, most players). This is what actually
+// makes the thing read as a pyramid rather than an accordion list: the width steps
+// mirror the same "fewer players the higher you go" idea the distribution note below
+// already states in words, so the shape and the copy reinforce each other.
+const ROW_WIDTH_PCT = {
+  Radiant: 30, Immortal: 42, Ascendant: 53, Diamond: 64,
+  Platinum: 74, Gold: 82, Silver: 89, Bronze: 95, Iron: 100,
+};
+
+// Radiant (apex) down to Iron (base) — reversed from getRankLadder()'s natural
+// lowest-to-highest order.
+const GROUPS = [...getRankLadder()].reverse();
+
+function groupPct(group) {
+  return group.tiers.reduce((sum, tier) => sum + (DISTRIBUTION_PCT[tier.label] ?? 0), 0);
+}
 
 export default function RankPyramid({ t, isPremium, onSeePlans }) {
-  const [expandedKey, setExpandedKey] = useState(null);
+  const [expandedGroup, setExpandedGroup] = useState(null);
 
   return (
     <div>
       <p className="text-xs text-neutral-400 font-body leading-relaxed mb-2">{t.rankPyramidDesc}</p>
       <p className="text-[11px] text-neutral-600 font-body leading-relaxed mb-5">{t.rankPyramidDistributionNote}</p>
 
-      <div className="flex flex-col gap-1.5">
-        {TIERS.map((tier) => {
-          const pct = DISTRIBUTION_PCT[tier.label];
-          const isOpen = expandedKey === tier.key;
-          const content = t.rankTips?.[tier.groupName];
+      <div className="flex flex-col items-center gap-1">
+        {GROUPS.map((group) => {
+          const isOpen = expandedGroup === group.name;
+          const content = t.rankTips?.[group.name];
+          const pct = groupPct(group);
 
           return (
-            <div key={tier.key} style={{ borderLeft: `3px solid ${tier.color}` }}>
-              <button
-                type="button"
-                onClick={() => setExpandedKey(isOpen ? null : tier.key)}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left"
-                style={{ background: `${tier.color}14` }}
-                aria-expanded={isOpen}
-              >
-                <img src={optimizeImg(tier.icon, 44)} alt={tier.label} className="val-icon w-9 h-9 rounded-full object-cover shrink-0" />
-                <span className="flex-1 min-w-0 flex items-baseline justify-between gap-2">
-                  <span className="font-display text-sm font-bold uppercase tracking-wide" style={{ color: tier.color }}>
-                    {tier.label}
+            <div key={group.name} className="w-full flex flex-col items-center">
+              <div className="min-w-[8.5rem]" style={{ width: `${ROW_WIDTH_PCT[group.name]}%` }}>
+                <button
+                  type="button"
+                  onClick={() => setExpandedGroup(isOpen ? null : group.name)}
+                  className="w-full flex flex-col items-center gap-1 px-2 py-2"
+                  style={{
+                    background: `${group.color}14`,
+                    borderLeft: `3px solid ${group.color}`,
+                    borderRight: `3px solid ${group.color}`,
+                  }}
+                  aria-expanded={isOpen}
+                >
+                  <span className="flex items-center justify-center gap-1.5">
+                    {group.tiers.map((tier) => (
+                      <img
+                        key={tier.label}
+                        src={optimizeImg(tier.icon, 40)}
+                        alt={tier.label}
+                        className="val-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0"
+                      />
+                    ))}
                   </span>
-                  <span className="font-mono text-xs text-neutral-400 shrink-0">
-                    {pct !== undefined ? `~${pct}%` : '<1%'}
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="font-display text-xs sm:text-sm font-bold uppercase tracking-wide" style={{ color: group.color }}>
+                      {group.name}
+                    </span>
+                    <span className="font-mono text-[10px] text-neutral-400 shrink-0">
+                      {pct !== undefined ? `~${pct.toFixed(1)}%` : '<1%'}
+                    </span>
+                    <ChevronDown size={12} className={`text-neutral-500 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                   </span>
-                </span>
-                <ChevronDown size={14} className={`text-neutral-500 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-              </button>
+                </button>
+              </div>
 
               {isOpen && content && (
-                <div className="px-3 py-3 bg-neutral-950 border-t border-neutral-800">
+                <div className="w-full px-3 py-3 bg-neutral-950 border-t border-neutral-800">
                   <div className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body mb-1.5">
                     {t.rankTipsHowToLabel}
                   </div>

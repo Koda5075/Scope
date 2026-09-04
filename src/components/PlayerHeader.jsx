@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HelpCircle } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { getRankIcon, optimizeImg } from '../data/valorantAssets.js';
 import { getPlayerTitleLabel, getSprayIcon } from '../data/valorantCosmetics.js';
 import Modal from './Modal.jsx';
@@ -51,17 +51,7 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
       <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
         {rankIcon && <img src={optimizeImg(rankIcon, 96)} alt="" className="val-icon w-24 h-24 shrink-0 self-center" />}
         <div className="flex-1 min-w-[220px]">
-          <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body">{t.rank}</span>
-            <button
-              onClick={() => setShowRankInfo(true)}
-              aria-label={t.rankPyramidTitle}
-              title={t.rankPyramidTitle}
-              className="text-neutral-600 hover:text-accent transition-colors"
-            >
-              <HelpCircle size={13} />
-            </button>
-          </div>
+          <span className="block text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body mb-1">{t.rank}</span>
           <div className="font-display text-4xl sm:text-5xl font-bold text-accent leading-none">{CURRENT_RANK}</div>
           <div className="sc-track h-2.5 w-full max-w-sm overflow-hidden mt-3">
             <div className="sc-fill h-full" style={{ width: `${rrCurrent}%` }} />
@@ -76,6 +66,13 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
               <span className="text-neutral-400">{peakRank}</span>
             </span>
           </div>
+          <button
+            onClick={() => setShowRankInfo(true)}
+            className="flex items-center gap-1 mt-2 text-[11px] font-display font-bold uppercase tracking-wide text-accent hover:underline"
+          >
+            {t.rankPyramidCta}
+            <ChevronRight size={12} />
+          </button>
         </div>
 
         <div className="hidden sm:block w-px self-stretch bg-neutral-800 shrink-0" />
@@ -104,7 +101,7 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
       </div>
 
       {showRankInfo && (
-        <Modal onClose={() => setShowRankInfo(false)} closeLabel={t.close}>
+        <Modal onClose={() => setShowRankInfo(false)} closeLabel={t.close} size="lg">
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.rankPyramidTitle}</span>
           <RankPyramid t={t} isPremium={isPremium} onSeePlans={onSeePlans} />
         </Modal>

@@ -44,10 +44,35 @@ function loadStored(key, fallback, parse = (v) => v) {
   }
 }
 
+// Best-effort match of the browser's own language list against what Scope actually
+// ships translations for — checked in navigator.languages order (the user's real
+// preference order, not just the first entry) so e.g. ['fr-FR', 'en-US'] picks 'fr'.
+// Falls back to English when nothing supported matches or navigator is unavailable
+// (SSR-safe, though this app is client-only).
+function detectBrowserLang() {
+  try {
+    const candidates = navigator.languages?.length ? navigator.languages : [navigator.language];
+    for (const candidate of candidates) {
+      if (!candidate) continue;
+      const primary = candidate.slice(0, 2).toLowerCase();
+      if (T[primary]) return primary;
+    }
+  } catch {
+    /* ignore */
+  }
+  return 'en';
+}
+
 export default function ScopeDashboard() {
   const [loggedIn, setLoggedIn] = useState(() => loadStored('scope-logged-in', false, (v) => v === 'true'));
   const [tab, setTab] = useState('overview');
-  const [lang, setLang] = useState(() => loadStored('scope-lang', 'en', (v) => (T[v] ? v : 'en')));
+  // Only auto-detects from navigator.language on a genuinely first load (no
+  // 'scope-lang' key saved yet) — once a preference exists, saved or manually
+  // changed, it always wins over re-detecting the browser's language.
+  const [lang, setLang] = useState(() => {
+    const saved = loadStored('scope-lang', null);
+    return saved && T[saved] ? saved : detectBrowserLang();
+  });
   const [theme, setTheme] = useState(() => loadStored('scope-theme', 'yellow', (v) => (THEMES[v] ? v : 'yellow')));
   // themeMode is the stored preference (dark|light|auto); resolvedThemeMode below is what
   // actually gets applied to data-theme/resolveAccent, since the CSS overrides only ever
@@ -202,6 +227,15 @@ export default function ScopeDashboard() {
   useEffect(() => {
     document.documentElement.style.background = resolvedThemeMode === 'light' ? '#FAF9F7' : '#000000';
   }, [resolvedThemeMode]);
+
+  // Keeps <html lang> in sync with the actually-displayed language — it was hardcoded
+  // to "en" in index.html and never updated, which left it wrong after a browser-language
+  // auto-detect or a manual change in Settings. Right beyond correctness: a stale lang
+  // attribute is also what makes browsers offer to auto-translate a page that's already
+  // in the reader's language, or skip translating one that isn't.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   // Digit keys 1-7 jump straight to the matching tab, in TabNav's own order — skipped
   // while typing in any input/textarea/select (or when logged out, since tabs aren't
@@ -421,7 +455,7 @@ export default function ScopeDashboard() {
               </Suspense>
             )}
 
-            <OnboardingTour t={t} />
+            <OnboardingTour t={t} lang={lang} setLang={setLang} />
           </>
         )}
         </main>
