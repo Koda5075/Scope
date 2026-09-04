@@ -21,6 +21,7 @@ import { getSupabase } from './lib/supabaseClient.js';
 import { DEFAULT_TITLE_ID } from './data/valorantCosmetics.js';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
+import EconomyTab from './components/tabs/EconomyTab.jsx';
 import CompareTab from './components/tabs/CompareTab.jsx';
 import LeaderboardTab from './components/tabs/LeaderboardTab.jsx';
 import BadgesTab from './components/tabs/BadgesTab.jsx';
@@ -124,7 +125,7 @@ export default function ScopeDashboard() {
   const urlFilterParams = new URLSearchParams(window.location.search);
   const [filterMode, setFilterMode] = useState(() => {
     const m = urlFilterParams.get('mode');
-    return ['all', 'competitive', 'unrated', 'deathmatch'].includes(m) ? m : 'all';
+    return ['all', 'competitive', 'unrated', 'deathmatch', 'spikerush', 'escalation', 'teamdeathmatch', 'swiftplay'].includes(m) ? m : 'all';
   });
   const [filterPeriod, setFilterPeriod] = useState(() => {
     const p = urlFilterParams.get('period');
@@ -503,6 +504,7 @@ export default function ScopeDashboard() {
 
             {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
+            {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
             {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'leaderboard' && (
               <LeaderboardTab t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} filteredGames={filteredGames} />

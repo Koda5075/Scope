@@ -54,7 +54,8 @@ export default function Highlights({ t, filteredGames }) {
 
   return (
     <Card className="mb-4" data-tour="highlights">
-      <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.highlightsTitle}</span>
+      <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1 block">{t.highlightsTitle}</span>
+      <p className="text-[11px] text-neutral-500 font-body mb-3">{t.highlightsSub}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {items.map((item, i) => (
           <div key={i} className="flex items-center gap-2.5 px-3 py-2 border border-neutral-800 bg-neutral-950">

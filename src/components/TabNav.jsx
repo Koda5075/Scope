@@ -2,7 +2,7 @@ import { Lock } from 'lucide-react';
 
 // Exported so App.jsx's keyboard-shortcut handler (digit keys 1-7) can map to the same
 // order without duplicating it.
-export const TABS = ['overview', 'agents', 'compare', 'leaderboard', 'badges', 'progress', 'premium'];
+export const TABS = ['overview', 'agents', 'economy', 'compare', 'leaderboard', 'badges', 'progress', 'premium'];
 
 export default function TabNav({ tab, setTab, t }) {
   return (

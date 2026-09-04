@@ -18,9 +18,9 @@ export default function InfoTip({ text }) {
       <button
         type="button"
         aria-label={text}
-        className="text-neutral-600 hover:text-accent focus:text-accent transition-colors"
+        className="text-neutral-400 hover:text-accent focus:text-accent transition-colors"
       >
-        <Info size={11} />
+        <Info size={13} />
       </button>
       {open && (
         <span

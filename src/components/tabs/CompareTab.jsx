@@ -23,30 +23,30 @@ function VersusRow({ label, you, them, themLabel, youLabel = 'You', bare = false
   const ahead = you >= them;
   const body = (
     <>
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-center justify-between mb-2">
         <span className="text-[11px] text-neutral-400 font-body">{label}</span>
         <span className={`flex items-center gap-1 text-[11px] font-mono ${ahead ? 'text-accent' : 'text-red-500'}`}>
           {ahead ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
           {fmtDelta(you - them)}
         </span>
       </div>
-      <div className="flex items-center gap-2 mb-1">
+      <div className="flex items-center gap-2 mb-1.5">
         <span className="text-[10px] font-body text-neutral-500 w-24 shrink-0 leading-tight">{youLabel}</span>
-        <div className="flex-1 sc-track h-2 overflow-hidden">
+        <div className="flex-1 sc-track h-2.5 overflow-hidden">
           <div className="sc-fill h-full" style={{ width: `${(you / max) * 100}%` }} />
         </div>
         <span className="font-mono text-xs text-white w-12 text-right shrink-0">{you}</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-body text-neutral-500 w-24 shrink-0 leading-tight">{themLabel}</span>
-        <div className="flex-1 sc-track h-1.5 overflow-hidden">
+        <div className="flex-1 sc-track h-2 overflow-hidden">
           <div className="sc-fill-muted h-full" style={{ width: `${(them / max) * 100}%` }} />
         </div>
         <span className="font-mono text-xs text-neutral-400 w-12 text-right shrink-0">{them}</span>
       </div>
     </>
   );
-  return bare ? body : <div className="border border-neutral-800 bg-neutral-950 px-3 py-2.5">{body}</div>;
+  return bare ? body : <div className="border border-neutral-800 bg-neutral-950 px-3 py-3">{body}</div>;
 }
 
 const COMPARE_METRICS = [
@@ -172,7 +172,7 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <Card>
         <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-1 block">{t.compareAnyoneTitle}</span>
         <p className="text-[11px] text-neutral-500 font-body mb-3">{t.compareAnyoneDesc}</p>
@@ -227,7 +227,7 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
             <div className="text-xs font-display uppercase text-neutral-400 mb-3">
               <span className="text-accent">{t.you}</span> {t.compareVs} {player.name}#{player.tag}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {COMPARE_METRICS.map((m) => (
                 <VersusRow
                   key={m.key}
@@ -246,19 +246,19 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.compareTitle}</span>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {compared.map((c, i) => (
               <div
                 key={c.metric}
-                className="sc-reveal border border-neutral-800 bg-neutral-950 px-4 py-3"
+                className="sc-reveal border border-neutral-800 bg-neutral-950 px-4 py-4"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="flex items-center justify-between gap-2 mb-2.5">
+                <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-xs font-display uppercase tracking-wide text-neutral-400">{c.metric}</span>
                   <span className="font-mono text-2xl font-bold text-white leading-none">{c.you}</span>
                 </div>
                 <VersusRow bare label={t.rankAvg} you={c.you} them={c.rankAvg} youLabel={t.you} themLabel={t.rankAvg} />
-                <div className="h-2" />
+                <div className="h-3" />
                 <VersusRow bare label={t.past30} you={c.you} them={c.past} youLabel={t.you} themLabel={t.past30} />
               </div>
             ))}
@@ -287,14 +287,14 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
               })}
             </div>
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             {friendsRanked.map((f, i) => {
               const top = MEDAL[i];
               const metricLabel = activeMetric.labelKey ? t[activeMetric.labelKey] : activeMetric.label;
               return (
                 <div
                   key={f.name}
-                  className={`flex items-center justify-between px-3 py-2 border ${f.isYou ? 'border-accent bg-neutral-900' : 'border-neutral-800 bg-neutral-950'}`}
+                  className={`flex items-center justify-between px-3 py-2.5 border ${f.isYou ? 'border-accent bg-neutral-900' : 'border-neutral-800 bg-neutral-950'}`}
                 >
                   <div className="flex items-center gap-3">
                     <span

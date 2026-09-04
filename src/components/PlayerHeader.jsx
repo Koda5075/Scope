@@ -49,7 +49,7 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
           row's full height rather than pinned to the top with dead space below. The
           rank icon likewise sits centred against its own text column. */}
       <div className="relative flex items-center gap-5 flex-wrap sm:flex-nowrap">
-        {rankIcon && <img src={optimizeImg(rankIcon, 96)} alt="" className="val-icon w-24 h-24 shrink-0 self-center" />}
+        {rankIcon && <img src={optimizeImg(rankIcon, 96)} alt="" className="w-24 h-24 shrink-0 self-center" />}
         <div className="flex-1 min-w-[220px]">
           <span className="block text-[11px] tracking-[0.25em] uppercase text-neutral-500 font-body mb-1">{t.rank}</span>
           <div className="font-display text-4xl sm:text-5xl font-bold text-accent leading-none">{CURRENT_RANK}</div>

@@ -159,6 +159,15 @@ export const CURRENT_COMPETITIVE_MAP_POOL = ['Ascent', 'Haven', 'Split', 'Sunset
 // Round-type and clutch breakdown — Scope+. Pistol/eco-force winrates and clutch
 // success rate by man-disadvantage situation, instead of just the flat clutch count
 // already shown for free on the Overview tab.
+// How often the player's own buy (full buy / eco / force / save) matched what most of
+// the team did that round, vs bought or saved alone while teammates went the other way
+// — illustrative, same "no real per-round economy API" caveat as the rest of this file.
+export const economyStats = {
+  syncRate: 74,
+  outOfSyncBuys: 6,
+  outOfSyncSaves: 3,
+};
+
 export const roundBreakdown = {
   pistolWr: 58,
   ecoForceWr: 36,

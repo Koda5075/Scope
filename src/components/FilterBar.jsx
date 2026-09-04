@@ -57,6 +57,10 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod, acts, a
           { value: 'competitive', label: t.modeCompetitive },
           { value: 'unrated', label: t.modeUnrated },
           { value: 'deathmatch', label: t.modeDeathmatch },
+          { value: 'spikerush', label: t.modeSpikeRush },
+          { value: 'escalation', label: t.modeEscalation },
+          { value: 'teamdeathmatch', label: t.modeTeamDeathmatch },
+          { value: 'swiftplay', label: t.modeSwiftplay },
         ]}
       />
       <Segmented

@@ -41,6 +41,7 @@ function AgentRow({ a, t, isLastPlayed }) {
         )}
         <span className="font-mono text-xs text-neutral-500">{a.games} {gamesLabel(a.games, t)}</span>
         <span className="flex items-center gap-1">
+          <span className="text-[9px] text-neutral-600 uppercase tracking-wide">{t.wrShort}</span>
           <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
           <InfoTip text={a.games > 0 && a.games < 5 ? t.lowSampleTooltip : t.tipAgentMapWinRate} />
         </span>
@@ -72,6 +73,7 @@ function MapRow({ m, t }) {
           <div className="flex-1 sc-track h-2 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${m.wr ?? 0}%` }} /></div>
           <span className="font-mono text-xs text-neutral-500 w-16 text-right shrink-0">{m.games} {gamesLabel(m.games, t)}</span>
           <span className="flex items-center gap-1 shrink-0">
+            <span className="text-[9px] text-neutral-600 uppercase tracking-wide">{t.wrShort}</span>
             <span className="font-mono text-xs text-accent w-10 text-right">{m.wr !== null ? `${m.wr}%` : '—'}</span>
             <InfoTip text={m.games > 0 && m.games < 5 ? t.lowSampleTooltip : t.tipAgentMapWinRate} />
           </span>
