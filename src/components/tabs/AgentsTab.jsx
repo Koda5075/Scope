@@ -177,7 +177,7 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
         {untriedAgent && (
           <div className="flex items-center gap-2.5 mt-4 pt-3 border-t border-neutral-800">
             {getAgentIcon(untriedAgent) && (
-              <img src={optimizeImg(getAgentIcon(untriedAgent), 40)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover shrink-0" />
+              <img src={optimizeImg(getAgentIcon(untriedAgent), 44)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover shrink-0" />
             )}
             <p className="text-xs font-body text-neutral-400 leading-relaxed">
               {t.agentSuggestionText.replace('{agent}', untriedAgent)}

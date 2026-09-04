@@ -332,7 +332,11 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
                     className="flex items-center justify-between gap-3 px-3 py-2 border border-neutral-800 hover:border-accent bg-neutral-950 transition-colors text-left flex-wrap sm:flex-nowrap"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className={`w-2 h-2 shrink-0 rounded-full ${g.result === 'win' ? 'bg-accent' : 'bg-red-500'}`} />
+                      {/* Fixed win/loss colours rather than bg-accent for the win dot — a
+                          status colour needs to stay green/red regardless of which accent
+                          theme is active, otherwise a red or pink theme would make the win
+                          and loss dots look confusingly similar. */}
+                      <span className={`w-2 h-2 shrink-0 rounded-full ${g.result === 'win' ? 'bg-emerald-500' : 'bg-red-500'}`} />
                       {mapImage && <img src={optimizeImg(mapImage.splash, 48)} alt="" loading="lazy" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
                       <span className="font-display text-sm font-semibold text-white truncate">{g.map}</span>
                       <span

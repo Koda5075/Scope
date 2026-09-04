@@ -70,7 +70,7 @@ export default function RankPyramid({ t, isPremium, onSeePlans }) {
                     {group.tiers.map((tier) => (
                       <img
                         key={tier.label}
-                        src={optimizeImg(tier.icon, 40)}
+                        src={optimizeImg(tier.icon, 44)}
                         alt={tier.label}
                         className="val-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0"
                       />

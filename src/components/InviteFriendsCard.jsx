@@ -79,7 +79,7 @@ export default function InviteFriendsCard({ t }) {
       </div>
 
       <button
-        onClick={() => copy(window.location.origin, 'link')}
+        onClick={() => copy(`${window.location.origin}/?ref=${code}`, 'link')}
         className="flex items-center gap-1.5 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-3 py-2 hover:opacity-90 transition-opacity"
       >
         {copied === 'link' ? <Check size={12} /> : <Copy size={12} />}
