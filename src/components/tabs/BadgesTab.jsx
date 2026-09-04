@@ -4,13 +4,22 @@ import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { badgeDefs, getBadgeProgress, isBadgeUnlocked } from '../../data/mockData.js';
 
-const FILTERS = ['all', 'unlocked', 'locked'];
+const FILTERS = ['all', 'unlocked', 'inProgress', 'locked'];
+const FILTER_LABEL_KEY = { all: 'All', unlocked: 'Unlocked', inProgress: 'InProgress', locked: 'Locked' };
+
+// A tiered badge that's unlocked but hasn't hit its top tier yet — distinct from
+// "unlocked", which also includes single-state badges and already-maxed tiered ones.
+function isInProgress(b) {
+  const progress = getBadgeProgress(b);
+  return !!progress && progress.tierIndex >= 0 && !progress.isMaxed;
+}
 
 export default function BadgesTab({ t, isPremium }) {
   const [filter, setFilter] = useState('all');
   const unlockedCount = badgeDefs.filter(isBadgeUnlocked).length;
   const visibleBadges = badgeDefs.filter((b) => {
     if (filter === 'unlocked') return isBadgeUnlocked(b);
+    if (filter === 'inProgress') return isInProgress(b);
     if (filter === 'locked') return !isBadgeUnlocked(b);
     return true;
   });
@@ -33,7 +42,7 @@ export default function BadgesTab({ t, isPremium }) {
                     : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
                 }`}
               >
-                {t[`badgesFilter${f === 'all' ? 'All' : f === 'unlocked' ? 'Unlocked' : 'Locked'}`]}
+                {t[`badgesFilter${FILTER_LABEL_KEY[f]}`]}
               </button>
             ))}
           </div>

@@ -13,6 +13,7 @@ import TabNav, { TABS } from './components/TabNav.jsx';
 import FilterBar from './components/FilterBar.jsx';
 import PromoBanner from './components/PromoBanner.jsx';
 import OnboardingTour from './components/OnboardingTour.jsx';
+import FeedbackButton from './components/FeedbackButton.jsx';
 import ScopePlansModal from './components/ScopePlansModal.jsx';
 import Footer from './components/Footer.jsx';
 import TabLoading from './components/TabLoading.jsx';
@@ -515,6 +516,7 @@ export default function ScopeDashboard() {
             )}
 
             <OnboardingTour t={t} lang={lang} setLang={setLang} />
+            <FeedbackButton t={t} />
           </>
         )}
         </main>

@@ -1,11 +1,40 @@
+import { useRef, useState } from 'react';
 import { LogIn, Settings } from 'lucide-react';
 import NotificationsBell from './NotificationsBell.jsx';
 
+// Discreet easter egg for anyone clicking around the logo — 5 clicks within 2s, no
+// state kept anywhere, purely a one-off flourish for people exploring the site.
+const EASTER_EGG_CLICKS = 5;
+const EASTER_EGG_WINDOW_MS = 2000;
+
 export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, dndEnabled, t }) {
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const clickTimes = useRef([]);
+
+  function handleLogoClick() {
+    const now = Date.now();
+    clickTimes.current = [...clickTimes.current, now].filter((t) => now - t < EASTER_EGG_WINDOW_MS);
+    if (clickTimes.current.length >= EASTER_EGG_CLICKS) {
+      clickTimes.current = [];
+      setShowEasterEgg(true);
+      setTimeout(() => setShowEasterEgg(false), 2500);
+    }
+  }
+
   return (
-    <div className="flex items-start justify-between mb-6">
+    <div className="flex items-start justify-between mb-6 relative">
       <div className="flex items-center gap-3">
-        <img src="/logo.png" alt="Scope" className="sc-logo w-10 h-10 object-contain" />
+        <img
+          src="/logo.png"
+          alt="Scope"
+          onClick={handleLogoClick}
+          className="sc-logo w-10 h-10 object-contain cursor-pointer"
+        />
+        {showEasterEgg && (
+          <span className="absolute top-12 left-0 text-[11px] font-mono text-accent bg-neutral-950 border border-accent px-2.5 py-1 z-50 whitespace-nowrap">
+            {t.easterEggMessage}
+          </span>
+        )}
         <div>
           {/* The dashboard's page <h1>. Rendered as a plain <span> on the logged-out
               landing so LandingView's own <h1> stays the single heading there — the two

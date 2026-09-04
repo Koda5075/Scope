@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X, CalendarClock } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
@@ -20,7 +20,7 @@ const GameScoreboard = lazy(() => import('../GameScoreboard.jsx'));
 import {
   rrHistory, badgeDefs, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, getStreaks,
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
-  computeFirstBloods, computeClutchRecord, performanceScore,
+  computeFirstBloods, computeClutchRecord, performanceScore, computeSideWinrates, ACT_DAYS_REMAINING,
 } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage, optimizeImg } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
@@ -70,6 +70,15 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
 
   const selectedMatch = selectedGameId ? getMatchScoreboard(selectedGameId) : null;
   const streaks = getStreaks(filteredGames);
+  // "Form" reuses the exact same streak data already driving the session-summary streak
+  // readout below — just a one-word read on it (hot/cold/steady) rather than a second,
+  // separately-computed metric.
+  const form = streaks.currentType === 'win' && streaks.currentCount >= 3
+    ? { key: 'formHot', color: 'text-accent' }
+    : streaks.currentType === 'loss' && streaks.currentCount >= 2
+      ? { key: 'formCold', color: 'text-red-500' }
+      : { key: 'formSteady', color: 'text-neutral-400' };
+  const sideWinrates = computeSideWinrates(filteredGames);
 
   // Stat grid — genuinely derived from the filtered games, same as the rest of
   // Overview, rather than a fixed snapshot that ignores the global filter.
@@ -181,6 +190,10 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
         </Card>
       )}
       <StreakFlame t={t} />
+      <div className="mb-4 flex items-center gap-2 text-[11px] font-body text-neutral-500">
+        <CalendarClock size={12} className="shrink-0" />
+        {t.alertMsgActEnding.replace('{days}', ACT_DAYS_REMAINING)}
+      </div>
       {isPremium && (
         <Card className="mb-4">
           <div className="flex items-start gap-3">
@@ -273,13 +286,29 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames }) {
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.best}</div><div className="font-mono text-xl text-white">{best.label}</div></div>
             <div><div className="text-[11px] text-neutral-500 font-body mb-1">{t.worst}</div><div className="font-mono text-xl text-neutral-400">{worst.label}</div></div>
             <div>
-              <div className="text-[11px] text-neutral-500 font-body mb-1">{t.streakLabel}</div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[11px] text-neutral-500 font-body">{t.streakLabel}</span>
+                {filteredGames.length >= 4 && (
+                  <span className={`text-[9px] font-display uppercase tracking-wide ${form.color}`}>{t[form.key]}</span>
+                )}
+              </div>
               <div className={`font-mono text-xl ${streaks.currentType === 'win' ? 'text-accent' : 'text-neutral-400'}`}>
                 {streaks.currentCount}{streaks.currentType === 'win' ? t.winShort : t.lossShort}
               </div>
               <div className="text-[10px] text-neutral-600 font-mono mt-0.5">{t.bestStreak}: {streaks.bestWinStreak}{t.winShort}</div>
             </div>
           </div>
+          {sideWinrates && (
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-neutral-900">
+              <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body shrink-0">{t.sideWinrateLabel}</span>
+              <span className="flex items-center gap-1.5 text-xs font-mono">
+                <span className="text-neutral-500">ATK</span><span className="text-white">{sideWinrates.atk}%</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-mono">
+                <span className="text-neutral-500">DEF</span><span className="text-white">{sideWinrates.def}%</span>
+              </span>
+            </div>
+          )}
           {filteredGames.length > 0 && filteredGames.length < 5 && (
             <div className="text-[10px] text-neutral-600 font-body mt-3">
               {t.smallSampleNote.replace('{n}', filteredGames.length)}

@@ -3,7 +3,7 @@ import { Star, Maximize2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { weaponStats, computeAgentStats, computeMapStats } from '../../data/mockData.js';
+import { weaponStats, computeAgentStats, computeMapStats, WEAPON_CATEGORIES, roundBreakdown } from '../../data/mockData.js';
 import { getAgentIcon, getMapImage, getWeaponIcon, getAllAgentNames, optimizeImg } from '../../data/valorantAssets.js';
 import { gamesLabel } from '../../i18n/translations.js';
 import InfoTip from '../InfoTip.jsx';
@@ -42,7 +42,7 @@ function AgentRow({ a, t, isLastPlayed }) {
         <span className="font-mono text-xs text-neutral-500">{a.games} {gamesLabel(a.games, t)}</span>
         <span className="flex items-center gap-1">
           <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
-          <InfoTip text={t.tipAgentMapWinRate} />
+          <InfoTip text={a.games > 0 && a.games < 5 ? t.lowSampleTooltip : t.tipAgentMapWinRate} />
         </span>
       </div>
     </div>
@@ -73,7 +73,7 @@ function MapRow({ m, t }) {
           <span className="font-mono text-xs text-neutral-500 w-16 text-right shrink-0">{m.games} {gamesLabel(m.games, t)}</span>
           <span className="flex items-center gap-1 shrink-0">
             <span className="font-mono text-xs text-accent w-10 text-right">{m.wr !== null ? `${m.wr}%` : '—'}</span>
-            <InfoTip text={t.tipAgentMapWinRate} />
+            <InfoTip text={m.games > 0 && m.games < 5 ? t.lowSampleTooltip : t.tipAgentMapWinRate} />
           </span>
         </div>
         {m.atkWr !== undefined && m.defWr !== undefined && (
@@ -132,6 +132,7 @@ function WeaponRow({ w, killShare, t }) {
 
 export default function AgentsTab({ t, isPremium, filteredGames }) {
   const [openModal, setOpenModal] = useState(null); // 'agents' | 'maps' | 'weapons' | null
+  const [weaponCategory, setWeaponCategory] = useState('all');
 
   // Agent/map performance is recomputed from whatever the global Mode + Period filter
   // currently selects; weaponStats has no per-match weapon breakdown in the mock
@@ -201,10 +202,13 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
           {weaponStats.length > PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('weapons')} t={t} />}
         </div>
         {topWeapon && (
-          <p className="text-[11px] text-neutral-500 font-body mb-3">
+          <p className="text-[11px] text-neutral-500 font-body mb-1.5">
             {fmt(t.weaponKillShareExplain, { pct: topWeaponShare, weapon: topWeapon.name })}
           </p>
         )}
+        <p className="text-[11px] text-neutral-500 font-body mb-3">
+          {fmt(t.ecoForceSuggestion, { pct: roundBreakdown.ecoForceWr })}
+        </p>
         <div className="flex flex-col gap-3">
           {sortedWeapons.slice(0, PREVIEW_COUNT).map((w) => (
             <WeaponRow key={w.name} w={w} killShare={totalKills ? Math.round((w.kills / totalKills) * 100) : 0} t={t} />
@@ -235,10 +239,25 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
       )}
 
       {openModal === 'weapons' && (
-        <Modal onClose={() => setOpenModal(null)} closeLabel={t.close}>
-          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.weaponPerf}</span>
+        <Modal onClose={() => { setOpenModal(null); setWeaponCategory('all'); }} closeLabel={t.close}>
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.weaponPerf}</span>
+          <div className="flex flex-wrap gap-1 mb-4">
+            {['all', ...WEAPON_CATEGORIES].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setWeaponCategory(cat)}
+                className={`px-2 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                  weaponCategory === cat
+                    ? 'border-accent text-accent bg-accent/5'
+                    : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                }`}
+              >
+                {t[`weaponCategory${cat.charAt(0).toUpperCase()}${cat.slice(1)}`]}
+              </button>
+            ))}
+          </div>
           <div className="flex flex-col gap-4">
-            {sortedWeapons.map((w) => (
+            {sortedWeapons.filter((w) => weaponCategory === 'all' || w.category === weaponCategory).map((w) => (
               <WeaponRow key={w.name} w={w} killShare={totalKills ? Math.round((w.kills / totalKills) * 100) : 0} t={t} />
             ))}
           </div>

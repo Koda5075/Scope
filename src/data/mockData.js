@@ -1,4 +1,4 @@
-import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock, Footprints } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock, Footprints, Star } from 'lucide-react';
 import { getAllAgentNames } from './valorantAssets.js';
 
 // `s` is a plain session index (1-based) rather than a pre-formatted "S1" string, so the
@@ -25,6 +25,9 @@ export const badgeDefs = [
   // Auto-unlocked the moment an account exists, so the Badges tab already has one
   // unlocked entry on day one instead of a wall of locked cards.
   { id: 'firstSteps', icon: Footprints, unlocked: true, daysAgo: 94 },
+  // Matches Jett's games count in `agentStats` below — the agent actually played the
+  // most, same "kept in sync with the real numbers" rule every other badge value follows.
+  { id: 'specialist', icon: Star, tiers: [10, 25, 50, 100], value: 14 },
   { id: 'teamPlayer', icon: Users, tiers: [10, 25, 50, 100], value: 38 },
   { id: 'aceX3', icon: Swords, tiers: [1, 3, 10, 25], value: 7 },
   { id: 'headshots200', icon: Target, tiers: [100, 500, 1000, 2500], value: 640 },
@@ -223,33 +226,38 @@ export const otherPlayers = [
 // dropped, so the "Voir tout" popup still lists the entire roster.
 // "Melee" is the game's own official name for the knife (the brief's "Couteau" is just
 // its French gloss) — kept in English like every other weapon/agent/map name here.
+// `category` mirrors the grouping comments below (already the game's own weapon-shop
+// categories) so the Weapons filter buttons don't need a second, separately-maintained
+// mapping.
+export const WEAPON_CATEGORIES = ['sidearm', 'smg', 'shotgun', 'rifle', 'sniper', 'heavy', 'melee'];
+
 export const weaponStats = [
   // Sidearms
-  { name: 'Classic', accuracy: 18, kills: 29 },
-  { name: 'Shorty', accuracy: 25, kills: 3 },
-  { name: 'Frenzy', accuracy: 22, kills: 2 },
-  { name: 'Ghost', accuracy: 22, kills: 18 },
-  { name: 'Sheriff', accuracy: 28, kills: 33 },
+  { name: 'Classic', accuracy: 18, kills: 29, category: 'sidearm' },
+  { name: 'Shorty', accuracy: 25, kills: 3, category: 'sidearm' },
+  { name: 'Frenzy', accuracy: 22, kills: 2, category: 'sidearm' },
+  { name: 'Ghost', accuracy: 22, kills: 18, category: 'sidearm' },
+  { name: 'Sheriff', accuracy: 28, kills: 33, category: 'sidearm' },
   // SMGs
-  { name: 'Stinger', accuracy: 20, kills: 7 },
-  { name: 'Spectre', accuracy: 19, kills: 41 },
+  { name: 'Stinger', accuracy: 20, kills: 7, category: 'smg' },
+  { name: 'Spectre', accuracy: 19, kills: 41, category: 'smg' },
   // Shotguns
-  { name: 'Bucky', accuracy: 27, kills: 6 },
-  { name: 'Judge', accuracy: 30, kills: 9 },
+  { name: 'Bucky', accuracy: 27, kills: 6, category: 'shotgun' },
+  { name: 'Judge', accuracy: 30, kills: 9, category: 'shotgun' },
   // Rifles
-  { name: 'Bulldog', accuracy: 26, kills: 15 },
-  { name: 'Guardian', accuracy: 33, kills: 22 },
-  { name: 'Phantom', accuracy: 21, kills: 88 },
-  { name: 'Vandal', accuracy: 24, kills: 142, favorite: true },
+  { name: 'Bulldog', accuracy: 26, kills: 15, category: 'rifle' },
+  { name: 'Guardian', accuracy: 33, kills: 22, category: 'rifle' },
+  { name: 'Phantom', accuracy: 21, kills: 88, category: 'rifle' },
+  { name: 'Vandal', accuracy: 24, kills: 142, favorite: true, category: 'rifle' },
   // Sniper rifles
-  { name: 'Marshal', accuracy: 45, kills: 12 },
-  { name: 'Outlaw', accuracy: 44, kills: 5 },
-  { name: 'Operator', accuracy: 41, kills: 37 },
+  { name: 'Marshal', accuracy: 45, kills: 12, category: 'sniper' },
+  { name: 'Outlaw', accuracy: 44, kills: 5, category: 'sniper' },
+  { name: 'Operator', accuracy: 41, kills: 37, category: 'sniper' },
   // Heavy weapons
-  { name: 'Ares', accuracy: 15, kills: 1 },
-  { name: 'Odin', accuracy: 0, kills: 0 },
+  { name: 'Ares', accuracy: 15, kills: 1, category: 'heavy' },
+  { name: 'Odin', accuracy: 0, kills: 0, category: 'heavy' },
   // Melee
-  { name: 'Melee', accuracy: 100, kills: 4 },
+  { name: 'Melee', accuracy: 100, kills: 4, category: 'melee' },
 ];
 
 // Deterministic pseudo-random in [0, 1) — keeps mock data reproducible across renders/builds.
@@ -388,6 +396,10 @@ export function getStreaks(games = recentGames) {
   return { currentType, currentCount, bestWinStreak, bestLossStreak };
 }
 
+// Shared by the act-ending alert and the always-visible Overview countdown widget so
+// the two can't drift apart into quoting different numbers for the same thing.
+export const ACT_DAYS_REMAINING = 6;
+
 export const acts = [
   { id: 'e9a3', label: 'Episode 9 — Act III', minDaysAgo: 0, maxDaysAgo: 29, current: true },
   { id: 'e9a2', label: 'Episode 9 — Act II', minDaysAgo: 30, maxDaysAgo: 59 },
@@ -454,6 +466,19 @@ export function computeMapStats(games) {
       };
     })
     .sort((a, b) => b.games - a.games);
+}
+
+// Aggregates the per-map atk/def winrates from computeMapStats into one global
+// attack-vs-defense split, weighted by each map's game count — a map with 1 game
+// shouldn't move the number as much as one with 10. Returns null once there's nothing
+// to weight (no games at all in the current filter).
+export function computeSideWinrates(games) {
+  const perMap = computeMapStats(games).filter((m) => m.games && m.atkWr !== undefined);
+  const totalGames = perMap.reduce((sum, m) => sum + m.games, 0);
+  if (!totalGames) return null;
+  const atk = Math.round(perMap.reduce((sum, m) => sum + m.atkWr * m.games, 0) / totalGames);
+  const def = Math.round(perMap.reduce((sum, m) => sum + m.defWr * m.games, 0) / totalGames);
+  return { atk, def };
 }
 
 // Per-match aggregates used to make the Overview stat grid and Compare tab react to the
@@ -685,7 +710,7 @@ export const alertsFeed = [
   { id: 'a2', icon: ShieldAlert, tone: 'warn', messageKey: 'alertMsgDerankRisk', params: { rr: 8 }, daysAgo: 2, read: false },
   { id: 'a3', icon: Award, tone: 'success', messageKey: 'alertMsgNewBadge', params: { badge: 'Ace Hunter' }, daysAgo: 3, read: false },
   { id: 'a4', icon: Flame, tone: 'hot', messageKey: 'alertMsgStreak', params: { n: 3 }, daysAgo: 5, read: true },
-  { id: 'a5', icon: CalendarClock, tone: 'info', messageKey: 'alertMsgActEnding', params: { days: 6 }, daysAgo: 6, read: true },
+  { id: 'a5', icon: CalendarClock, tone: 'info', messageKey: 'alertMsgActEnding', params: { days: ACT_DAYS_REMAINING }, daysAgo: 6, read: true },
 ];
 
 export function getUnreadAlertsCount(alerts = alertsFeed) {
