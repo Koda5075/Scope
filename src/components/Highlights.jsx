@@ -1,6 +1,6 @@
 import { Flame, TrendingDown, Map as MapIcon, Swords, Trophy } from 'lucide-react';
 import Card from './Card.jsx';
-import { badgeDefs, getBadgeProgress, getStreaks, computeAgentStats, computeMapStats, TIER_NAMES } from '../data/mockData.js';
+import { badgeDefs, getBadgeProgress, getStreaks, computeAgentStats, computeMapStats, TIER_NAME_KEYS } from '../data/mockData.js';
 
 function fmt(template, vars) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
@@ -34,7 +34,7 @@ function computeHighlights(t, filteredGames) {
     .filter((x) => x.progress && !x.progress.isMaxed)
     .sort((a, b) => b.progress.progressPct - a.progress.progressPct)[0];
   if (closestBadge) {
-    const nextTier = TIER_NAMES[closestBadge.progress.tierIndex + 1];
+    const nextTier = t[TIER_NAME_KEYS[closestBadge.progress.tierIndex + 1]];
     items.push({
       Icon: Trophy,
       text: fmt(t.highlightBadgeClose, {

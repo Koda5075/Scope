@@ -436,7 +436,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
                       className="font-display text-[9px] font-bold uppercase tracking-wide px-1 py-0.5 shrink-0"
                       style={{ color: '#0A0A0A', background: progress.tierColor }}
                     >
-                      {progress.tierName}
+                      {t[progress.tierNameKey]}
                     </span>
                   )}
                 </div>

@@ -9,9 +9,10 @@ export const rrHistory = [
   { s: 5, rr: 57 }, { s: 6, rr: 74 }, { s: 7, rr: 67 },
 ];
 
-// Tier ladder shared by every progressive badge (kept in English — same convention as
-// rank names, which stay untranslated across all 6 locales already).
+// Tier ladder shared by every progressive badge. TIER_NAMES stays English (internal
+// key/log use); TIER_NAME_KEYS gives the matching translations.js key for display.
 export const TIER_NAMES = ['Bronze', 'Silver', 'Gold', 'Diamond'];
+export const TIER_NAME_KEYS = ['tierBronze', 'tierSilver', 'tierGold', 'tierDiamond'];
 export const TIER_COLORS = ['#CD7F32', '#C0C4C9', '#F2C94C', '#7DD3E8'];
 
 // Badges with a natural cumulative counter get a 4-tier progression (tiers = thresholds,
@@ -68,6 +69,7 @@ export function getBadgeProgress(badge) {
   return {
     tierIndex,
     tierName: tierIndex >= 0 ? TIER_NAMES[tierIndex] : null,
+    tierNameKey: tierIndex >= 0 ? TIER_NAME_KEYS[tierIndex] : null,
     tierColor: tierIndex >= 0 ? TIER_COLORS[tierIndex] : '#525252',
     value,
     nextThreshold,

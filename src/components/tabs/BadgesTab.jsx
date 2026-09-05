@@ -108,7 +108,7 @@ export default function BadgesTab({ t, isPremium }) {
                         className="font-display text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 shrink-0 rounded-sm"
                         style={{ color: '#0A0A0A', background: progress.tierColor }}
                       >
-                        {progress.tierName}
+                        {t[progress.tierNameKey]}
                       </span>
                     )}
                     {!unlocked && (

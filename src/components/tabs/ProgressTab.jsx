@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Plus, X, TrendingUp, Zap, Flame, Trophy } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { progressionTimeline, badgeDefs, getBadgeProgress, TIER_NAMES } from '../../data/mockData.js';
+import { progressionTimeline, badgeDefs, getBadgeProgress, TIER_NAME_KEYS } from '../../data/mockData.js';
 import { getRankIcon, getMapImage, optimizeImg } from '../../data/valorantAssets.js';
 
 function fmt(template, vars = {}) {
@@ -115,7 +115,7 @@ export default function ProgressTab({ t, isPremium }) {
             <span className="text-xs font-body text-neutral-200">
               {fmt(t.highlightBadgeClose, {
                 pct: closestBadge.progress.progressPct,
-                tier: TIER_NAMES[closestBadge.progress.tierIndex + 1],
+                tier: t[TIER_NAME_KEYS[closestBadge.progress.tierIndex + 1]],
                 badge: t.badges[closestBadge.b.id].label,
               })}
             </span>

@@ -60,18 +60,28 @@ export function getLeaderboard(region) {
 
   const tagPool = REGION_TAGS[region] ?? REGION_TAGS.eu;
 
+  // Deterministic shuffle of the name pool (30 names for a 30-row board) so every row
+  // on a given region's board gets a distinct name — independent per-row draws used to
+  // let the same name+tag land on multiple rows of the same board by chance.
+  const shuffledNames = [...NAME_POOL];
+  for (let i = shuffledNames.length - 1; i > 0; i--) {
+    const j = Math.floor(seededValue(regionSeed + i * 7) * (i + 1));
+    [shuffledNames[i], shuffledNames[j]] = [shuffledNames[j], shuffledNames[i]];
+  }
+
   const players = Array.from({ length: 30 }, (_, i) => {
     const rank = i + 1;
     const seed = regionSeed + rank * 13;
     const { band, posInBand } = bandForRank(rank);
-    // Interpolate across the band's RR window by position, minus a small seeded
-    // wobble so it isn't a perfectly straight line — still monotonic overall and
-    // always within the band.
+    // Interpolate across the band's RR window by position, minus a seeded wobble so
+    // it isn't a perfectly straight line, and so top-of-board RR actually differs
+    // from region to region instead of all landing near the same number — still
+    // safely under each band's per-step spacing so rank stays monotonic with RR.
     const span = Math.max(band.count - 1, 1);
-    const rr = Math.round(band.rrHi - (band.rrHi - band.rrLo) * (posInBand / span) - seededValue(seed) * 6);
+    const rr = Math.round(band.rrHi - (band.rrHi - band.rrLo) * (posInBand / span) - seededValue(seed) * 12);
     return {
       puuid: `lb-${region}-${rank}`,
-      gameName: NAME_POOL[Math.floor(seededValue(seed + 1) * NAME_POOL.length)],
+      gameName: shuffledNames[i],
       tagLine: tagPool[Math.floor(seededValue(seed + 2) * tagPool.length)],
       leaderboardRank: rank,
       rankedRating: Math.max(0, rr),
