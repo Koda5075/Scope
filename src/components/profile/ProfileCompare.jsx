@@ -16,14 +16,17 @@ const METRICS = [
 // Comparisons on someone else's profile: the player against their rank's average by
 // default, and against the signed-in viewer ("vs me") when there's one — the owner's
 // numbers are the same aggregate the Compare tab uses.
-export default function ProfileCompare({ dataset, t, loggedIn }) {
+export default function ProfileCompare({ dataset, games, t, loggedIn }) {
   const [mode, setMode] = useState('rank'); // 'rank' | 'me'
 
+  // Player side follows the Mode/Period filter (falling back to the anchor summary when
+  // the filter leaves no games), so this tab reacts to the filters like the rest.
+  const rows = games ?? dataset.games;
   const player = {
-    kda: dataset.summary.kda,
-    acs: dataset.summary.acs,
-    accuracy: dataset.summary.accuracy,
-    headshots: dataset.summary.headshots,
+    kda: computeAggregateKDA(rows) ?? dataset.summary.kda,
+    acs: computeAverageAcs(rows) ?? dataset.summary.acs,
+    accuracy: computeAverageAccuracy(rows) ?? dataset.summary.accuracy,
+    headshots: computeAverageHeadshots(rows) ?? dataset.summary.headshots,
   };
 
   const me = {

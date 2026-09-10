@@ -15,8 +15,7 @@ import {
 
 const GameScoreboard = lazy(() => import('../GameScoreboard.jsx'));
 
-export default function ProfileOverview({ dataset, t, accent }) {
-  const games = dataset.games;
+export default function ProfileOverview({ dataset, games, t, accent }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const subjectName = `${dataset.identity.name}#${dataset.identity.tag}`;
   const selectedMatch = selectedGameId

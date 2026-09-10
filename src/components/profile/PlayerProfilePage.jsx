@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Info } from 'lucide-react';
-import { otherPlayers } from '../../data/mockData.js';
+import { otherPlayers, acts, filterGames } from '../../data/mockData.js';
 import { getPlayerDataset } from '../../data/playerProfileData.js';
+import FilterBar from '../FilterBar.jsx';
 import AgentsTab from '../tabs/AgentsTab.jsx';
 import EconomyTab from '../tabs/EconomyTab.jsx';
 import BadgesTab from '../tabs/BadgesTab.jsx';
@@ -12,8 +13,15 @@ import ProfileOverview from './ProfileOverview.jsx';
 import ProfileCompare from './ProfileCompare.jsx';
 
 const PROFILE_TABS = ['overview', 'agents', 'economy', 'compare', 'leaderboard', 'badges', 'progress'];
+const MODES = ['all', 'competitive', 'unrated', 'deathmatch', 'spikerush', 'escalation', 'teamdeathmatch', 'swiftplay'];
+const PERIODS = ['7d', '30d', 'act', 'all'];
 const DEFAULT_TITLE = 'Scope — VALORANT Stats Tracker';
+const DEFAULT_ACT = () => acts.find((a) => a.current)?.id ?? acts[0].id;
 
+// Tab + Mode/Period filters are read from the query string on load (so a copied
+// "filtered link" opens into the same view) and default otherwise. They are LOCAL page
+// state — never persisted, never shared — so navigating to another player, whose URL
+// carries no params, resets everything (see the riotId effect below).
 function initialTab() {
   try {
     const q = new URLSearchParams(window.location.search).get('tab');
@@ -23,8 +31,25 @@ function initialTab() {
   }
 }
 
+function initialFilters() {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    const m = q.get('mode');
+    const p = q.get('period');
+    const a = q.get('act');
+    return {
+      mode: MODES.includes(m) ? m : 'all',
+      period: PERIODS.includes(p) ? p : '7d',
+      actId: a && acts.some((x) => x.id === a) ? a : DEFAULT_ACT(),
+    };
+  } catch {
+    return { mode: 'all', period: '7d', actId: DEFAULT_ACT() };
+  }
+}
+
 export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium, accent, favoriteIds, onToggleFavorite }) {
-  const [tab, setTabState] = useState(initialTab);
+  const [tab, setTab] = useState(initialTab);
+  const [filters, setFilters] = useState(initialFilters);
   const dataset = getPlayerDataset(riotId);
 
   // A known public Scope profile can be favourited (favourites are keyed by puuid);
@@ -41,20 +66,33 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
     return () => { document.title = DEFAULT_TITLE; };
   }, [dataset]);
 
-  // Reset to Overview whenever the route points at a different player.
+  // Different player → reset tab + filters. Navigation to another profile produces a URL
+  // with no query params, so initialTab()/initialFilters() fall back to the defaults.
   useEffect(() => {
-    setTabState(initialTab());
+    setTab(initialTab());
+    setFilters(initialFilters());
   }, [riotId.name, riotId.tag]);
 
-  function setTab(next) {
-    setTabState(next);
+  // Mirror tab + filters into the query string (replaceState, so no extra history
+  // entries — browser Back still goes straight to the dashboard). Only non-default
+  // values are written, keeping a pristine profile URL clean.
+  useEffect(() => {
     try {
       const url = new URL(window.location.href);
-      if (next === 'overview') url.searchParams.delete('tab');
-      else url.searchParams.set('tab', next);
+      const sp = url.searchParams;
+      tab !== 'overview' ? sp.set('tab', tab) : sp.delete('tab');
+      filters.mode !== 'all' ? sp.set('mode', filters.mode) : sp.delete('mode');
+      filters.period !== '7d' ? sp.set('period', filters.period) : sp.delete('period');
+      filters.period === 'act' ? sp.set('act', filters.actId) : sp.delete('act');
       window.history.replaceState({}, '', url);
     } catch { /* ignore */ }
-  }
+  }, [tab, filters]);
+
+  const selectedAct = acts.find((a) => a.id === filters.actId) ?? acts[0];
+  const filteredGames = useMemo(
+    () => (dataset ? filterGames(dataset.games, { mode: filters.mode, period: filters.period, act: selectedAct }) : []),
+    [dataset, filters.mode, filters.period, selectedAct],
+  );
 
   if (!dataset) {
     return (
@@ -79,6 +117,17 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
         <span className="text-[11px] font-body text-neutral-400 leading-relaxed">{t.profileDisclaimerBanner}</span>
       </div>
 
+      <FilterBar
+        t={t}
+        mode={filters.mode}
+        setMode={(m) => setFilters((f) => ({ ...f, mode: m }))}
+        period={filters.period}
+        setPeriod={(p) => setFilters((f) => ({ ...f, period: p }))}
+        acts={acts}
+        actId={filters.actId}
+        setActId={(a) => setFilters((f) => ({ ...f, actId: a }))}
+      />
+
       <div className="flex gap-1 mb-6 border-b border-neutral-800 overflow-x-auto">
         {PROFILE_TABS.map((tb) => (
           <button
@@ -93,12 +142,12 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
         ))}
       </div>
 
-      {tab === 'overview' && <ProfileOverview dataset={dataset} t={t} accent={accent} />}
+      {tab === 'overview' && <ProfileOverview dataset={dataset} games={filteredGames} t={t} accent={accent} />}
       {tab === 'agents' && (
         <AgentsTab
           t={t}
           isPremium={isPremium}
-          filteredGames={dataset.games}
+          filteredGames={filteredGames}
           weapons={dataset.weapons}
           ecoForceWr={dataset.economy.ecoForceWr}
           showAds={false}
@@ -108,7 +157,7 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
       {tab === 'economy' && (
         <EconomyTab t={t} isPremium={isPremium} stats={dataset.economy} rounds={dataset.economy} showAds={false} />
       )}
-      {tab === 'compare' && <ProfileCompare dataset={dataset} t={t} loggedIn={loggedIn} />}
+      {tab === 'compare' && <ProfileCompare dataset={dataset} games={filteredGames} t={t} loggedIn={loggedIn} />}
       {tab === 'leaderboard' && (
         <LeaderboardTab t={t} highlightRiotId={{ name: identity.name, tag: identity.tag }} />
       )}
