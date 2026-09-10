@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Search, Star, X, Lock, UserPlus, Clock } from 'lucide-react';
 import Modal from './Modal.jsx';
 import PlayerProfileCard from './PlayerProfileCard.jsx';
+import PlayerFullProfile from './PlayerFullProfile.jsx';
 import PlayerCompareView from './PlayerCompareView.jsx';
 import { otherPlayers } from '../data/mockData.js';
 import { parseRiotId } from '../lib/riotId.js';
@@ -241,16 +242,28 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
       )}
 
       {selected && (
-        <Modal onClose={() => setSelected(null)} closeLabel={t.close}>
-          {view === 'profile' ? (
+        <Modal onClose={() => setSelected(null)} closeLabel={t.close} size={view === 'full' ? 'lg' : 'md'}>
+          {view === 'profile' && (
             <PlayerProfileCard
               player={selected}
               isFavorite={favoriteIds.includes(selected.puuid)}
               onToggleFavorite={onToggleFavorite}
               onCompare={() => setView('compare')}
+              onViewFull={() => setView('full')}
               t={t}
             />
-          ) : (
+          )}
+          {view === 'full' && (
+            <PlayerFullProfile
+              player={selected}
+              isFavorite={favoriteIds.includes(selected.puuid)}
+              onToggleFavorite={onToggleFavorite}
+              onBack={() => setView('profile')}
+              onCompare={() => setView('compare')}
+              t={t}
+            />
+          )}
+          {view === 'compare' && (
             <PlayerCompareView player={selected} onBack={() => setView('profile')} t={t} filteredGames={filteredGames} />
           )}
         </Modal>

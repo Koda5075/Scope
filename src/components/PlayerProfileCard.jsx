@@ -3,12 +3,13 @@ import StatReadout from './StatReadout.jsx';
 import Avatar from './Avatar.jsx';
 import { getRankIcon, optimizeImg } from '../data/valorantAssets.js';
 
-export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite, onCompare, t }) {
+export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite, onCompare, onViewFull, t }) {
   const rankIcon = getRankIcon(player.rank);
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-4">
+      {/* pr-8 keeps the favorite button clear of the modal's absolute close (X) button */}
+      <div className="flex items-start justify-between gap-3 mb-4 pr-8">
         <div className="flex items-center gap-3">
           <Avatar name={player.name} size={48} />
           <div>
@@ -41,12 +42,22 @@ export default function PlayerProfileCard({ player, isFavorite, onToggleFavorite
         <StatReadout label={t.statACS} value={player.acs} Icon={Zap} tip={t.tipACS} />
       </div>
 
-      <button
-        onClick={onCompare}
-        className="w-full bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
-      >
-        {t.compareWithMe}
-      </button>
+      <div className="flex flex-col gap-2">
+        {onViewFull && (
+          <button
+            onClick={onViewFull}
+            className="w-full border border-neutral-700 text-neutral-200 font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:border-accent hover:text-accent transition-colors"
+          >
+            {t.viewFullProfile}
+          </button>
+        )}
+        <button
+          onClick={onCompare}
+          className="w-full bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity"
+        >
+          {t.compareWithMe}
+        </button>
+      </div>
     </div>
   );
 }
