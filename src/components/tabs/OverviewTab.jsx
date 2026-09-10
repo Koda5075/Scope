@@ -28,7 +28,7 @@ import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/sh
 const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 const WELCOME_SEEN_KEY = 'scope-welcome-seen';
 
-export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode }) {
+export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
@@ -414,7 +414,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
           <ActivityCalendar t={t} />
         </Card>
 
-        <InviteFriendsCard t={t} customCode={referralCode} />
+        <InviteFriendsCard t={t} customCode={referralCode} setCustomCode={setReferralCode} />
 
         <SessionGoal t={t} />
 

@@ -393,7 +393,7 @@ export default function SettingsModal({
                     type="text"
                     value={referralCodeDraft}
                     onChange={(e) => setReferralCodeDraft(e.target.value.toUpperCase())}
-                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft); }}
+                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft === 'KAITO-SCOPE' ? '' : referralCodeDraft); }}
                     maxLength={12}
                     aria-label={t.referralCodeLabel}
                     spellCheck={false}
