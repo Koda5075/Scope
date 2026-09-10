@@ -7,7 +7,7 @@ import NotificationsBell from './NotificationsBell.jsx';
 const EASTER_EGG_CLICKS = 5;
 const EASTER_EGG_WINDOW_MS = 2000;
 
-export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, dndEnabled, t }) {
+export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, onHome, dndEnabled, t }) {
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const clickTimes = useRef([]);
 
@@ -19,6 +19,9 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, dndEnabl
       setShowEasterEgg(true);
       setTimeout(() => setShowEasterEgg(false), 2500);
     }
+    // The logo doubles as "home" — from a /player/… profile page it returns to the
+    // dashboard; on the dashboard itself it's a no-op (navigate() bails on same URL).
+    onHome?.();
   }
 
   return (

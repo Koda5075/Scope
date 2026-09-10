@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Trophy, Search } from 'lucide-react';
 import Card from '../Card.jsx';
-import Modal from '../Modal.jsx';
-import PlayerProfileCard from '../PlayerProfileCard.jsx';
-import PlayerCompareView from '../PlayerCompareView.jsx';
 import { LEADERBOARD_REGIONS, getLeaderboard } from '../../data/leaderboardData.js';
 import { otherPlayers } from '../../data/mockData.js';
 import { getRankIcon, optimizeImg } from '../../data/valorantAssets.js';
 import { fetchValLeaderboard } from '../../lib/riotLive.js';
+import { navigate, playerPath } from '../../lib/route.js';
 
 const MEDAL = ['#F2C94C', '#C0C4C9', '#CD7F32']; // gold / silver / bronze for ranks 1-3
 
@@ -27,10 +25,11 @@ function isScopePlayer(p) {
 // (otherPlayers) get a "compare with me" entry point, reusing the exact same
 // profile/compare flow as the search bar's "compare with anyone" — non-Scope players
 // just display, no comparison forced.
-export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filteredGames, publicOnly = false }) {
+// `highlightRiotId` ({ name, tag }) is set when this tab is embedded in a player's own
+// profile page — the matching row (if any) is ringed so "where does this player stand"
+// is visible at a glance.
+export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly = false }) {
   const [region, setRegion] = useState('eu');
-  const [selected, setSelected] = useState(null);
-  const [view, setView] = useState('profile');
   const [scopeOnly, setScopeOnly] = useState(false);
   const [nameFilter, setNameFilter] = useState('');
   // Mock rows render instantly; the val-leaderboard proxy swaps in real rows if a Riot
@@ -63,9 +62,13 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
   const rest = (scopeOnly || query ? rows : rows.slice(3)).filter(matchesQuery);
 
   function openScopeProfile(matched) {
-    setSelected(matched);
-    setView('profile');
+    navigate(playerPath({ name: matched.name, tag: matched.tag }));
   }
+
+  const hl = highlightRiotId
+    ? `${highlightRiotId.name.toLowerCase()}#${highlightRiotId.tag.toLowerCase()}`
+    : null;
+  const isHighlighted = (p) => hl && `${p.gameName.toLowerCase()}#${p.tagLine.toLowerCase()}` === hl;
 
   return (
     <div className="flex flex-col gap-4">
@@ -82,15 +85,18 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
         </div>
         <p className="text-xs font-body text-neutral-500 mb-4">{t.leaderboardSubtitle}</p>
 
-        {/* Diamond doesn't place on a real regional top-30 (Immortal/Radiant-only at
-            that scale, see TIER_BANDS in leaderboardData.js) — so "where do I stand"
-            can't highlight an actual row here without faking one. Reuses the exact
-            15% the "Top 15%" badge already tracks, so this and that badge can't drift
-            into quoting two different percentiles for the same underlying standing. */}
-        <div className="flex items-center gap-2.5 mb-4 px-3 py-2.5 border border-accent bg-accent/5">
-          <Trophy size={14} className="text-accent shrink-0" />
-          <span className="text-xs font-body text-neutral-200">{t.leaderboardYourStanding.replace('{pct}', 15)}</span>
-        </div>
+        {/* "Where do I stand" is the viewer's own standing — only meaningful on the
+            owner's dashboard, not when this tab is embedded in someone else's profile
+            page. Diamond doesn't place on a real regional top-30 (Immortal/Radiant-only
+            at that scale, see TIER_BANDS in leaderboardData.js), so it can't highlight an
+            actual row without faking one; it reuses the exact 15% the "Top 15%" badge
+            already tracks so the two can't drift apart. */}
+        {!highlightRiotId && (
+          <div className="flex items-center gap-2.5 mb-4 px-3 py-2.5 border border-accent bg-accent/5">
+            <Trophy size={14} className="text-accent shrink-0" />
+            <span className="text-xs font-body text-neutral-200">{t.leaderboardYourStanding.replace('{pct}', 15)}</span>
+          </div>
+        )}
 
         <div className="relative mb-3 max-w-xs">
           <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600" />
@@ -192,7 +198,9 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
                 key={p.puuid}
                 {...(matched ? { type: 'button', onClick: () => openScopeProfile(matched) } : {})}
                 className={`flex items-center justify-between gap-3 px-3 py-2 border transition-colors w-full text-left ${
-                  matched
+                  isHighlighted(p)
+                    ? 'border-accent bg-accent/10 ring-1 ring-accent'
+                    : matched
                     ? 'border-accent bg-neutral-900 hover:bg-neutral-800/70'
                     : 'border-neutral-800 bg-neutral-950 hover:border-neutral-600'
                 }`}
@@ -219,22 +227,6 @@ export default function LeaderboardTab({ t, favoriteIds, onToggleFavorite, filte
           })}
         </div>
       </Card>
-
-      {selected && (
-        <Modal onClose={() => setSelected(null)} closeLabel={t.close}>
-          {view === 'profile' ? (
-            <PlayerProfileCard
-              player={selected}
-              isFavorite={favoriteIds.includes(selected.puuid)}
-              onToggleFavorite={onToggleFavorite}
-              onCompare={() => setView('compare')}
-              t={t}
-            />
-          ) : (
-            <PlayerCompareView player={selected} onBack={() => setView('profile')} t={t} filteredGames={filteredGames} />
-          )}
-        </Modal>
-      )}
     </div>
   );
 }

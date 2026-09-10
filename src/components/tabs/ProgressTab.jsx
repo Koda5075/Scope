@@ -22,9 +22,15 @@ function loadCustomMilestones() {
   }
 }
 
-export default function ProgressTab({ t, isPremium }) {
+// `timelineData` / `badges` default to the owner's own mock data; the public
+// player-profile page passes a per-player dataset of the same shape and sets
+// `readOnly` (hides the add-milestone form + custom-notes UI — those are viewer-local)
+// and `showAds={false}`.
+export default function ProgressTab({
+  t, isPremium, timelineData = progressionTimeline, badges = badgeDefs, readOnly = false, showAds = true,
+}) {
   const [filter, setFilter] = useState('all');
-  const [customMilestones, setCustomMilestones] = useState(loadCustomMilestones);
+  const [customMilestones, setCustomMilestones] = useState(readOnly ? [] : loadCustomMilestones);
   const [showAddForm, setShowAddForm] = useState(false);
   const [draftTitle, setDraftTitle] = useState('');
   const [draftNote, setDraftNote] = useState('');
@@ -63,14 +69,14 @@ export default function ProgressTab({ t, isPremium }) {
   }));
 
   // Oldest first so the timeline reads top-to-bottom as a story ending at "today".
-  const timeline = [...progressionTimeline, ...resolvedCustom]
+  const timeline = [...timelineData, ...resolvedCustom]
     .sort((a, b) => b.daysAgo - a.daysAgo)
     .filter((m) => filter === 'all' || m.type === filter);
 
   // Same "closest to its next tier" pick Highlights already surfaces on Overview —
   // ties Progress to the badge system Koda asked for instead of it staying a purely
   // passive history, without inventing a second progress mechanic to maintain.
-  const closestBadge = badgeDefs
+  const closestBadge = badges
     .filter((b) => !b.secret)
     .map((b) => ({ b, progress: getBadgeProgress(b) }))
     .filter((x) => x.progress && !x.progress.isMaxed)
@@ -97,14 +103,16 @@ export default function ProgressTab({ t, isPremium }) {
                 </button>
               ))}
             </div>
-            <button
-              onClick={() => setShowAddForm((s) => !s)}
-              aria-label={t.timelineAddCustom}
-              title={t.timelineAddCustom}
-              className="w-6 h-6 flex items-center justify-center border border-neutral-800 text-neutral-500 hover:text-accent hover:border-accent transition-colors"
-            >
-              <Plus size={12} />
-            </button>
+            {!readOnly && (
+              <button
+                onClick={() => setShowAddForm((s) => !s)}
+                aria-label={t.timelineAddCustom}
+                title={t.timelineAddCustom}
+                className="w-6 h-6 flex items-center justify-center border border-neutral-800 text-neutral-500 hover:text-accent hover:border-accent transition-colors"
+              >
+                <Plus size={12} />
+              </button>
+            )}
           </div>
         </div>
         <p className="text-[11px] text-neutral-500 font-body mb-5">{t.progressSub}</p>
@@ -122,7 +130,7 @@ export default function ProgressTab({ t, isPremium }) {
           </div>
         )}
 
-        {showAddForm && (
+        {showAddForm && !readOnly && (
           <form onSubmit={handleAddMilestone} className="flex flex-col gap-2 mb-5 p-3 border border-neutral-800 bg-neutral-950">
             <div className="flex gap-2">
               <input
@@ -210,7 +218,7 @@ export default function ProgressTab({ t, isPremium }) {
         )}
       </Card>
 
-      <AdSlot t={t} isPremium={isPremium} variant="banner" />
+      {showAds && <AdSlot t={t} isPremium={isPremium} variant="banner" />}
     </div>
   );
 }

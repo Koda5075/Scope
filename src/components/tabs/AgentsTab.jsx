@@ -132,7 +132,14 @@ function WeaponRow({ w, killShare, t }) {
   );
 }
 
-export default function AgentsTab({ t, isPremium, filteredGames }) {
+// `weapons` / `ecoForceWr` default to the owner's own mock data; the public
+// player-profile page passes a per-player dataset of the same shape. `showAds` drops the
+// ad slot and `showSuggestions` drops the "try a new agent" / eco-force coaching lines
+// (a stranger's profile is stats + progression only, no coaching).
+export default function AgentsTab({
+  t, isPremium, filteredGames, weapons = weaponStats, ecoForceWr = roundBreakdown.ecoForceWr,
+  showAds = true, showSuggestions = true,
+}) {
   const [openModal, setOpenModal] = useState(null); // 'agents' | 'maps' | 'weapons' | null
   const [weaponCategory, setWeaponCategory] = useState('all');
 
@@ -159,8 +166,8 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
   // — the full weapon roster is grouped by category in mockData.js for readability, so
   // array order alone would otherwise put a rarely-used Shorty ahead of the Vandal in
   // the 3-item preview.
-  const sortedWeapons = useMemo(() => [...weaponStats].sort((a, b) => b.kills - a.kills), []);
-  const totalKills = weaponStats.reduce((sum, w) => sum + w.kills, 0);
+  const sortedWeapons = useMemo(() => [...weapons].sort((a, b) => b.kills - a.kills), [weapons]);
+  const totalKills = weapons.reduce((sum, w) => sum + w.kills, 0);
   const topWeapon = sortedWeapons[0] ?? null;
   const topWeaponShare = topWeapon && totalKills ? Math.round((topWeapon.kills / totalKills) * 100) : 0;
 
@@ -176,7 +183,7 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
             <AgentRow key={a.name} a={a} t={t} isLastPlayed={a.name === lastPlayedAgent} />
           ))}
         </div>
-        {untriedAgent && (
+        {showSuggestions && untriedAgent && (
           <div className="flex items-center gap-2.5 mt-4 pt-3 border-t border-neutral-800">
             {getAgentIcon(untriedAgent) && (
               <img src={optimizeImg(getAgentIcon(untriedAgent), 44)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover shrink-0" />
@@ -201,16 +208,18 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
       <Card className="md:col-span-2">
         <div className="flex items-center justify-between mb-1">
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.weaponPerf}</span>
-          {weaponStats.length > PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('weapons')} t={t} />}
+          {weapons.length > PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('weapons')} t={t} />}
         </div>
         {topWeapon && (
           <p className="text-[11px] text-neutral-500 font-body mb-1.5">
             {fmt(t.weaponKillShareExplain, { pct: topWeaponShare, weapon: topWeapon.name })}
           </p>
         )}
-        <p className="text-[11px] text-neutral-500 font-body mb-3">
-          {fmt(t.ecoForceSuggestion, { pct: roundBreakdown.ecoForceWr })}
-        </p>
+        {showSuggestions && (
+          <p className="text-[11px] text-neutral-500 font-body mb-3">
+            {fmt(t.ecoForceSuggestion, { pct: ecoForceWr })}
+          </p>
+        )}
         <div className="flex flex-col gap-3">
           {sortedWeapons.slice(0, PREVIEW_COUNT).map((w) => (
             <WeaponRow key={w.name} w={w} killShare={totalKills ? Math.round((w.kills / totalKills) * 100) : 0} t={t} />
@@ -218,9 +227,11 @@ export default function AgentsTab({ t, isPremium, filteredGames }) {
         </div>
       </Card>
 
-      <div className="md:col-span-2">
-        <AdSlot t={t} isPremium={isPremium} variant="banner" />
-      </div>
+      {showAds && (
+        <div className="md:col-span-2">
+          <AdSlot t={t} isPremium={isPremium} variant="banner" />
+        </div>
+      )}
 
       {openModal === 'agents' && (
         <Modal onClose={() => setOpenModal(null)} closeLabel={t.close}>

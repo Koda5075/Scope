@@ -14,10 +14,13 @@ function isInProgress(b) {
   return !!progress && progress.tierIndex >= 0 && !progress.isMaxed;
 }
 
-export default function BadgesTab({ t, isPremium }) {
+// `badges` defaults to the owner's own roster; the public player-profile page passes a
+// per-player clone (same shape, re-rolled progress). `showAds` lets that page drop the
+// ad slot.
+export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = true }) {
   const [filter, setFilter] = useState('all');
-  const unlockedCount = badgeDefs.filter(isBadgeUnlocked).length;
-  const visibleBadges = badgeDefs.filter((b) => {
+  const unlockedCount = badges.filter(isBadgeUnlocked).length;
+  const visibleBadges = badges.filter((b) => {
     if (filter === 'unlocked') return isBadgeUnlocked(b);
     if (filter === 'inProgress') return isInProgress(b);
     if (filter === 'locked') return !isBadgeUnlocked(b);
@@ -29,7 +32,7 @@ export default function BadgesTab({ t, isPremium }) {
       <Card>
         <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300">
-            {unlockedCount}/{badgeDefs.length} {t.badgesUnlockedLabel}
+            {unlockedCount}/{badges.length} {t.badgesUnlockedLabel}
           </span>
           <div className="flex gap-1">
             {FILTERS.map((f) => (
@@ -48,7 +51,7 @@ export default function BadgesTab({ t, isPremium }) {
           </div>
         </div>
         <div className="sc-track h-1.5 overflow-hidden">
-          <div className="sc-fill h-full transition-all" style={{ width: `${(unlockedCount / badgeDefs.length) * 100}%` }} />
+          <div className="sc-fill h-full transition-all" style={{ width: `${(unlockedCount / badges.length) * 100}%` }} />
         </div>
       </Card>
 
@@ -145,7 +148,7 @@ export default function BadgesTab({ t, isPremium }) {
         })}
       </div>
 
-      <AdSlot t={t} isPremium={isPremium} variant="banner" />
+      {showAds && <AdSlot t={t} isPremium={isPremium} variant="banner" />}
     </div>
   );
 }

@@ -8,12 +8,14 @@ function intensityClass(games) {
   return 'sc-fill';
 }
 
-export default function ActivityCalendar({ t }) {
+// `days` defaults to the owner's own 90-day grid; the public player-profile page passes
+// a per-player grid of the same `{ date, games }[]` shape.
+export default function ActivityCalendar({ t, days = activityCalendar }) {
   const weeks = [];
-  for (let i = 0; i < activityCalendar.length; i += 7) {
-    weeks.push(activityCalendar.slice(i, i + 7));
+  for (let i = 0; i < days.length; i += 7) {
+    weeks.push(days.slice(i, i + 7));
   }
-  const summary = getActivitySummary();
+  const summary = getActivitySummary(days);
 
   return (
     <div>

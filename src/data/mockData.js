@@ -277,68 +277,11 @@ export const weaponStats = [
 ];
 
 // Deterministic pseudo-random in [0, 1) — keeps mock data reproducible across renders/builds.
-function seededValue(seed) {
+// Exported so the per-player profile dataset (playerProfileData.js) seeds off the same
+// generator the rest of this file uses.
+export function seededValue(seed) {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
   return x - Math.floor(x);
-}
-
-// Illustrative full-profile snapshot for a searched player. Other players carry only
-// summary stats (no per-match rows — that needs the real Riot match-history API), so
-// the recent-match list here is generated deterministically from the player's puuid and
-// anchored to the summary numbers we do have (KDA drives win probability, ACS drives the
-// per-match spread). Same "seeded, reproducible, clearly not live" treatment as the rest
-// of this file. The View-full-profile modal shows this with a snapshot disclaimer.
-const PROFILE_AGENT_POOL = ['Jett', 'Reyna', 'Raze', 'Omen', 'Sova', 'Killjoy', 'Cypher', 'Fade', 'Chamber', 'Neon'];
-const PROFILE_MAP_POOL = ['Ascent', 'Bind', 'Haven', 'Split', 'Lotus', 'Sunset', 'Icebox', 'Pearl', 'Breeze', 'Abyss'];
-
-export function getPlayerProfile(player) {
-  if (!player || player.kda == null) return null;
-  const key = String(player.puuid ?? player.name ?? 'x');
-  const seedBase = [...key].reduce((sum, c, i) => sum + c.charCodeAt(0) * (i + 1), 0);
-  const rand = (i) => seededValue(seedBase + i * 7.13);
-
-  // KDA 1.0 → ~50% expected wins, 1.6 → ~62%, clamped to a believable band.
-  const winP = Math.max(0.35, Math.min(0.7, 0.3 + (player.kda ?? 1) * 0.2));
-  const MATCHES = 12;
-
-  const recentForm = Array.from({ length: MATCHES }, (_, i) => {
-    const win = rand(i + 1) < winP;
-    const agent = PROFILE_AGENT_POOL[Math.floor(rand(i + 40) * PROFILE_AGENT_POOL.length)];
-    const map = PROFILE_MAP_POOL[Math.floor(rand(i + 80) * PROFILE_MAP_POOL.length)];
-    // Deaths land in a plausible 12-19 band; kills follow from the player's KDA (plus a
-    // little per-match noise) so the generated rows stay roughly in line with the summary.
-    const d = Math.round(12 + rand(i + 160) * 7);
-    const a = Math.round(3 + rand(i + 200) * 6);
-    const k = Math.max(6, Math.round((player.kda ?? 1) * d - a + (rand(i + 120) * 8 - 4)));
-    const acs = Math.round((player.acs ?? 200) * (0.82 + rand(i + 240) * 0.36));
-    const mode = rand(i + 280) < 0.72 ? 'competitive' : 'unrated';
-    return { win, agent, map, k, d, a, acs, mode };
-  });
-
-  const wins = recentForm.filter((m) => m.win).length;
-
-  const topBy = (field) => {
-    const tally = {};
-    recentForm.forEach((m) => {
-      const name = m[field];
-      tally[name] = tally[name] ?? { name, games: 0, wins: 0 };
-      tally[name].games += 1;
-      if (m.win) tally[name].wins += 1;
-    });
-    return Object.values(tally)
-      .sort((x, y) => y.games - x.games)
-      .slice(0, 3)
-      .map((e) => ({ name: e.name, games: e.games, wr: Math.round((e.wins / e.games) * 100) }));
-  };
-
-  return {
-    recentForm,
-    wins,
-    matchesTracked: MATCHES,
-    winrate: Math.round((wins / MATCHES) * 100),
-    topAgents: topBy('agent'),
-    topMaps: topBy('map'),
-  };
 }
 
 export const activityCalendar = Array.from({ length: 90 }, (_, i) => {
@@ -606,8 +549,9 @@ const FILLER_AGENTS = getAllAgentNames();
 // Deterministic string hash (djb2-style) — used instead of a single trailing char so
 // every gameId spreads to a distinct seed (the old `charCodeAt(len-1) + length` hash
 // collided across ids like g1/g10 and g2/g11, which is why the same handful of filler
-// names kept resurfacing match after match).
-function hashString(str) {
+// names kept resurfacing match after match). Exported for playerProfileData.js, which
+// seeds a whole per-player dataset off the Riot ID string.
+export function hashString(str) {
   let h = 5381;
   for (let i = 0; i < str.length; i++) h = ((h * 33) ^ str.charCodeAt(i)) >>> 0;
   return h;

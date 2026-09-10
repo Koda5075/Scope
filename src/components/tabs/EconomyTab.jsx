@@ -4,8 +4,11 @@ import InfoTip from '../InfoTip.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { roundBreakdown, economyStats } from '../../data/mockData.js';
 
-export default function EconomyTab({ t, isPremium }) {
-  const { syncRate, outOfSyncBuys, outOfSyncSaves } = economyStats;
+// `stats` / `rounds` default to the owner's own mock constants; the public player-profile
+// page passes a per-player dataset of the same shape. `showAds` lets that page drop the
+// ad slot (someone else's profile shouldn't carry the viewer's upsell furniture).
+export default function EconomyTab({ t, isPremium, stats = economyStats, rounds = roundBreakdown, showAds = true }) {
+  const { syncRate, outOfSyncBuys, outOfSyncSaves } = stats;
 
   return (
     <div className="flex flex-col gap-4">
@@ -19,16 +22,16 @@ export default function EconomyTab({ t, isPremium }) {
           <div>
             <div className="flex items-center justify-between text-[11px] text-neutral-400 mb-1">
               <span className="flex items-center gap-1">{t.pistolRoundsLabel}<InfoTip text={t.tipPistolRounds} /></span>
-              <span className="font-mono text-white">{roundBreakdown.pistolWr}%</span>
+              <span className="font-mono text-white">{rounds.pistolWr}%</span>
             </div>
-            <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${roundBreakdown.pistolWr}%` }} /></div>
+            <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${rounds.pistolWr}%` }} /></div>
           </div>
           <div>
             <div className="flex items-center justify-between text-[11px] text-neutral-400 mb-1">
               <span className="flex items-center gap-1">{t.ecoForceLabel}<InfoTip text={t.tipEcoForceRounds} /></span>
-              <span className="font-mono text-white">{roundBreakdown.ecoForceWr}%</span>
+              <span className="font-mono text-white">{rounds.ecoForceWr}%</span>
             </div>
-            <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${roundBreakdown.ecoForceWr}%` }} /></div>
+            <div className="sc-track h-1.5 overflow-hidden"><div className="sc-fill h-full" style={{ width: `${rounds.ecoForceWr}%` }} /></div>
           </div>
         </div>
       </Card>
@@ -56,7 +59,7 @@ export default function EconomyTab({ t, isPremium }) {
         </div>
       </Card>
 
-      <AdSlot t={t} isPremium={isPremium} variant="banner" />
+      {showAds && <AdSlot t={t} isPremium={isPremium} variant="banner" />}
     </div>
   );
 }

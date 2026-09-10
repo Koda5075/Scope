@@ -18,6 +18,8 @@ import ScopePlansModal from './components/ScopePlansModal.jsx';
 import Footer from './components/Footer.jsx';
 import TabLoading from './components/TabLoading.jsx';
 import { getSupabase } from './lib/supabaseClient.js';
+import { useRoute, navigate } from './lib/route.js';
+import PlayerProfilePage from './components/profile/PlayerProfilePage.jsx';
 import { DEFAULT_TITLE_ID } from './data/valorantCosmetics.js';
 import OverviewTab from './components/tabs/OverviewTab.jsx';
 import AgentsTab from './components/tabs/AgentsTab.jsx';
@@ -66,6 +68,7 @@ function detectBrowserLang() {
 }
 
 export default function ScopeDashboard() {
+  const route = useRoute();
   const [loggedIn, setLoggedIn] = useState(() => loadStored('scope-logged-in', false, (v) => v === 'true'));
   const [tab, setTab] = useState('overview');
   // Only auto-detects from navigator.language on a genuinely first load (no
@@ -491,12 +494,24 @@ export default function ScopeDashboard() {
             setSettingsSection(typeof sectionArg === 'string' ? sectionArg : 'appearance');
             setShowSettings(true);
           }}
+          onHome={() => navigate('/')}
           dndEnabled={dndEnabled}
           t={t}
         />
 
         <main>
-        {!loggedIn ? (
+        {route.name === 'player' ? (
+          <PlayerProfilePage
+            riotId={route.riotId}
+            t={t}
+            lang={lang}
+            loggedIn={loggedIn}
+            isPremium={isPremium}
+            accent={accent}
+            favoriteIds={favoriteIds}
+            onToggleFavorite={toggleFavorite}
+          />
+        ) : !loggedIn ? (
           <LandingView t={t} setLoggedIn={setLoggedIn} filteredGames={filteredGames} />
         ) : (
           <>
@@ -518,7 +533,6 @@ export default function ScopeDashboard() {
               t={t}
               favoriteIds={favoriteIds}
               onToggleFavorite={toggleFavorite}
-              filteredGames={filteredGames}
               incognitoSearch={incognitoSearch}
             />
 
@@ -541,9 +555,7 @@ export default function ScopeDashboard() {
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
             {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
-            {tab === 'leaderboard' && (
-              <LeaderboardTab t={t} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} filteredGames={filteredGames} />
-            )}
+            {tab === 'leaderboard' && <LeaderboardTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
             {tab === 'premium' && (

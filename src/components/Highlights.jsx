@@ -12,7 +12,7 @@ function fmt(template, vars) {
 // right below the global Mode + Period filter, so it must agree with the numbers the
 // Agents & Maps tab shows for that same filter instead of quoting an unrelated all-time
 // snapshot.
-function computeHighlights(t, filteredGames) {
+function computeHighlights(t, filteredGames, badges) {
   const items = [];
 
   const streaks = getStreaks(filteredGames);
@@ -29,7 +29,7 @@ function computeHighlights(t, filteredGames) {
   const bestAgent = computeAgentStats(filteredGames).filter((a) => a.wr !== null).sort((a, b) => b.wr - a.wr)[0];
   if (bestAgent) items.push({ Icon: Swords, text: fmt(t.highlightBestAgent, { agent: bestAgent.name, wr: bestAgent.wr }) });
 
-  const closestBadge = badgeDefs
+  const closestBadge = badges
     .map((b) => ({ b, progress: getBadgeProgress(b) }))
     .filter((x) => x.progress && !x.progress.isMaxed)
     .sort((a, b) => b.progress.progressPct - a.progress.progressPct)[0];
@@ -48,8 +48,8 @@ function computeHighlights(t, filteredGames) {
   return items.slice(0, 4);
 }
 
-export default function Highlights({ t, filteredGames }) {
-  const items = computeHighlights(t, filteredGames);
+export default function Highlights({ t, filteredGames, badges = badgeDefs }) {
+  const items = computeHighlights(t, filteredGames, badges);
   if (items.length === 0) return null;
 
   return (

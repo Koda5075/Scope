@@ -1,11 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Search, Star, X, Lock, UserPlus, Clock } from 'lucide-react';
-import Modal from './Modal.jsx';
-import PlayerProfileCard from './PlayerProfileCard.jsx';
-import PlayerFullProfile from './PlayerFullProfile.jsx';
-import PlayerCompareView from './PlayerCompareView.jsx';
 import { otherPlayers } from '../data/mockData.js';
 import { parseRiotId } from '../lib/riotId.js';
+import { navigate, playerPath } from '../lib/route.js';
 
 const RECENT_KEY = 'scope-recent-searches';
 const RECENT_MAX = 6;
@@ -19,11 +16,9 @@ function loadRecent() {
   }
 }
 
-export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filteredGames, incognitoSearch = false }) {
+export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, incognitoSearch = false }) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
-  const [selected, setSelected] = useState(null);
-  const [view, setView] = useState('profile');
   const [inviteCopied, setInviteCopied] = useState(false);
   const [recent, setRecent] = useState(loadRecent);
   const [focused, setFocused] = useState(false);
@@ -72,13 +67,16 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
     }
   }
 
-  function openPlayer(p, initialView = 'profile') {
-    setSelected(p);
-    setView(initialView);
-    setResult(null);
+  // Every player click now goes to the real, shareable profile PAGE (/player/<slug>),
+  // not an in-place modal. `tab` optionally deep-links a section (e.g. the inline
+  // "compare" shortcut on a suggestion row).
+  function openPlayer(riotId, tab) {
+    pushRecent(`${riotId.name}#${riotId.tag}`);
     setQuery('');
+    setResult(null);
     setFocused(false);
-    pushRecent(`${p.name}#${p.tag}`);
+    const path = playerPath(riotId);
+    navigate(tab ? `${path}?tab=${tab}` : path);
   }
 
   function runSearch(raw) {
@@ -239,34 +237,6 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, filt
             </div>
           ))}
         </div>
-      )}
-
-      {selected && (
-        <Modal onClose={() => setSelected(null)} closeLabel={t.close} size={view === 'full' ? 'lg' : 'md'}>
-          {view === 'profile' && (
-            <PlayerProfileCard
-              player={selected}
-              isFavorite={favoriteIds.includes(selected.puuid)}
-              onToggleFavorite={onToggleFavorite}
-              onCompare={() => setView('compare')}
-              onViewFull={() => setView('full')}
-              t={t}
-            />
-          )}
-          {view === 'full' && (
-            <PlayerFullProfile
-              player={selected}
-              isFavorite={favoriteIds.includes(selected.puuid)}
-              onToggleFavorite={onToggleFavorite}
-              onBack={() => setView('profile')}
-              onCompare={() => setView('compare')}
-              t={t}
-            />
-          )}
-          {view === 'compare' && (
-            <PlayerCompareView player={selected} onBack={() => setView('profile')} t={t} filteredGames={filteredGames} />
-          )}
-        </Modal>
       )}
     </div>
   );
