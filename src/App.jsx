@@ -502,6 +502,7 @@ export default function ScopeDashboard() {
         <main>
         {route.name === 'player' ? (
           <PlayerProfilePage
+            key={`${route.riotId.name}#${route.riotId.tag}`}
             riotId={route.riotId}
             t={t}
             lang={lang}

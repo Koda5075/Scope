@@ -2,8 +2,17 @@ import { useState } from 'react';
 import { Crosshair, Target, Zap, Skull, Flame, Swords, ShieldOff } from 'lucide-react';
 import { getAgentIcon, getMapImage, optimizeImg } from '../data/valorantAssets.js';
 import { getMatchDiagnosis } from '../lib/matchDiagnosis.js';
+import { parseRiotId } from '../lib/riotId.js';
+import { navigate, playerPath } from '../lib/route.js';
 import KDAStat from './KDAStat.jsx';
 import StatReadout from './StatReadout.jsx';
+
+// Every player name in the scoreboard links to that player's profile page, same as
+// search results / favourites / the leaderboard.
+function goToProfile(fullName) {
+  const parsed = parseRiotId(fullName ?? '');
+  if (parsed) navigate(playerPath(parsed));
+}
 
 function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
@@ -168,28 +177,43 @@ export default function GameScoreboard({ match, t }) {
               key={i}
               className={`border ${p.isYou ? 'border-accent bg-neutral-900' : isExpanded ? 'border-neutral-700 bg-neutral-900' : 'border-neutral-800 bg-neutral-950'}`}
             >
-              <button
-                type="button"
-                onClick={() => setExpandedName(isExpanded ? null : p.name)}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left"
-                aria-expanded={isExpanded}
-              >
+              {/* The name links to the player's profile; the agent + stats area toggles
+                  the expanded per-player detail (nesting a button inside a button is
+                  invalid HTML, so the row is a div with two separate controls). */}
+              <div className="w-full flex items-center justify-between gap-2 px-3 py-2">
                 <div className="flex items-center gap-3 min-w-0">
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${p.team === you?.team ? 'bg-accent' : 'bg-neutral-600'}`} />
-                  <span className={`font-body text-xs truncate ${p.isYou ? 'text-accent' : 'text-neutral-300'}`}>{p.name}</span>
-                  <span className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-600 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => goToProfile(p.name)}
+                    className={`font-body text-xs truncate hover:underline transition-colors ${p.isYou ? 'text-accent' : 'text-neutral-300 hover:text-accent'}`}
+                    title={t.viewFullProfile}
+                  >
+                    {p.name}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedName(isExpanded ? null : p.name)}
+                    aria-expanded={isExpanded}
+                    className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-600 shrink-0"
+                  >
                     {getAgentIcon(p.agent) && <img src={optimizeImg(getAgentIcon(p.agent), 32)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
                     {p.agent}
-                  </span>
+                  </button>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setExpandedName(isExpanded ? null : p.name)}
+                  aria-expanded={isExpanded}
+                  className="flex items-center gap-3 shrink-0"
+                >
                   <KDAStat kills={p.kills} deaths={p.deaths} assists={p.assists} tone={p.isYou ? 'you' : 'default'} showDiff />
                   <span className="flex flex-col items-end w-11 shrink-0">
                     <span className="font-mono text-xs text-white">{p.acs}</span>
                     <span className="text-[8px] text-neutral-600 uppercase tracking-wide">{t.statACS}</span>
                   </span>
-                </div>
-              </button>
+                </button>
+              </div>
               {isExpanded && (
                 <div className="border-t border-neutral-800 px-3">
                   <PlayerDetail p={p} t={t} />

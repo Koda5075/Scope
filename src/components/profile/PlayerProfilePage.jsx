@@ -39,11 +39,13 @@ function initialFilters() {
     const a = q.get('act');
     return {
       mode: MODES.includes(m) ? m : 'all',
-      period: PERIODS.includes(p) ? p : '7d',
+      // Defaults to "all history" on a profile (not "7d" like the owner dashboard) — a
+      // stranger's last 7 days is often only a couple of games and reads as an empty page.
+      period: PERIODS.includes(p) ? p : 'all',
       actId: a && acts.some((x) => x.id === a) ? a : DEFAULT_ACT(),
     };
   } catch {
-    return { mode: 'all', period: '7d', actId: DEFAULT_ACT() };
+    return { mode: 'all', period: 'all', actId: DEFAULT_ACT() };
   }
 }
 
@@ -66,12 +68,9 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
     return () => { document.title = DEFAULT_TITLE; };
   }, [dataset]);
 
-  // Different player → reset tab + filters. Navigation to another profile produces a URL
-  // with no query params, so initialTab()/initialFilters() fall back to the defaults.
-  useEffect(() => {
-    setTab(initialTab());
-    setFilters(initialFilters());
-  }, [riotId.name, riotId.tag]);
+  // App.jsx keys this component on the Riot ID, so a different player remounts it fresh —
+  // tab, filters and any open match modal all reset to defaults (initial*() re-run
+  // against the new, param-free URL). No manual per-player reset needed here.
 
   // Mirror tab + filters into the query string (replaceState, so no extra history
   // entries — browser Back still goes straight to the dashboard). Only non-default
@@ -82,7 +81,7 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
       const sp = url.searchParams;
       tab !== 'overview' ? sp.set('tab', tab) : sp.delete('tab');
       filters.mode !== 'all' ? sp.set('mode', filters.mode) : sp.delete('mode');
-      filters.period !== '7d' ? sp.set('period', filters.period) : sp.delete('period');
+      filters.period !== 'all' ? sp.set('period', filters.period) : sp.delete('period');
       filters.period === 'act' ? sp.set('act', filters.actId) : sp.delete('act');
       window.history.replaceState({}, '', url);
     } catch { /* ignore */ }
