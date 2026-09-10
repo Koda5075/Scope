@@ -568,10 +568,12 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
-// Builds a deterministic 10-player scoreboard (you + 9 filler players) around a game's
-// known kda/acs, instead of hand-writing ten rows per match.
-export function getMatchScoreboard(gameId) {
-  const game = recentGames.find((g) => g.id === gameId);
+// Builds a deterministic 10-player scoreboard (subject + 9 filler players) around a
+// game's known kda/acs, instead of hand-writing ten rows per match. `games` defaults to
+// the owner's own recentGames; the public profile page passes that player's dataset and
+// their Riot ID as `subjectName` so the highlighted row is the player being viewed.
+export function getMatchScoreboard(gameId, { games = recentGames, subjectName = 'KAITO#EUW1' } = {}) {
+  const game = games.find((g) => g.id === gameId);
   if (!game) return null;
 
   const [yourKills, yourDeaths, yourAssists] = game.kda.split('/').map(Number);
@@ -607,7 +609,7 @@ export function getMatchScoreboard(gameId) {
   });
 
   const you = {
-    name: 'KAITO#EUW1',
+    name: subjectName,
     team: 'A',
     isYou: true,
     agent: game.agent,

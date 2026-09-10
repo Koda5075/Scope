@@ -31,7 +31,9 @@ function mulberry32(a) {
 
 const AGENT_POOL = ['Jett', 'Reyna', 'Raze', 'Omen', 'Sova', 'Killjoy', 'Cypher', 'Fade', 'Chamber', 'Neon', 'Sage', 'Breach'];
 const MAP_POOL = ['Ascent', 'Bind', 'Haven', 'Split', 'Lotus', 'Sunset', 'Icebox', 'Pearl', 'Breeze', 'Abyss', 'Fracture'];
-const MODE_POOL = ['competitive', 'competitive', 'competitive', 'competitive', 'unrated', 'unrated', 'swiftplay'];
+// Only modes the recent-games list has a badge label for (competitive / unrated) —
+// swiftplay would render a blank mode pill.
+const MODE_POOL = ['competitive', 'competitive', 'competitive', 'competitive', 'unrated', 'unrated'];
 
 const RANK_LADDER = [
   'Iron 2', 'Bronze 1', 'Bronze 3', 'Silver 2', 'Gold 1', 'Gold 3',

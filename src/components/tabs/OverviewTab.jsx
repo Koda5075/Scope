@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X, CalendarClock } from 'lucide-react';
 import Card from '../Card.jsx';
@@ -6,9 +6,9 @@ import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
 import StreakFlame from '../StreakFlame.jsx';
 import Modal from '../Modal.jsx';
-import KDAStat from '../KDAStat.jsx';
 import InfoTip from '../InfoTip.jsx';
 import Highlights from '../Highlights.jsx';
+import RecentGamesList from '../RecentGamesList.jsx';
 import SessionGoal from '../SessionGoal.jsx';
 import InviteFriendsCard from '../InviteFriendsCard.jsx';
 import AdSlot from '../AdSlot.jsx';
@@ -22,10 +22,8 @@ import {
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
   computeFirstBloods, computeClutchRecord, performanceScore, computeSideWinrates, ACT_DAYS_REMAINING,
 } from '../../data/mockData.js';
-import { getAgentIcon, getMapImage, optimizeImg } from '../../data/valorantAssets.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
-const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 const WELCOME_SEEN_KEY = 'scope-welcome-seen';
 
 export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode }) {
@@ -33,10 +31,6 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
   const [statsCopied, setStatsCopied] = useState(false);
-  const GAMES_PAGE = 8;
-  const [visibleGames, setVisibleGames] = useState(GAMES_PAGE);
-  // Collapse back to the first page whenever the global filter changes the list.
-  useEffect(() => setVisibleGames(GAMES_PAGE), [filteredGames]);
 
   // Shown once, ever — first thing a brand-new account sees on Overview, separate from
   // the onboarding tour (which walks through the UI; this just says hello).
@@ -329,62 +323,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
         </Card>
 
         <Card>
-          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recentGamesTitle}</span>
-          <div className="flex flex-col gap-1.5">
-            {filteredGames.length === 0 ? (
-              <div className="text-xs font-body text-neutral-500 py-2">{t.noGamesForFilter}</div>
-            ) : (
-              filteredGames.slice(0, visibleGames).map((g) => {
-                const [k, d, a] = g.kda.split('/').map(Number);
-                const mapImage = getMapImage(g.map);
-                return (
-                  <button
-                    key={g.id}
-                    onClick={() => setSelectedGameId(g.id)}
-                    className="flex items-center justify-between gap-3 px-3 py-2 border border-neutral-800 hover:border-accent bg-neutral-950 transition-colors text-left flex-wrap sm:flex-nowrap"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {/* Fixed win/loss colours rather than bg-accent for the win dot — a
-                          status colour needs to stay green/red regardless of which accent
-                          theme is active, otherwise a red or pink theme would make the win
-                          and loss dots look confusingly similar. */}
-                      <span className={`w-2 h-2 shrink-0 rounded-full ${g.result === 'win' ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                      {mapImage && <img src={optimizeImg(mapImage.splash, 48)} alt="" loading="lazy" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
-                      <span className="font-display text-sm font-semibold text-white truncate">{g.map}</span>
-                      <span
-                        className={`font-body text-[10px] uppercase tracking-wide px-1.5 py-0.5 shrink-0 border ${
-                          g.mode === 'competitive' ? 'text-accent border-accent' : 'text-neutral-500 border-neutral-700'
-                        }`}
-                      >
-                        {t[MODE_LABEL_KEY[g.mode]]}
-                      </span>
-                      <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 shrink-0">
-                        {getAgentIcon(g.agent) && <img src={optimizeImg(getAgentIcon(g.agent), 32)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
-                        {g.agent}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
-                      <KDAStat kills={k} deaths={d} assists={a} showDiff />
-                      <span className="flex flex-col items-end w-11 shrink-0">
-                        <span className="font-mono text-xs text-white">{g.acs}</span>
-                        <span className="text-[8px] text-neutral-600 uppercase tracking-wide">{t.statACS}</span>
-                      </span>
-                      <span className="font-mono text-xs text-white">{g.score}</span>
-                    </div>
-                  </button>
-                );
-              })
-            )}
-          </div>
-          {filteredGames.length > visibleGames && (
-            <button
-              type="button"
-              onClick={() => setVisibleGames((n) => n + GAMES_PAGE)}
-              className="mt-2.5 w-full py-2 text-[11px] font-display uppercase tracking-wide text-neutral-400 border border-neutral-800 hover:border-accent hover:text-accent transition-colors"
-            >
-              {t.seeMore} ({filteredGames.length - visibleGames})
-            </button>
-          )}
+          <RecentGamesList games={filteredGames} t={t} onSelectGame={setSelectedGameId} />
         </Card>
 
         <AdSlot t={t} isPremium={isPremium} variant="banner" />

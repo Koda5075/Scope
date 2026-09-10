@@ -1,19 +1,27 @@
+import { lazy, Suspense, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Swords, Crosshair, Target, Zap, Skull, Flame } from 'lucide-react';
 import Card from '../Card.jsx';
+import Modal from '../Modal.jsx';
 import StatReadout from '../StatReadout.jsx';
 import Highlights from '../Highlights.jsx';
+import RecentGamesList from '../RecentGamesList.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
-import { getAgentIcon, optimizeImg } from '../../data/valorantAssets.js';
+import TabLoading from '../TabLoading.jsx';
 import {
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
-  computeFirstBloods, computeClutchRecord, getStreaks,
+  computeFirstBloods, computeClutchRecord, getStreaks, getMatchScoreboard,
 } from '../../data/mockData.js';
 
-const MATCH_COUNT = 10;
+const GameScoreboard = lazy(() => import('../GameScoreboard.jsx'));
 
 export default function ProfileOverview({ dataset, t, accent }) {
   const games = dataset.games;
+  const [selectedGameId, setSelectedGameId] = useState(null);
+  const subjectName = `${dataset.identity.name}#${dataset.identity.tag}`;
+  const selectedMatch = selectedGameId
+    ? getMatchScoreboard(selectedGameId, { games, subjectName })
+    : null;
   const wins = games.filter((g) => g.result === 'win').length;
   const losses = games.length - wins;
   const winRate = games.length ? Math.round((wins / games.length) * 100) : 0;
@@ -82,24 +90,7 @@ export default function ProfileOverview({ dataset, t, accent }) {
           </Card>
 
           <Card>
-            <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recentGamesTitle}</span>
-            <div className="border border-neutral-800 divide-y divide-neutral-900">
-              {games.slice(0, MATCH_COUNT).map((g) => {
-                const [k, d, a] = g.kda.split('/');
-                const agentIcon = getAgentIcon(g.agent);
-                return (
-                  <div key={g.id} className="flex items-center gap-3 px-3 py-2 text-xs font-body">
-                    <span className={`w-1 h-8 shrink-0 ${g.result === 'win' ? 'bg-accent' : 'bg-red-500'}`} />
-                    {agentIcon && <img src={optimizeImg(agentIcon, 32)} alt="" loading="lazy" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />}
-                    <span className="w-16 shrink-0 text-neutral-200 truncate">{g.agent}</span>
-                    <span className="w-16 shrink-0 text-neutral-500 truncate">{g.map}</span>
-                    <span className="font-mono text-neutral-400">{k}/{d}/{a}</span>
-                    <span className="ml-auto font-mono text-neutral-500">{g.score}</span>
-                    <span className="font-mono text-neutral-500 w-16 text-right">{g.acs} {t.statACS}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <RecentGamesList games={games} t={t} onSelectGame={setSelectedGameId} />
           </Card>
         </div>
 
@@ -132,6 +123,14 @@ export default function ProfileOverview({ dataset, t, accent }) {
       <Card>
         <ActivityCalendar t={t} days={dataset.activity} />
       </Card>
+
+      {selectedMatch && (
+        <Modal onClose={() => setSelectedGameId(null)} closeLabel={t.close} size="lg">
+          <Suspense fallback={<TabLoading />}>
+            <GameScoreboard match={selectedMatch} t={t} />
+          </Suspense>
+        </Modal>
+      )}
     </div>
   );
 }
