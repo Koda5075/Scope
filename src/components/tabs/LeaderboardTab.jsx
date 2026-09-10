@@ -61,8 +61,11 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
   const podium = scopeOnly || query ? [] : rows.slice(0, 3);
   const rest = (scopeOnly || query ? rows : rows.slice(3)).filter(matchesQuery);
 
-  function openScopeProfile(matched) {
-    navigate(playerPath({ name: matched.name, tag: matched.tag }));
+  // Every leaderboard row links to that player's profile page — the page synthesises a
+  // dataset for any Riot ID, so this isn't limited to known Scope members any more
+  // (the `matched` flag below now only drives the "ON SCOPE" styling, not clickability).
+  function goToProfile(p) {
+    navigate(playerPath({ name: p.gameName, tag: p.tagLine }));
   }
 
   const hl = highlightRiotId
@@ -154,13 +157,13 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
             const matched = !publicOnly && isScopePlayer(p);
             const rankIcon = getRankIcon(p.competitiveTier);
             const medal = MEDAL[i];
-            const Cell = matched ? 'button' : 'div';
             return (
-              <Cell
+              <button
                 key={p.puuid}
-                {...(matched ? { type: 'button', onClick: () => openScopeProfile(matched) } : {})}
-                className={`relative flex flex-col items-center text-center gap-1 px-2 pt-4 pb-3 border w-full transition-colors ${
-                  i === 0 ? 'border-accent' : matched ? 'hover:bg-neutral-800/60' : ''
+                type="button"
+                onClick={() => goToProfile(p)}
+                className={`relative flex flex-col items-center text-center gap-1 px-2 pt-4 pb-3 border w-full transition-colors hover:bg-neutral-800/60 ${
+                  i === 0 ? 'border-accent' : ''
                 }`}
                 style={{
                   borderColor: i === 0 ? undefined : medal,
@@ -179,10 +182,8 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
                 </span>
                 <span className="font-mono text-xs text-white">{p.rankedRating} RR</span>
                 <span className="text-[9px] font-body text-neutral-500">{p.competitiveTier}</span>
-                {matched && (
-                  <span className="text-[10px] font-body text-accent">{t.leaderboardViewProfile}</span>
-                )}
-              </Cell>
+                <span className={`text-[10px] font-body ${matched ? 'text-accent' : 'text-neutral-600'}`}>{t.leaderboardViewProfile}</span>
+              </button>
             );
           })}
         </div>
@@ -192,12 +193,12 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
           {rest.map((p) => {
             const matched = !publicOnly && isScopePlayer(p);
             const rankIcon = getRankIcon(p.competitiveTier);
-            const Row = matched ? 'button' : 'div';
             return (
-              <Row
+              <button
                 key={p.puuid}
-                {...(matched ? { type: 'button', onClick: () => openScopeProfile(matched) } : {})}
-                className={`flex items-center justify-between gap-3 px-3 py-2 border transition-colors w-full text-left ${
+                type="button"
+                onClick={() => goToProfile(p)}
+                className={`group flex items-center justify-between gap-3 px-3 py-2 border transition-colors w-full text-left ${
                   isHighlighted(p)
                     ? 'border-accent bg-accent/10 ring-1 ring-accent'
                     : matched
@@ -218,11 +219,11 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="hidden sm:block text-[11px] font-body text-neutral-500">{p.competitiveTier}</span>
                   <span className="font-mono text-xs text-white w-12 text-right">{p.rankedRating} RR</span>
-                  {matched && (
-                    <span className="text-[11px] font-body text-accent whitespace-nowrap">{t.leaderboardViewProfile}</span>
-                  )}
+                  <span className={`text-[11px] font-body whitespace-nowrap transition-colors ${
+                    matched ? 'text-accent' : 'text-neutral-600 group-hover:text-accent'
+                  }`}>{t.leaderboardViewProfile}</span>
                 </div>
-              </Row>
+              </button>
             );
           })}
         </div>
