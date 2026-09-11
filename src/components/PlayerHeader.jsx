@@ -7,7 +7,7 @@ import RankPyramid from './RankPyramid.jsx';
 
 const CURRENT_RANK = 'DIAMOND 2';
 
-export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, avatarUrl, nickname, bannerUrl, titleId, bannerSpray, bannerFocus, onAvatarClick, isPremium, onSeePlans }) {
+export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, peakRr, avatarUrl, nickname, bannerUrl, titleId, bannerSpray, bannerFocus, onAvatarClick, isPremium, onSeePlans }) {
   const rankIcon = getRankIcon(CURRENT_RANK);
   const peakRankIcon = getRankIcon(peakRank);
   const [showRankInfo, setShowRankInfo] = useState(false);
@@ -63,7 +63,9 @@ export default function PlayerHeader({ t, lang, rrCurrent, rrGoal, peakRank, ava
             <span className="flex items-center gap-1.5 text-xs font-mono text-neutral-600">
               {t.peakRankLabel}
               {peakRankIcon && <img src={optimizeImg(peakRankIcon, 24)} alt="" className="val-icon w-5 h-5" />}
-              <span className="text-neutral-400">{peakRank}</span>
+              <span className="text-neutral-400">
+                {peakRank}{peakRr != null && <span className="text-neutral-600"> — {peakRr} RR</span>}
+              </span>
             </span>
           </div>
           <button

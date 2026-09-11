@@ -224,6 +224,9 @@ export const friends = [
 export const myStats = { kda: 1.42, accuracy: 24, headshots: 31, acs: 238 };
 
 export const peakRank = 'DIAMOND 3';
+// RR the owner held at that peak. Diamond is a 0-100 sub-tier scale (see lib/rank.js);
+// climbed to Diamond 3 @ 88 RR, currently sitting at Diamond 2 @ 67 (rrCurrent in App).
+export const peakRr = 88;
 
 // Players findable via search/favorites/compare. Only entries with connected:true and
 // isPublic:true should ever surface in search results — mirrors the real RSO opt-in

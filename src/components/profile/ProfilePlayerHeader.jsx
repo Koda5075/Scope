@@ -1,6 +1,7 @@
 import { ArrowLeft, Star } from 'lucide-react';
 import { getRankIcon, optimizeImg } from '../../data/valorantAssets.js';
 import { navigate } from '../../lib/route.js';
+import { rankRrDisplay } from '../../lib/rank.js';
 
 // Read-only counterpart of the owner's PlayerHeader: identity + rank + RR + peak, and
 // nothing editable (no avatar upload, no title cosmetic, no "last session" — those are
@@ -10,6 +11,7 @@ export default function ProfilePlayerHeader({ identity, t, isFavorite, onToggleF
   const rankIcon = getRankIcon(identity.rank);
   const peakIcon = getRankIcon(identity.peakRank);
   const initial = (identity.name?.[0] ?? '?').toUpperCase();
+  const rrView = rankRrDisplay(identity.rank, identity.rr);
 
   return (
     <div className="mb-6">
@@ -47,17 +49,25 @@ export default function ProfilePlayerHeader({ identity, t, isFavorite, onToggleF
             </div>
 
             <div className="font-display text-xl font-bold text-accent leading-none mt-2">{identity.rank}</div>
-            <div className="sc-track h-2 w-full max-w-sm overflow-hidden mt-2.5">
-              <div className="sc-fill h-full" style={{ width: `${identity.rr}%` }} />
-            </div>
+            {rrView.barPct != null && (
+              <div className="sc-track h-2 w-full max-w-sm overflow-hidden mt-2.5">
+                <div className="sc-fill h-full" style={{ width: `${rrView.barPct}%` }} />
+              </div>
+            )}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
-              <span className="font-mono text-xs text-neutral-300">
-                {identity.rr} RR <span className="text-neutral-600">/ {identity.rrGoal}</span>
-              </span>
+              {rrView.rr != null && (
+                <span className="font-mono text-xs text-neutral-300">
+                  {rrView.rr} RR
+                  {rrView.goal != null && <span className="text-neutral-600"> / {rrView.goal}</span>}
+                </span>
+              )}
               <span className="flex items-center gap-1.5 text-xs font-mono text-neutral-600">
                 {t.peakRankLabel}
                 {peakIcon && <img src={optimizeImg(peakIcon, 24)} alt="" className="val-icon w-5 h-5" />}
-                <span className="text-neutral-400">{identity.peakRank}</span>
+                <span className="text-neutral-400">
+                  {identity.peakRank}
+                  {identity.peakRr != null && <span className="text-neutral-600"> — {identity.peakRr} RR</span>}
+                </span>
               </span>
             </div>
           </div>

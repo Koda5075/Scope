@@ -1,5 +1,6 @@
 import { TrendingUp, Zap, Swords, Flame, Trophy } from 'lucide-react';
 import { hashString, otherPlayers, badgeDefs, weaponStats } from './mockData.js';
+import { rrForRank, isImmortal, immortalRrBand } from '../lib/rank.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Deterministic per-player dataset for the public profile PAGE (/player/<slug>).
@@ -113,12 +114,16 @@ function buildGames(rnd, anchor) {
   });
 }
 
-function buildRrHistory(rnd) {
-  let rr = 25 + Math.round(rnd() * 45);
-  return Array.from({ length: 7 }, (_, i) => {
-    rr = Math.max(6, Math.min(96, rr + Math.round((rnd() - 0.45) * 40)));
-    return { s: i + 1, rr };
-  });
+// Session RR history for the "Évolution du RR" chart, anchored so the last point lands
+// on the player's current RR (whatever scale that is — 0-100 for most, or the continuous
+// Immortal counter). Walks backward from `currentRr` with per-session swings.
+function buildRrHistory(rnd, currentRr) {
+  const anchor = Number.isFinite(currentRr) ? currentRr : 25 + Math.round(rnd() * 45);
+  const pts = [anchor];
+  for (let i = 0; i < 6; i++) {
+    pts.push(Math.max(0, pts[pts.length - 1] - Math.round((rnd() - 0.42) * 34)));
+  }
+  return pts.reverse().map((rr, i) => ({ s: i + 1, rr }));
 }
 
 // Clone the real badge roster, re-rolling the per-player progress so a stranger's board
@@ -227,19 +232,32 @@ export function getPlayerDataset(riotId) {
   const anchor = resolveAnchor(riotId, rnd);
   const games = buildGames(rnd, anchor);
 
+  // Current RR follows the rank's own scale — 0-100 sub-tier bar for Iron→Ascendant,
+  // the continuous 0-200+ counter for Immortal. Peak RR the same, on the PEAK rank's
+  // scale; when the peak is the same rank as now, it's clamped to be no lower than the
+  // current RR (your best can't be worse than where you sit today).
+  const rr = rrForRank(anchor.rank, rnd()) ?? 0;
+  let peakRr = rrForRank(anchor.peakRank, rnd());
+  if (peakRr != null && anchor.peakRank === anchor.rank) {
+    // Same rank as now → the peak sits somewhere between where they are today and the
+    // top of the band (you dipped a bit from your best), never below the current RR.
+    const top = isImmortal(anchor.rank) ? immortalRrBand(anchor.rank)[1] : 100;
+    peakRr = Math.min(top, rr + Math.round(rnd() * (top - rr)));
+  }
+
   const dataset = {
     identity: {
       name: anchor.name,
       tag: anchor.tag,
       rank: anchor.rank,
       peakRank: anchor.peakRank,
-      rr: 8 + Math.round(rnd() * 88),
-      rrGoal: 100,
+      rr,
+      peakRr,
       known: anchor.known,
     },
     summary: { kda: anchor.kda, acs: anchor.acs, accuracy: anchor.accuracy, headshots: anchor.headshots },
     games,
-    rrHistory: buildRrHistory(rnd),
+    rrHistory: buildRrHistory(rnd, rr),
     badges: buildBadges(rnd),
     progression: buildProgression(rnd, anchor),
     economy: buildEconomy(rnd, games),

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { T } from './i18n/translations.js';
 import { THEMES, resolveAccent, deriveDim, isValidHex } from './data/themes.js';
-import { peakRank as mockPeakRank, acts, filterGames, recentGames } from './data/mockData.js';
+import { peakRank as mockPeakRank, peakRr as mockPeakRr, acts, filterGames, recentGames } from './data/mockData.js';
 import TopBar from './components/TopBar.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import LandingView from './components/LandingView.jsx';
@@ -522,6 +522,7 @@ export default function ScopeDashboard() {
               rrCurrent={rrCurrent}
               rrGoal={rrGoal}
               peakRank={mockPeakRank}
+              peakRr={mockPeakRr}
               avatarUrl={avatarUrl}
               nickname={nickname}
               {...visibleCosmetics({ titleId, bannerUrl, bannerSpray, isPremium })}
