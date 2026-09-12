@@ -94,7 +94,7 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, inco
       setResult({ status: 'private' });
       pushRecent(`${parsed.name}#${parsed.tag}`);
     } else {
-      setResult({ status: 'not_found', riotId: `${parsed.name}#${parsed.tag}` });
+      setResult({ status: 'not_found', name: parsed.name, tag: parsed.tag });
     }
   }
 
@@ -205,6 +205,16 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, inco
             <div className="text-xs font-body text-neutral-300">{t.searchNotOnScopeTitle}</div>
             <div className="text-[11px] font-body text-neutral-500 mt-0.5">{t.searchNotOnScopeDesc}</div>
           </div>
+          {/* This Riot ID may still be a real player with public match history (any
+              /player/<slug> URL renders one, and every leaderboard row links to one the
+              same way) — "not on Scope" only means they haven't connected an account, not
+              that there's nothing to show, so offer a way in besides the invite CTA. */}
+          <button
+            onClick={() => openPlayer({ name: result.name, tag: result.tag })}
+            className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
+          >
+            {t.leaderboardViewProfile}
+          </button>
           <button
             onClick={handleInvite}
             className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
