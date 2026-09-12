@@ -158,7 +158,10 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
       )}
       {tab === 'compare' && <ProfileCompare dataset={dataset} games={filteredGames} t={t} loggedIn={loggedIn} />}
       {tab === 'leaderboard' && (
-        <LeaderboardTab t={t} highlightRiotId={{ name: identity.name, tag: identity.tag }} />
+        <LeaderboardTab
+          t={t}
+          highlightRiotId={{ name: identity.name, tag: identity.tag, rank: identity.rank, rr: identity.rr }}
+        />
       )}
       {tab === 'badges' && (
         <BadgesTab t={t} isPremium={isPremium} badges={dataset.badges} showAds={false} />

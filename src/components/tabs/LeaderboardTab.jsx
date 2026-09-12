@@ -73,6 +73,18 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
     : null;
   const isHighlighted = (p) => hl && `${p.gameName.toLowerCase()}#${p.tagLine.toLowerCase()}` === hl;
 
+  // The leaderboard and the profile page each generate their own independent rank/RR for
+  // a given Riot ID (see leaderboardData.js), so a player embedding this tab on their own
+  // profile can otherwise see two contradictory numbers on the same page. When we know the
+  // real rank/RR for the highlighted row (passed down from the profile), show that instead
+  // of the leaderboard's own generated value for that one row.
+  function displayStats(p) {
+    if (isHighlighted(p) && highlightRiotId?.rank != null) {
+      return { rankedRating: highlightRiotId.rr, competitiveTier: highlightRiotId.rank };
+    }
+    return { rankedRating: p.rankedRating, competitiveTier: p.competitiveTier };
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -94,7 +106,7 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
             at that scale, see TIER_BANDS in leaderboardData.js), so it can't highlight an
             actual row without faking one; it reuses the exact 15% the "Top 15%" badge
             already tracks so the two can't drift apart. */}
-        {!highlightRiotId && (
+        {!highlightRiotId && !publicOnly && (
           <div className="flex items-center gap-2.5 mb-4 px-3 py-2.5 border border-accent bg-accent/5">
             <Trophy size={14} className="text-accent shrink-0" />
             <span className="text-xs font-body text-neutral-200">{t.leaderboardYourStanding.replace('{pct}', 15)}</span>
@@ -155,7 +167,8 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
         <div className="grid grid-cols-3 gap-2 mb-3">
           {podium.map((p, i) => {
             const matched = !publicOnly && isScopePlayer(p);
-            const rankIcon = getRankIcon(p.competitiveTier);
+            const { rankedRating, competitiveTier } = displayStats(p);
+            const rankIcon = getRankIcon(competitiveTier);
             const medal = MEDAL[i];
             return (
               <button
@@ -180,8 +193,8 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
                 <span className={`font-body text-xs truncate w-full ${matched ? 'text-accent' : 'text-neutral-200'}`}>
                   {p.gameName}<span className="text-neutral-600">#{p.tagLine}</span>
                 </span>
-                <span className="font-mono text-xs text-white">{p.rankedRating} RR</span>
-                <span className="text-[9px] font-body text-neutral-500">{p.competitiveTier}</span>
+                <span className="font-mono text-xs text-white">{rankedRating} RR</span>
+                <span className="text-[9px] font-body text-neutral-500">{competitiveTier}</span>
                 <span className={`text-[10px] font-body ${matched ? 'text-accent' : 'text-neutral-600'}`}>{t.leaderboardViewProfile}</span>
               </button>
             );
@@ -192,7 +205,8 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
         <div className="flex flex-col gap-1">
           {rest.map((p) => {
             const matched = !publicOnly && isScopePlayer(p);
-            const rankIcon = getRankIcon(p.competitiveTier);
+            const { rankedRating, competitiveTier } = displayStats(p);
+            const rankIcon = getRankIcon(competitiveTier);
             return (
               <button
                 key={p.puuid}
@@ -217,8 +231,8 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
                   )}
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="hidden sm:block text-[11px] font-body text-neutral-500">{p.competitiveTier}</span>
-                  <span className="font-mono text-xs text-white w-12 text-right">{p.rankedRating} RR</span>
+                  <span className="hidden sm:block text-[11px] font-body text-neutral-500">{competitiveTier}</span>
+                  <span className="font-mono text-xs text-white w-12 text-right">{rankedRating} RR</span>
                   <span className={`text-[11px] font-body whitespace-nowrap transition-colors ${
                     matched ? 'text-accent' : 'text-neutral-600 group-hover:text-accent'
                   }`}>{t.leaderboardViewProfile}</span>
