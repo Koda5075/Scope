@@ -88,10 +88,14 @@ export default function SettingsModal({
   // tree (charts included) on every keystroke, which is heavy enough to visibly drop
   // characters when typed quickly.
   const [nicknameDraft, setNicknameDraft] = useState(nickname ?? '');
+  // Suggested code derived from the account's own name (falling back to the same
+  // "KAITO" default the rest of the app uses when no nickname is set) rather than a
+  // hardcoded stranger's name that never matched whoever was actually connected.
+  const defaultReferralCode = `${(nickname?.trim() || 'KAITO').toUpperCase().replace(/\s+/g, '')}-SCOPE`;
   // Same local-draft-until-blur pattern as nicknameDraft above, plus a format check
   // (4-12 chars, letters/digits/dashes) — there's no real backend to verify the code is
   // actually unique account-wide, so this only ever validates shape, not uniqueness.
-  const [referralCodeDraft, setReferralCodeDraft] = useState(referralCode || 'KAITO-SCOPE');
+  const [referralCodeDraft, setReferralCodeDraft] = useState(referralCode || defaultReferralCode);
   const referralCodeValid = /^[A-Za-z0-9-]{4,12}$/.test(referralCodeDraft);
   const [notifyPrefs, setNotifyPrefs] = useState(loadNotifyPrefs);
 
@@ -308,7 +312,7 @@ export default function SettingsModal({
               <div>
                 <SectionTitle>{t.settingsNavConnection}</SectionTitle>
                 <p className="text-xs font-body text-neutral-300 mb-4">
-                  {loggedIn ? t.connectionConnectedAs.replace('{name}', 'KAITO#EUW1') : t.connectionNotConnected}
+                  {loggedIn ? t.connectionConnectedAs.replace('{name}', `${nickname?.trim() || 'KAITO'}#EUW1`) : t.connectionNotConnected}
                 </p>
                 <button
                   onClick={() => setLoggedIn((s) => !s)}
@@ -393,7 +397,7 @@ export default function SettingsModal({
                     type="text"
                     value={referralCodeDraft}
                     onChange={(e) => setReferralCodeDraft(e.target.value.toUpperCase())}
-                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft === 'KAITO-SCOPE' ? '' : referralCodeDraft); }}
+                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft === defaultReferralCode ? '' : referralCodeDraft); }}
                     maxLength={12}
                     aria-label={t.referralCodeLabel}
                     spellCheck={false}

@@ -7,7 +7,7 @@ import NotificationsBell from './NotificationsBell.jsx';
 const EASTER_EGG_CLICKS = 5;
 const EASTER_EGG_WINDOW_MS = 2000;
 
-export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, onHome, dndEnabled, t }) {
+export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, onHome, dndEnabled, nickname, t }) {
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const clickTimes = useRef([]);
 
@@ -60,7 +60,7 @@ export default function TopBar({ loggedIn, setLoggedIn, onOpenSettings, onHome, 
           onClick={() => setLoggedIn((s) => !s)}
           className="w-9 h-9 flex items-center justify-center bg-black border border-accent text-accent hover:opacity-80 transition-opacity"
           aria-label={loggedIn ? t.topBarLogoutAria : t.loginBtn}
-          title={loggedIn ? t.topBarConnectedTitle.replace('{name}', 'KAITO#EUW1') : t.loginBtn}
+          title={loggedIn ? t.topBarConnectedTitle.replace('{name}', `${nickname?.trim() || 'KAITO'}#EUW1`) : t.loginBtn}
         >
           <LogIn size={16} />
         </button>

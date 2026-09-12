@@ -75,7 +75,7 @@ function loadCompareHistory() {
   }
 }
 
-export default function CompareTab({ t, isPremium, filteredGames }) {
+export default function CompareTab({ t, isPremium, filteredGames, nickname }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
@@ -144,7 +144,7 @@ export default function CompareTab({ t, isPremium, filteredGames }) {
   // The "you" row tracks the active filter for the stats that have a filtered
   // equivalent (acs/kda/hs); rr has none, so it stays static.
   const friendsWithYou = friends.map((f) =>
-    f.isYou ? { ...f, acs: you.acs, kda: you.kda, hs: you.headshots } : f
+    f.isYou ? { ...f, name: `${nickname?.trim() || 'KAITO'}#EUW1`, acs: you.acs, kda: you.kda, hs: you.headshots } : f
   );
   const activeMetric = BOARD_METRICS.find((m) => m.key === boardMetric) ?? BOARD_METRICS[0];
   const friendsRanked = [...friendsWithYou].sort((a, b) => b[boardMetric] - a[boardMetric]);

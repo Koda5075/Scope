@@ -62,7 +62,9 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
     return k - d < acc.diff ? { diff: k - d, label: `${k}/${d}` } : acc;
   }, { diff: Infinity, label: '—' });
 
-  const selectedMatch = selectedGameId ? getMatchScoreboard(selectedGameId) : null;
+  const selectedMatch = selectedGameId
+    ? getMatchScoreboard(selectedGameId, { subjectName: `${nickname?.trim() || 'KAITO'}#EUW1` })
+    : null;
   const streaks = getStreaks(filteredGames);
   // "Form" reuses the exact same streak data already driving the session-summary streak
   // readout below — just a one-word read on it (hot/cold/steady) rather than a second,
@@ -134,7 +136,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
       const blob = await renderShareCard({
         accent,
         rank: 'DIAMOND 2',
-        playerName: 'KAITO#EUW1',
+        playerName: `${nickname?.trim() || 'KAITO'}#EUW1`,
         stats: [
           { label: t.games, value: filteredGames.length },
           { label: t.record, value: `${wins}${t.winShort}-${losses}${t.lossShort}` },

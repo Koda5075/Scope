@@ -222,6 +222,7 @@ export default function ProfileCustomizationModal({
   onBannerFocusChange,
   lang,
   isPremium,
+  nickname,
   onSeePlans,
   onClose,
   t,
@@ -388,7 +389,7 @@ export default function ProfileCustomizationModal({
 
           {/* Avatar */}
           <div className="flex items-center gap-4 mb-4">
-            <Avatar name="KAITO" photoUrl={avatarPreview || avatarUrl} size={64} />
+            <Avatar name={nickname?.trim() || 'KAITO'} photoUrl={avatarPreview || avatarUrl} size={64} />
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => avatarInputRef.current?.click()}
@@ -424,7 +425,7 @@ export default function ProfileCustomizationModal({
 
             <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <span className="font-display text-base tracking-wide text-white">
-                KAITO<span className="text-neutral-600">#EUW1</span>
+                {nickname?.trim() || 'KAITO'}<span className="text-neutral-600">#EUW1</span>
               </span>
               {currentTitleLabel && (
                 <span className="px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-[0.12em] text-accent bg-accent/10 border border-accent/40">

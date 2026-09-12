@@ -496,6 +496,7 @@ export default function ScopeDashboard() {
           }}
           onHome={() => navigate('/')}
           dndEnabled={dndEnabled}
+          nickname={nickname}
           t={t}
         />
 
@@ -556,7 +557,7 @@ export default function ScopeDashboard() {
             {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} setReferralCode={setReferralCode} nickname={nickname} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
-            {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
+            {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} nickname={nickname} />}
             {tab === 'leaderboard' && <LeaderboardTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
@@ -588,6 +589,7 @@ export default function ScopeDashboard() {
             onBannerFocusChange={setBannerFocus}
             lang={lang}
             isPremium={isPremium}
+            nickname={nickname}
             onSeePlans={() => {
               setShowProfileModal(false);
               setShowPlansModal(true);
