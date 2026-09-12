@@ -26,7 +26,7 @@ import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/sh
 
 const WELCOME_SEEN_KEY = 'scope-welcome-seen';
 
-export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode }) {
+export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode, nickname }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
@@ -185,7 +185,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
             <Sparkles size={14} className="text-accent shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
               <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block mb-1">
-                {t.welcomeBannerTitle.replace('{name}', 'KAITO')}
+                {t.welcomeBannerTitle.replace('{name}', nickname?.trim() || 'KAITO')}
               </span>
               <p className="text-xs font-body text-neutral-400 leading-relaxed">{t.welcomeBannerDesc}</p>
             </div>

@@ -553,7 +553,7 @@ export default function ScopeDashboard() {
 
             {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />}
 
-            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} setReferralCode={setReferralCode} />}
+            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} setReferralCode={setReferralCode} nickname={nickname} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
             {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
