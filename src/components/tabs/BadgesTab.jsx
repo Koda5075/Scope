@@ -17,11 +17,20 @@ function isInProgress(b) {
 // `badges` defaults to the owner's own roster; the public player-profile page passes a
 // per-player clone (same shape, re-rolled progress). `showAds` lets that page drop the
 // ad slot.
+// "Unlocked" (for the header count and the filter) means fully achieved: a single-state
+// badge with its flag set, or a tiered badge that's already hit its top tier. A tiered
+// badge sitting between Bronze and Diamond is still climbing, so it belongs under "In
+// Progress" instead — otherwise "Unlocked" and "All minus Locked" are the same list,
+// which is what made the header count (and the filter) count in-progress badges as done.
+function isFullyUnlocked(b) {
+  return isBadgeUnlocked(b) && !isInProgress(b);
+}
+
 export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = true }) {
   const [filter, setFilter] = useState('all');
-  const unlockedCount = badges.filter(isBadgeUnlocked).length;
+  const unlockedCount = badges.filter(isFullyUnlocked).length;
   const visibleBadges = badges.filter((b) => {
-    if (filter === 'unlocked') return isBadgeUnlocked(b);
+    if (filter === 'unlocked') return isFullyUnlocked(b);
     if (filter === 'inProgress') return isInProgress(b);
     if (filter === 'locked') return !isBadgeUnlocked(b);
     return true;
