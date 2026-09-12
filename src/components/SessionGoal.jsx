@@ -104,6 +104,7 @@ export default function SessionGoal({ t }) {
               step={draftConfig.step}
               value={draftTarget}
               onChange={(e) => setDraftTarget(e.target.value)}
+              onWheel={(e) => e.target.blur()}
               placeholder={t.sessionGoalTargetPlaceholder}
               aria-label={t.sessionGoalTargetPlaceholder}
               className="w-24 bg-neutral-950 border border-neutral-800 text-xs font-mono text-neutral-200 px-2 py-1.5 focus:border-accent outline-none"
