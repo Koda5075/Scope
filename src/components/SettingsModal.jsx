@@ -3,6 +3,7 @@ import { Check, AlertTriangle, Lock, Moon, Sun, Monitor, CircleDot } from 'lucid
 import Modal from './Modal.jsx';
 import { THEMES, isValidHex } from '../data/themes.js';
 import { inviteStats, recentGames } from '../data/mockData.js';
+import { defaultReferralCode } from '../lib/riotId.js';
 
 // Downloads a Blob under `filename` via a throwaway object URL — no server round-trip
 // needed since everything being exported already lives in mock data on the client.
@@ -88,14 +89,13 @@ export default function SettingsModal({
   // tree (charts included) on every keystroke, which is heavy enough to visibly drop
   // characters when typed quickly.
   const [nicknameDraft, setNicknameDraft] = useState(nickname ?? '');
-  // Suggested code derived from the account's own name (falling back to the same
-  // "KAITO" default the rest of the app uses when no nickname is set) rather than a
-  // hardcoded stranger's name that never matched whoever was actually connected.
-  const defaultReferralCode = `${(nickname?.trim() || 'KAITO').toUpperCase().replace(/\s+/g, '')}-SCOPE`;
+  // Same fallback the dashboard's Invite Friends card uses, so the two never suggest
+  // two different fake codes for the same account.
+  const suggestedReferralCode = defaultReferralCode(nickname);
   // Same local-draft-until-blur pattern as nicknameDraft above, plus a format check
   // (4-12 chars, letters/digits/dashes) — there's no real backend to verify the code is
   // actually unique account-wide, so this only ever validates shape, not uniqueness.
-  const [referralCodeDraft, setReferralCodeDraft] = useState(referralCode || defaultReferralCode);
+  const [referralCodeDraft, setReferralCodeDraft] = useState(referralCode || suggestedReferralCode);
   const referralCodeValid = /^[A-Za-z0-9-]{4,12}$/.test(referralCodeDraft);
   const [notifyPrefs, setNotifyPrefs] = useState(loadNotifyPrefs);
 
@@ -397,7 +397,7 @@ export default function SettingsModal({
                     type="text"
                     value={referralCodeDraft}
                     onChange={(e) => setReferralCodeDraft(e.target.value.toUpperCase())}
-                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft === defaultReferralCode ? '' : referralCodeDraft); }}
+                    onBlur={() => { if (referralCodeValid) setReferralCode(referralCodeDraft === suggestedReferralCode ? '' : referralCodeDraft); }}
                     maxLength={12}
                     aria-label={t.referralCodeLabel}
                     spellCheck={false}

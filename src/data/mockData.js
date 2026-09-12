@@ -764,7 +764,6 @@ export const inviteStats = { invited: 12, joined: 4 };
 // so the number stays consistent across the invite card, settings, and the locker.
 // All local/mock like the rest until there's a real user backend.
 export const referralProgram = {
-  code: 'KAITO-SCOPE',
   referred: inviteStats.joined,
   rewardAt: 5,
   rewardBannerName: 'Dreamwing Lunari',

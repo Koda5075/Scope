@@ -355,7 +355,7 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
           <ActivityCalendar t={t} />
         </Card>
 
-        <InviteFriendsCard t={t} customCode={referralCode} setCustomCode={setReferralCode} />
+        <InviteFriendsCard t={t} customCode={referralCode} setCustomCode={setReferralCode} nickname={nickname} />
 
         <SessionGoal t={t} />
 

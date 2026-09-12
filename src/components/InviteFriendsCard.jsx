@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { UserPlus, Copy, Check, X, Gift, Pencil } from 'lucide-react';
 import Card from './Card.jsx';
 import { inviteStats, referralProgram } from '../data/mockData.js';
+import { defaultReferralCode } from '../lib/riotId.js';
 
 const STORAGE_KEY = 'scope-invite-card-dismissed';
 // Same shape check as Settings > Privacy — 4-12 chars, letters/digits/dashes.
 // There's no backend uniqueness check, so this only validates format.
 const CODE_RE = /^[A-Za-z0-9-]{4,12}$/;
 
-export default function InviteFriendsCard({ t, customCode, setCustomCode }) {
+export default function InviteFriendsCard({ t, customCode, setCustomCode, nickname }) {
   const [dismissed, setDismissed] = useState(() => {
     try {
       return sessionStorage.getItem(STORAGE_KEY) === 'true';
@@ -42,7 +43,8 @@ export default function InviteFriendsCard({ t, customCode, setCustomCode }) {
   }
 
   const { referred, rewardAt, rewardBannerName } = referralProgram;
-  const code = customCode?.trim() || referralProgram.code;
+  const suggestedCode = defaultReferralCode(nickname);
+  const code = customCode?.trim() || suggestedCode;
   const done = referred >= rewardAt;
   const pct = Math.min(100, Math.round((referred / rewardAt) * 100));
   const rewardLine = done
@@ -62,7 +64,7 @@ export default function InviteFriendsCard({ t, customCode, setCustomCode }) {
 
   function commit() {
     if (!draftValid) return;
-    setCustomCode(draft === referralProgram.code ? '' : draft);
+    setCustomCode(draft === suggestedCode ? '' : draft);
     setEditing(false);
   }
 
