@@ -27,7 +27,7 @@ import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/sh
 
 const WELCOME_SEEN_KEY = 'scope-welcome-seen';
 
-export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode, nickname }) {
+export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode, nickname, daysSinceLastVisit }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
@@ -236,6 +236,19 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
             <button onClick={dismissWelcome} aria-label={t.close} className="shrink-0 text-neutral-600 hover:text-accent transition-colors">
               <X size={14} />
             </button>
+          </div>
+        </Card>
+      )}
+      {daysSinceLastVisit !== null && daysSinceLastVisit >= 14 && (
+        <Card className="mb-4">
+          <div className="flex items-start gap-3">
+            <Sparkles size={14} className="text-accent shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block mb-1">
+                {t.welcomeBackTitle.replace('{n}', daysSinceLastVisit)}
+              </span>
+              <p className="text-xs font-body text-neutral-400 leading-relaxed">{t.welcomeBackDesc}</p>
+            </div>
           </div>
         </Card>
       )}

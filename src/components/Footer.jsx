@@ -7,6 +7,8 @@ export default function Footer({ t, lang }) {
         <div className="flex gap-4">
           <a href={`/legal.html?lang=${lang}#cgu`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.cgu}</a>
           <a href={`/legal.html?lang=${lang}#confidentialite`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.privacy}</a>
+          <a href="/faq.html" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.faqLink}</a>
+          <a href="/about.html" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.aboutLink}</a>
         </div>
         <ServerStatusBadge t={t} />
         <div>{t.sampleData}</div>

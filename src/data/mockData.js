@@ -148,20 +148,23 @@ export const agentStats = [
 // as agentStats above: computeMapStats seeds every map from this array's `name`, then
 // overwrites games/wr with real numbers from the filtered games — atkWr/defWr/bestAgent
 // stay as this static, illustrative snapshot since recentGames has no per-side data.
+// bestWeapon is the weapon with the most kills on that map in this illustrative
+// snapshot (same "no per-match weapon field in recentGames" caveat as weaponStats
+// itself — a static editorial pick, not computed, exactly like bestAgent already is).
 export const mapStats = [
-  { name: 'Bind', games: 8, wr: 62, atkWr: 58, defWr: 67, bestAgent: 'Jett' },
-  { name: 'Haven', games: 5, wr: 40, atkWr: 33, defWr: 47, bestAgent: 'Sova' },
-  { name: 'Split', games: 4, wr: 55, atkWr: 50, defWr: 60, bestAgent: 'Jett' },
-  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39, bestAgent: 'Reyna' },
-  { name: 'Icebox', games: 3, wr: 67, atkWr: 71, defWr: 63, bestAgent: 'Sova' },
-  { name: 'Breeze', games: 0, wr: 0, atkWr: 55, defWr: 60, bestAgent: 'Sova' },
-  { name: 'Fracture', games: 3, wr: 45, atkWr: 40, defWr: 50, bestAgent: 'Killjoy' },
-  { name: 'Pearl', games: 2, wr: 70, atkWr: 65, defWr: 75, bestAgent: 'Jett' },
-  { name: 'Lotus', games: 0, wr: 0, atkWr: 40, defWr: 55, bestAgent: 'Reyna' },
-  { name: 'Sunset', games: 2, wr: 55, atkWr: 60, defWr: 50, bestAgent: 'Sova' },
-  { name: 'Abyss', games: 0, wr: 0, atkWr: 48, defWr: 52, bestAgent: 'Neon' },
-  { name: 'Corrode', games: 0, wr: 0, atkWr: 50, defWr: 58, bestAgent: 'Viper' },
-  { name: 'Summit', games: 0, wr: 0, atkWr: 53, defWr: 47, bestAgent: 'Fade' },
+  { name: 'Bind', games: 8, wr: 62, atkWr: 58, defWr: 67, bestAgent: 'Jett', bestWeapon: 'Vandal' },
+  { name: 'Haven', games: 5, wr: 40, atkWr: 33, defWr: 47, bestAgent: 'Sova', bestWeapon: 'Phantom' },
+  { name: 'Split', games: 4, wr: 55, atkWr: 50, defWr: 60, bestAgent: 'Jett', bestWeapon: 'Spectre' },
+  { name: 'Ascent', games: 6, wr: 50, atkWr: 61, defWr: 39, bestAgent: 'Reyna', bestWeapon: 'Vandal' },
+  { name: 'Icebox', games: 3, wr: 67, atkWr: 71, defWr: 63, bestAgent: 'Sova', bestWeapon: 'Operator' },
+  { name: 'Breeze', games: 0, wr: 0, atkWr: 55, defWr: 60, bestAgent: 'Sova', bestWeapon: 'Operator' },
+  { name: 'Fracture', games: 3, wr: 45, atkWr: 40, defWr: 50, bestAgent: 'Killjoy', bestWeapon: 'Phantom' },
+  { name: 'Pearl', games: 2, wr: 70, atkWr: 65, defWr: 75, bestAgent: 'Jett', bestWeapon: 'Vandal' },
+  { name: 'Lotus', games: 0, wr: 0, atkWr: 40, defWr: 55, bestAgent: 'Reyna', bestWeapon: 'Phantom' },
+  { name: 'Sunset', games: 2, wr: 55, atkWr: 60, defWr: 50, bestAgent: 'Sova', bestWeapon: 'Vandal' },
+  { name: 'Abyss', games: 0, wr: 0, atkWr: 48, defWr: 52, bestAgent: 'Neon', bestWeapon: 'Phantom' },
+  { name: 'Corrode', games: 0, wr: 0, atkWr: 50, defWr: 58, bestAgent: 'Viper', bestWeapon: 'Vandal' },
+  { name: 'Summit', games: 0, wr: 0, atkWr: 53, defWr: 47, bestAgent: 'Fade', bestWeapon: 'Phantom' },
 ];
 
 // ⚠️ Illustrative snapshot only, not a live value — captured for this mockup at the end
@@ -240,11 +243,24 @@ export const peakRr = 88;
 // Players findable via search/favorites/compare. Only entries with connected:true and
 // isPublic:true should ever surface in search results — mirrors the real RSO opt-in
 // policy (never-connected and opted-out players must be indistinguishable to searchers).
+// friendSinceDaysAgo is only set on entries the owner actually has some relationship
+// with (the two default favorites/rivals) — an unrelated player has no "friend since"
+// date to show, same "don't invent data for pairs that don't have it" rule as the rest
+// of this file.
 export const otherPlayers = [
-  { puuid: 'p2', name: 'Nova', tag: 'EUW1', connected: true, isPublic: true, rank: 'Immortal 1', peakRank: 'Immortal 2', kda: 1.61, acs: 261, accuracy: 27, headshots: 34 },
-  { puuid: 'p3', name: 'Miro', tag: 'EUW1', connected: true, isPublic: true, rank: 'Diamond 3', peakRank: 'Diamond 3', kda: 1.18, acs: 204, accuracy: 21, headshots: 26 },
+  { puuid: 'p2', name: 'Nova', tag: 'EUW1', connected: true, isPublic: true, rank: 'Immortal 1', peakRank: 'Immortal 2', kda: 1.61, acs: 261, accuracy: 27, headshots: 34, friendSinceDaysAgo: 58 },
+  { puuid: 'p3', name: 'Miro', tag: 'EUW1', connected: true, isPublic: true, rank: 'Diamond 3', peakRank: 'Diamond 3', kda: 1.18, acs: 204, accuracy: 21, headshots: 26, friendSinceDaysAgo: 21 },
   { puuid: 'p4', name: 'Shade', tag: 'EUW1', connected: true, isPublic: false, rank: 'Platinum 2', peakRank: 'Diamond 1', kda: 1.05, acs: 190, accuracy: 19, headshots: 22 },
   { puuid: 'p5', name: 'Volt', tag: 'NA1', connected: false, isPublic: false, rank: null, peakRank: null, kda: null, acs: null, accuracy: null, headshots: null },
+];
+
+// Top-referrers snapshot for the invite card — same "no real per-user referral counts
+// yet" caveat as inviteStats/referralProgram above; illustrative, includes the owner's
+// own count (inviteStats.joined) at a plausible rank rather than pretending they're #1.
+export const topReferrers = [
+  { name: 'Nova#EUW1', invited: 19 },
+  { name: 'Talon#EUW1', invited: 15 },
+  { name: 'Wren#NA1', invited: 11 },
 ];
 
 // Full 19-weapon roster (verified against the live weapon list, 2026-08-24). Unlike
@@ -498,6 +514,7 @@ export function computeMapStats(games) {
         atkWr: m.games ? staticDef?.atkWr ?? wr : undefined,
         defWr: m.games ? staticDef?.defWr ?? wr : undefined,
         bestAgent: m.games ? staticDef?.bestAgent : undefined,
+        bestWeapon: m.games ? staticDef?.bestWeapon : undefined,
       };
     })
     .sort((a, b) => b.games - a.games);
@@ -727,6 +744,26 @@ export const teammates = [
   { name: 'Miro#EUW1', gamesTogether: 9, winRate: 44 },
   { name: 'Shade#EUW1', gamesTogether: 6, winRate: 33 },
 ];
+
+// Plain-text "career summary" — a downloadable document pulling together numbers that
+// already exist elsewhere (rank, streak, badges, milestones) rather than inventing new
+// ones, so it can never say something the rest of the app doesn't already show.
+export function buildCareerSummaryText({ nickname, t } = {}) {
+  const streaks = getStreaks();
+  const unlockedBadges = badgeDefs.filter(isBadgeUnlocked);
+  const lines = [
+    `SCOPE — ${t?.careerSummaryTitle ?? 'Career Summary'}`,
+    `${nickname?.trim() || 'KAITO'}#EUW1`,
+    '',
+    `${t?.rank ?? 'Rank'}: ${peakRank} (${t?.peak ?? 'Peak'})`,
+    `${t?.bestStreak ?? 'Best streak'}: ${streaks.bestWinStreak}`,
+    `${t?.badgesUnlockedLabel ?? 'Badges unlocked'}: ${unlockedBadges.length}/${badgeDefs.length}`,
+    '',
+    `${t?.tabs?.progress ?? 'Progress'}:`,
+    ...progressionTimeline.map((m) => `- ${t ? t[m.titleKey] : m.id}`),
+  ];
+  return lines.join('\n');
+}
 
 export function buildGamesCSV() {
   const header = ['date', 'mode', 'map', 'result', 'score', 'agent', 'kda', 'acs'];

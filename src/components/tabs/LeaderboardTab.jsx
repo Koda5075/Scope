@@ -1,11 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Trophy, Search } from 'lucide-react';
+import { Trophy, Search, Share2, Check } from 'lucide-react';
 import Card from '../Card.jsx';
 import { LEADERBOARD_REGIONS, getLeaderboard } from '../../data/leaderboardData.js';
-import { otherPlayers } from '../../data/mockData.js';
+import { otherPlayers, seededValue } from '../../data/mockData.js';
 import { getRankIcon, optimizeImg, getAgentIcon, getAllAgentNames } from '../../data/valorantAssets.js';
 import { fetchValLeaderboard } from '../../lib/riotLive.js';
 import { navigate, playerPath } from '../../lib/route.js';
+import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
+
+// Deterministic "last week" reference point for the standing percentile — same
+// illustrative-snapshot treatment as the rest of this mock dataset (no real
+// week-by-week position history exists yet), fixed per week number so it stays stable
+// across renders within the same real-world week rather than reshuffling on refresh.
+function lastWeekPercentile(currentPct) {
+  const weekSeed = Math.floor(Date.now() / (7 * 86400000));
+  const delta = Math.round((seededValue(weekSeed) - 0.5) * 6); // -3..+3
+  return Math.max(1, currentPct + delta);
+}
 
 const MEDAL = ['#F2C94C', '#C0C4C9', '#CD7F32']; // gold / silver / bronze for ranks 1-3
 
@@ -28,11 +39,13 @@ function isScopePlayer(p) {
 // `highlightRiotId` ({ name, tag }) is set when this tab is embedded in a player's own
 // profile page — the matching row (if any) is ringed so "where does this player stand"
 // is visible at a glance.
-export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly = false }) {
+export default function LeaderboardTab({ t, accent, nickname, highlightRiotId = null, publicOnly = false }) {
   const [region, setRegion] = useState('eu');
   const [scopeOnly, setScopeOnly] = useState(false);
   const [nameFilter, setNameFilter] = useState('');
   const [agentFilter, setAgentFilter] = useState('all');
+  const [sharing, setSharing] = useState(false);
+  const [shared, setShared] = useState(false);
   // Mock rows render instantly; the val-leaderboard proxy swaps in real rows if a Riot
   // key is configured server-side, otherwise the mock stays. `live` tracks which is shown.
   const [allRows, setAllRows] = useState(() => getLeaderboard(region));
@@ -88,6 +101,25 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
     return { rankedRating: p.rankedRating, competitiveTier: p.competitiveTier };
   }
 
+  async function handleShareStanding() {
+    setSharing(true);
+    try {
+      const blob = await renderShareCard({
+        accent,
+        rank: t.leaderboardRegions[region],
+        playerName: `${nickname?.trim() || 'KAITO'}#EUW1`,
+        stats: [{ label: t.leaderboardYourStanding.replace('{pct}', '').trim(), value: `Top 15%` }],
+        footerText: t.sampleData,
+      });
+      downloadBlob(blob, 'scope-leaderboard-standing.png');
+      await copyBlobToClipboard(blob);
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
+    } finally {
+      setSharing(false);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -110,9 +142,26 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
             actual row without faking one; it reuses the exact 15% the "Top 15%" badge
             already tracks so the two can't drift apart. */}
         {!highlightRiotId && !publicOnly && (
-          <div className="flex items-center gap-2.5 mb-4 px-3 py-2.5 border border-accent bg-accent/5">
-            <Trophy size={14} className="text-accent shrink-0" />
-            <span className="text-xs font-body text-neutral-200">{t.leaderboardYourStanding.replace('{pct}', 15)}</span>
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4 px-3 py-2.5 border border-accent bg-accent/5">
+            <div className="flex items-center gap-2.5">
+              <Trophy size={14} className="text-accent shrink-0" />
+              <div>
+                <span className="text-xs font-body text-neutral-200 block">{t.leaderboardYourStanding.replace('{pct}', 15)}</span>
+                <span className="text-[10px] font-mono text-neutral-500">
+                  {t.leaderboardVsLastWeek.replace('{pct}', lastWeekPercentile(15))}
+                </span>
+              </div>
+            </div>
+            {accent && (
+              <button
+                onClick={handleShareStanding}
+                disabled={sharing}
+                className="shrink-0 flex items-center gap-1 text-[11px] font-body text-accent hover:opacity-80 transition-opacity disabled:opacity-50"
+              >
+                {shared ? <Check size={12} /> : <Share2 size={12} />}
+                {shared ? t.shareDownloaded : t.share}
+              </button>
+            )}
           </div>
         )}
 

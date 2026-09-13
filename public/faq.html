@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ — Scope</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root { --accent: #FFC300; }
+    * { box-sizing: border-box; }
+
+    body {
+      background: #000;
+      color: #e5e5e5;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+      line-height: 1.6;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .brand-logo { width: 36px; height: 36px; object-fit: contain; }
+    .brand-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #fff; }
+    .brand-rule { height: 2px; width: 44px; background: var(--accent); margin-top: 4px; }
+
+    .back {
+      display: inline-block; margin-bottom: 20px; color: #737373; text-decoration: none;
+      font-size: 13px; transition: color 0.15s ease;
+    }
+    .back:hover { color: var(--accent); }
+
+    h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #fff; font-size: 30px; margin: 0 0 8px; letter-spacing: 0.01em; }
+    .sub { color: #737373; font-size: 13px; margin-bottom: 32px; }
+
+    .qa {
+      background: #0F0F0F;
+      border: 1px solid #262626;
+      border-left: 3px solid var(--accent);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .qa h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      color: #fff;
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+    .qa p { color: #a3a3a3; font-size: 14px; margin: 0; }
+    .qa p + p { margin-top: 8px; }
+
+    a.link { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a href="/" class="back">&larr; Retour à Scope</a>
+  <div class="brand">
+    <img src="/logo.png" alt="" class="brand-logo" />
+    <div>
+      <div class="brand-name">SCOPE</div>
+      <div class="brand-rule"></div>
+    </div>
+  </div>
+
+  <h1>Questions fréquentes</h1>
+  <p class="sub">Les questions qu'on nous pose le plus souvent sur Scope.</p>
+
+  <div class="qa">
+    <h3>Scope, c'est quoi exactement ?</h3>
+    <p>Un tracker de statistiques VALORANT pensé comme un coach plutôt qu'un simple relevé de chiffres : au lieu de juste afficher tes stats, Scope essaie de te dire sur quoi travailler pour progresser.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Pourquoi les données affichées ne sont pas mes vraies parties ?</h3>
+    <p>L'accès à l'API officielle VALORANT est en cours de validation auprès de Riot Games. En attendant, Scope tourne en mode démonstration avec des données d'exemple, pour que tu puisses voir à quoi ressemblera le produit final.</p>
+    <p>Une fois l'API accordée, tes vraies statistiques remplaceront ces données de démo — rien à faire de ton côté, la bascule se fera automatiquement pour les comptes connectés via Riot.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Scope est-il affilié à Riot Games ?</h3>
+    <p>Non. Scope n'est ni développé, ni approuvé, ni sponsorisé par Riot Games. VALORANT et les autres marques associées sont la propriété de Riot Games, Inc.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Est-ce que je peux voir les stats d'un joueur qui n'utilise pas Scope ?</h3>
+    <p>Une fois l'API réelle branchée, non — Riot exige que seuls les joueurs ayant eux-mêmes lié leur compte à Scope et accepté d'être visibles puissent apparaître dans les recherches, comparaisons ou classements d'un autre joueur. C'est une règle de confidentialité imposée par Riot, pas une limitation technique de Scope.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Qu'est-ce que Scope+ ?</h3>
+    <p>Une formule payante optionnelle qui débloque des analyses plus poussées (coaching personnalisé, statistiques avancées, personnalisation visuelle) en plus de la version gratuite. La version gratuite reste pleinement fonctionnelle sans abonnement.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Mes données sont-elles en sécurité ?</h3>
+    <p>Le traitement de tes données personnelles est détaillé dans notre <a class="link" href="/legal.html#confidentialite">politique de confidentialité</a>, conforme au RGPD. Tu peux à tout moment exporter ou supprimer tes données depuis les Paramètres.</p>
+  </div>
+
+  <div class="qa">
+    <h3>J'ai une question qui n'est pas ici, ou un bug à signaler ?</h3>
+    <p>Utilise le bouton de retour flottant présent sur toutes les pages du site, ou écris à <a class="link" href="mailto:contact@scopestats.com">contact@scopestats.com</a>.</p>
+  </div>
+</body>
+</html>

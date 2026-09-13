@@ -253,7 +253,11 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, riva
               key={p.puuid}
               className="group flex items-center gap-1.5 border border-neutral-800 hover:border-accent pl-2.5 pr-1.5 py-1 text-xs font-body text-neutral-300 transition-colors"
             >
-              <button onClick={() => openPlayer(p)} className="flex items-center gap-1.5">
+              <button
+                onClick={() => openPlayer(p)}
+                className="flex items-center gap-1.5"
+                title={p.friendSinceDaysAgo !== undefined ? t.friendSinceLabel.replace('{n}', p.friendSinceDaysAgo) : undefined}
+              >
                 <Star size={10} className="text-accent" fill="currentColor" />
                 {p.name}
               </button>

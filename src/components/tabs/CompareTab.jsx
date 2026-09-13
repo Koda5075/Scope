@@ -3,15 +3,20 @@ import { Search, ArrowUpRight, ArrowDownRight, Copy, Check, Share2 } from 'lucid
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import {
-  comparisons, friends, otherPlayers, myStats,
+  comparisons, friends, otherPlayers, myStats, recentGames, getMatchScoreboard, hashString, seededValue,
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
 } from '../../data/mockData.js';
+import { getPlayerDataset } from '../../data/playerProfileData.js';
 import { parseRiotId } from '../../lib/riotId.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const MEDAL = ['#F2C94C', '#C0C4C9', '#CD7F32'];
 
 // Rounds to a sensible number of decimals for a delta (KDA needs 2, everything else 0).
+function fmt(template, vars = {}) {
+  return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
+}
+
 function fmtDelta(d) {
   const rounded = Math.abs(d) < 10 ? Math.round(d * 100) / 100 : Math.round(d);
   return (d > 0 ? '+' : '') + rounded;
@@ -118,6 +123,31 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
     }
   }
 
+  // "Last opponent" comes from the most recent match's own scoreboard (the toughest
+  // rival Scope already computed for that game) rather than a separate concept — reuses
+  // getPlayerDataset (same generator the public profile page uses) so the opponent gets
+  // a full, internally-consistent stat line instead of just a name.
+  function handleCompareLastOpponent() {
+    const latestGame = recentGames[0];
+    if (!latestGame) return;
+    const scoreboard = getMatchScoreboard(latestGame.id, { subjectName: `${nickname?.trim() || 'KAITO'}#EUW1` });
+    const opponentName = scoreboard?.you?.rivals?.toughest?.name;
+    const parsed = opponentName && parseRiotId(opponentName);
+    if (!parsed) return;
+    const dataset = getPlayerDataset(parsed);
+    if (!dataset) return;
+    setPlayer({
+      puuid: `last-opponent-${parsed.name}`,
+      name: parsed.name,
+      tag: parsed.tag,
+      acs: computeAverageAcs(dataset.games) ?? 0,
+      kda: computeAggregateKDA(dataset.games) ?? 0,
+      accuracy: computeAverageAccuracy(dataset.games) ?? 0,
+      headshots: computeAverageHeadshots(dataset.games) ?? 0,
+    });
+    setError(null);
+  }
+
   async function handleShareComparison() {
     if (!player) return;
     setSharing(true);
@@ -175,6 +205,22 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
   const friendsWithYou = friends.map((f) =>
     f.isYou ? { ...f, name: `${nickname?.trim() || 'KAITO'}#EUW1`, acs: you.acs, kda: you.kda, hs: you.headshots } : f
   );
+  // Illustrative aggregated duel record against the selected player — same "no real
+  // match-level opponent history yet" caveat as the rest of this file's mock data, but
+  // deterministic per pairing (seeded on both Riot IDs) so it doesn't reshuffle on every
+  // render, and weighted by the real ACS gap between the two so a much stronger/weaker
+  // opponent shows a believably lopsided record rather than a flat coin flip.
+  const headToHead = player ? (() => {
+    const seed = hashString(`${nickname?.trim() || 'KAITO'}#EUW1-vs-${player.name}#${player.tag}`);
+    const totalGames = 3 + Math.floor(seededValue(seed) * 9);
+    const winProb = Math.max(0.2, Math.min(0.8, 0.5 + (you.acs - player.acs) / 500));
+    let wins = 0;
+    for (let i = 0; i < totalGames; i++) {
+      if (seededValue(seed + i * 7 + 1) < winProb) wins++;
+    }
+    return { wins, losses: totalGames - wins, total: totalGames };
+  })() : null;
+
   const activeMetric = BOARD_METRICS.find((m) => m.key === boardMetric) ?? BOARD_METRICS[0];
   const friendsRanked = [...friendsWithYou].sort((a, b) => b[boardMetric] - a[boardMetric]);
 
@@ -217,6 +263,15 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
             className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-9 pr-3 py-2.5 text-sm font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
           />
         </form>
+
+        {recentGames.length > 0 && (
+          <button
+            onClick={handleCompareLastOpponent}
+            className="mb-3 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors"
+          >
+            {t.compareLastOpponent}
+          </button>
+        )}
 
         {history.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -266,6 +321,11 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
                 {shared ? t.shareDownloaded : t.share}
               </button>
             </div>
+            {headToHead && (
+              <div className="text-[11px] font-body text-neutral-500 mb-3">
+                {fmt(t.headToHeadRecord, { wins: headToHead.wins, losses: headToHead.losses, total: headToHead.total })}
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {COMPARE_METRICS.map((m) => (
                 <VersusRow

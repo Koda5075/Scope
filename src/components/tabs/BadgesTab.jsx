@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { Lock, Share2, Check } from 'lucide-react';
+import { Lock, Share2, Check, Trophy } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { badgeDefs, getBadgeProgress, isBadgeUnlocked } from '../../data/mockData.js';
+import { badgeDefs, getBadgeProgress, isBadgeUnlocked, TIER_NAME_KEYS } from '../../data/mockData.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
+
+function fmt(template, vars = {}) {
+  return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
+}
 
 const FILTERS = ['all', 'unlocked', 'inProgress', 'locked'];
 const FILTER_LABEL_KEY = { all: 'All', unlocked: 'Unlocked', inProgress: 'InProgress', locked: 'Locked' };
@@ -67,6 +71,15 @@ export default function BadgesTab({ t, accent, nickname, isPremium, badges = bad
   };
   const visibleBadges = sortBy === 'recent' ? [...filteredBadges].sort((a, b) => sortRank(a) - sortRank(b)) : filteredBadges;
 
+  // Same "closest to its next tier" pick already surfaced on the Progress tab — shown
+  // here too since a badge-hunter browsing this tab specifically is exactly who this is
+  // for, rather than making them go check Progress for it.
+  const closestBadge = badges
+    .filter((b) => !b.secret)
+    .map((b) => ({ b, progress: getBadgeProgress(b) }))
+    .filter((x) => x.progress && !x.progress.isMaxed)
+    .sort((a, b) => b.progress.progressPct - a.progress.progressPct)[0];
+
   return (
     <div className="flex flex-col gap-3">
       <Card>
@@ -108,6 +121,19 @@ export default function BadgesTab({ t, accent, nickname, isPremium, badges = bad
           <div className="sc-fill h-full transition-all" style={{ width: `${(unlockedCount / badges.length) * 100}%` }} />
         </div>
       </Card>
+
+      {closestBadge && (
+        <div className="flex items-center gap-2.5 px-3 py-2.5 border border-accent bg-accent/5">
+          <Trophy size={14} className="text-accent shrink-0" />
+          <span className="text-xs font-body text-neutral-200">
+            {fmt(t.highlightBadgeClose, {
+              pct: closestBadge.progress.progressPct,
+              tier: t[TIER_NAME_KEYS[closestBadge.progress.tierIndex + 1]],
+              badge: t.badges[closestBadge.b.id].label,
+            })}
+          </span>
+        </div>
+      )}
 
       {visibleBadges.length === 0 && (
         <div className="text-xs font-body text-neutral-500 py-2">{t.badgesNoneForFilter}</div>

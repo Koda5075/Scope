@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>À propos — Scope</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root { --accent: #FFC300; }
+    * { box-sizing: border-box; }
+
+    body {
+      background: #000;
+      color: #e5e5e5;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+      line-height: 1.7;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .brand-logo { width: 36px; height: 36px; object-fit: contain; }
+    .brand-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #fff; }
+    .brand-rule { height: 2px; width: 44px; background: var(--accent); margin-top: 4px; }
+
+    .back {
+      display: inline-block; margin-bottom: 20px; color: #737373; text-decoration: none;
+      font-size: 13px; transition: color 0.15s ease;
+    }
+    .back:hover { color: var(--accent); }
+
+    h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #fff; font-size: 30px; margin: 0 0 8px; letter-spacing: 0.01em; }
+    .sub { color: #737373; font-size: 13px; margin-bottom: 32px; }
+
+    h2 {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #fff; font-size: 20px;
+      margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #262626;
+    }
+    p { color: #d4d4d4; font-size: 14.5px; }
+    .note {
+      background: #0F0F0F; border: 1px solid #262626; border-left: 3px solid var(--accent);
+      padding: 16px 20px; margin: 20px 0; font-size: 13.5px; color: #a3a3a3;
+    }
+    a.link { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a href="/" class="back">&larr; Retour à Scope</a>
+  <div class="brand">
+    <img src="/logo.png" alt="" class="brand-logo" />
+    <div>
+      <div class="brand-name">SCOPE</div>
+      <div class="brand-rule"></div>
+    </div>
+  </div>
+
+  <h1>À propos de Scope</h1>
+  <p class="sub">Pourquoi ce tracker existe et ce qui le distingue.</p>
+
+  <h2>L'idée de départ</h2>
+  <p>
+    La plupart des trackers VALORANT se contentent d'afficher des chiffres : KDA, précision, winrate.
+    Utiles, mais ils ne disent jamais quoi faire de ces chiffres. Scope est construit dans l'autre sens :
+    l'objectif n'est pas seulement de montrer tes statistiques, mais de t'aider à repérer ce sur quoi
+    progresser en premier — un peu comme un coach regarderait tes parties, pas comme un simple relevé de compteurs.
+  </p>
+
+  <h2>Où en est le projet</h2>
+  <p>
+    Scope fonctionne aujourd'hui en mode démonstration : l'accès à l'API officielle VALORANT est en cours
+    de validation auprès de Riot Games, un processus qui prend du temps et n'est pas garanti. En attendant,
+    le site tourne avec des données d'exemple pour que l'expérience complète — tableau de bord, comparaisons,
+    classement, coaching — soit consultable dès maintenant. Voir la <a class="link" href="/faq.html">FAQ</a>
+    pour plus de détails sur ce que ça change concrètement.
+  </p>
+
+  <div class="note">
+    Scope n'est ni développé, ni approuvé, ni sponsorisé par Riot Games. VALORANT et les marques associées
+    sont la propriété de Riot Games, Inc.
+  </div>
+
+  <h2>Contact</h2>
+  <p>
+    Une question, un bug, une suggestion ? Le bouton de retour flottant présent sur tout le site permet
+    d'écrire directement, ou par mail à <a class="link" href="mailto:contact@scopestats.com">contact@scopestats.com</a>.
+  </p>
+</body>
+</html>

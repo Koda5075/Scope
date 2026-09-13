@@ -1,8 +1,20 @@
 import { useState } from 'react';
-import { Plus, X, TrendingUp, Zap, Flame, Trophy } from 'lucide-react';
+import { Plus, X, TrendingUp, Zap, Flame, Trophy, Download } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
-import { progressionTimeline, badgeDefs, getBadgeProgress, TIER_NAME_KEYS } from '../../data/mockData.js';
+import { progressionTimeline, badgeDefs, getBadgeProgress, TIER_NAME_KEYS, buildCareerSummaryText } from '../../data/mockData.js';
+
+function downloadText(text, filename) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 import { getRankIcon, getMapImage, optimizeImg } from '../../data/valorantAssets.js';
 
 function fmt(template, vars = {}) {
@@ -27,7 +39,7 @@ function loadCustomMilestones() {
 // `readOnly` (hides the add-milestone form + custom-notes UI — those are viewer-local)
 // and `showAds={false}`.
 export default function ProgressTab({
-  t, isPremium, timelineData = progressionTimeline, badges = badgeDefs, readOnly = false, showAds = true,
+  t, isPremium, nickname, timelineData = progressionTimeline, badges = badgeDefs, readOnly = false, showAds = true,
 }) {
   const [filter, setFilter] = useState('all');
   const [customMilestones, setCustomMilestones] = useState(readOnly ? [] : loadCustomMilestones);
@@ -104,14 +116,24 @@ export default function ProgressTab({
               ))}
             </div>
             {!readOnly && (
-              <button
-                onClick={() => setShowAddForm((s) => !s)}
-                aria-label={t.timelineAddCustom}
-                title={t.timelineAddCustom}
-                className="w-6 h-6 flex items-center justify-center border border-neutral-800 text-neutral-500 hover:text-accent hover:border-accent transition-colors"
-              >
-                <Plus size={12} />
-              </button>
+              <>
+                <button
+                  onClick={() => downloadText(buildCareerSummaryText({ nickname, t }), 'scope-career-summary.txt')}
+                  aria-label={t.careerSummaryExport}
+                  title={t.careerSummaryExport}
+                  className="w-6 h-6 flex items-center justify-center border border-neutral-800 text-neutral-500 hover:text-accent hover:border-accent transition-colors"
+                >
+                  <Download size={12} />
+                </button>
+                <button
+                  onClick={() => setShowAddForm((s) => !s)}
+                  aria-label={t.timelineAddCustom}
+                  title={t.timelineAddCustom}
+                  className="w-6 h-6 flex items-center justify-center border border-neutral-800 text-neutral-500 hover:text-accent hover:border-accent transition-colors"
+                >
+                  <Plus size={12} />
+                </button>
+              </>
             )}
           </div>
         </div>

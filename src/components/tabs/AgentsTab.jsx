@@ -68,12 +68,20 @@ function MapRow({ m, t }) {
         <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
           <div className="font-display text-sm text-white">{m.name}</div>
           {m.bestAgent && (
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
               <span className="text-[10px] text-neutral-600 font-body">{t.bestOnMap}</span>
               {getAgentIcon(m.bestAgent) && (
                 <img src={optimizeImg(getAgentIcon(m.bestAgent), 24)} alt="" loading="lazy" className="val-icon w-5 h-5 rounded-full object-cover" />
               )}
               <span className="text-[10px] font-display text-neutral-300">{m.bestAgent}</span>
+              {m.bestWeapon && (
+                <>
+                  {getWeaponIcon(m.bestWeapon) && (
+                    <img src={optimizeImg(getWeaponIcon(m.bestWeapon), 24)} alt="" loading="lazy" className="val-icon w-5 h-4 object-contain" />
+                  )}
+                  <span className="text-[10px] font-display text-neutral-400">{m.bestWeapon}</span>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -188,9 +196,15 @@ export default function AgentsTab({
           {agentStats.length > AGENT_PREVIEW_COUNT && <SeeAllButton onClick={() => setOpenModal('agents')} t={t} />}
         </div>
         <div className="flex flex-col gap-3">
-          {agentStats.slice(0, AGENT_PREVIEW_COUNT).map((a) => (
-            <AgentRow key={a.name} a={a} t={t} isLastPlayed={a.name === lastPlayedAgent} />
-          ))}
+          {/* The last-played agent is pinned first in the preview even when it isn't
+              among the top-N by games played — otherwise the "last played" badge could
+              sit on a row the player has to open "See all" to even find. */}
+          {[...agentStats]
+            .sort((a, b) => (a.name === lastPlayedAgent ? -1 : b.name === lastPlayedAgent ? 1 : 0))
+            .slice(0, AGENT_PREVIEW_COUNT)
+            .map((a) => (
+              <AgentRow key={a.name} a={a} t={t} isLastPlayed={a.name === lastPlayedAgent} />
+            ))}
         </div>
         {showSuggestions && untriedAgent && (
           <div className="flex items-center gap-2.5 mt-4 pt-3 border-t border-neutral-800">

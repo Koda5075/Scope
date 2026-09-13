@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { UserPlus, Copy, Check, X, Gift, Pencil } from 'lucide-react';
 import Card from './Card.jsx';
-import { inviteStats, referralProgram } from '../data/mockData.js';
+import { inviteStats, referralProgram, topReferrers } from '../data/mockData.js';
 import { defaultReferralCode } from '../lib/riotId.js';
 
 const STORAGE_KEY = 'scope-invite-card-dismissed';
@@ -160,6 +160,18 @@ export default function InviteFriendsCard({ t, customCode, setCustomCode, nickna
         </div>
         <div className="sc-track h-1.5 overflow-hidden">
           <div className="sc-fill h-full transition-all" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <span className="block text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body mb-1.5">{t.topReferrersTitle}</span>
+        <div className="flex flex-col gap-1">
+          {topReferrers.map((r, i) => (
+            <div key={r.name} className="flex items-center justify-between text-[11px] font-body text-neutral-400">
+              <span>{i + 1}. {r.name}</span>
+              <span className="font-mono text-neutral-300">{r.invited}</span>
+            </div>
+          ))}
         </div>
       </div>
 
