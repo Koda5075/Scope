@@ -38,7 +38,7 @@ export default function RecentGamesList({ games, t, onSelectGame }) {
                       and loss dots look confusingly similar. */}
                   <span className={`w-2 h-2 shrink-0 rounded-full ${g.result === 'win' ? 'bg-emerald-500' : 'bg-red-500'}`} />
                   {mapImage && <img src={optimizeImg(mapImage.splash, 48)} alt="" loading="lazy" className="val-icon w-12 h-7 rounded object-cover shrink-0" />}
-                  <span className="font-display text-sm font-semibold text-white truncate">{g.map}</span>
+                  <span className="font-display text-sm font-semibold text-white truncate min-w-[64px]">{g.map}</span>
                   <span
                     className={`font-body text-[10px] uppercase tracking-wide px-1.5 py-0.5 shrink-0 border ${
                       g.mode === 'competitive' ? 'text-accent border-accent' : 'text-neutral-500 border-neutral-700'
@@ -47,8 +47,8 @@ export default function RecentGamesList({ games, t, onSelectGame }) {
                     {t[MODE_LABEL_KEY[g.mode]] ?? g.mode}
                   </span>
                   <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 shrink-0">
-                    {getAgentIcon(g.agent) && <img src={optimizeImg(getAgentIcon(g.agent), 32)} alt="" loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
-                    {g.agent}
+                    {getAgentIcon(g.agent) && <img src={optimizeImg(getAgentIcon(g.agent), 32)} alt={g.agent} loading="lazy" className="val-icon w-8 h-8 rounded-full object-cover" />}
+                    <span className="hidden sm:inline">{g.agent}</span>
                   </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
