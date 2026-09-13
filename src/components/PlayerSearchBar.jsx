@@ -199,28 +199,32 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, inco
       )}
 
       {result?.status === 'not_found' && (
-        <div className="mt-2 flex items-center gap-3 border border-neutral-800 bg-neutral-950 px-3 py-3">
-          <UserPlus size={16} className="text-accent shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-body text-neutral-300">{t.searchNotOnScopeTitle}</div>
-            <div className="text-[11px] font-body text-neutral-500 mt-0.5">{t.searchNotOnScopeDesc}</div>
+        <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-3 border border-neutral-800 bg-neutral-950 px-3 py-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <UserPlus size={16} className="text-accent shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-body text-neutral-300">{t.searchNotOnScopeTitle}</div>
+              <div className="text-[11px] font-body text-neutral-500 mt-0.5">{t.searchNotOnScopeDesc}</div>
+            </div>
           </div>
           {/* This Riot ID may still be a real player with public match history (any
               /player/<slug> URL renders one, and every leaderboard row links to one the
               same way) — "not on Scope" only means they haven't connected an account, not
               that there's nothing to show, so offer a way in besides the invite CTA. */}
-          <button
-            onClick={() => openPlayer({ name: result.name, tag: result.tag })}
-            className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
-          >
-            {t.leaderboardViewProfile}
-          </button>
-          <button
-            onClick={handleInvite}
-            className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
-          >
-            {inviteCopied ? t.linkCopied : t.inviteButton}
-          </button>
+          <div className="flex items-center gap-3 pl-7 sm:pl-0 sm:shrink-0">
+            <button
+              onClick={() => openPlayer({ name: result.name, tag: result.tag })}
+              className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
+            >
+              {t.leaderboardViewProfile}
+            </button>
+            <button
+              onClick={handleInvite}
+              className="shrink-0 text-[11px] font-body text-accent hover:underline whitespace-nowrap"
+            >
+              {inviteCopied ? t.linkCopied : t.inviteButton}
+            </button>
+          </div>
         </div>
       )}
 
