@@ -138,7 +138,7 @@ export default function ScopeDashboard() {
   });
   const [filterPeriod, setFilterPeriod] = useState(() => {
     const p = urlFilterParams.get('period');
-    return ['7d', '30d', 'act', 'all'].includes(p) ? p : '7d';
+    return ['today', '7d', '30d', 'act', 'all'].includes(p) ? p : '7d';
   });
   const [actId, setActId] = useState(() => {
     const a = urlFilterParams.get('act');
@@ -572,7 +572,7 @@ export default function ScopeDashboard() {
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
             {tab === 'compare' && <CompareTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} nickname={nickname} />}
             {tab === 'leaderboard' && <LeaderboardTab t={t} />}
-            {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
+            {tab === 'badges' && <BadgesTab t={t} accent={accent} nickname={nickname} isPremium={isPremium} />}
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}
             {tab === 'premium' && (
               <Suspense fallback={<TabLoading />}>

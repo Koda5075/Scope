@@ -99,11 +99,15 @@ export function isBadgeUnlocked(badge) {
 // array's `name` field to build that seed and then overwrites games/wr with real
 // numbers derived from the filtered games, so the games/wr values here are never
 // rendered directly; kept only so every entry has the same shape.
+// rankAvgWr is a flat 50 wherever set (only on agents with real games — see
+// computeAgentStats below) rather than a per-agent invented figure: Riot's own ranked
+// matchmaking is explicitly designed to converge every player toward a 50% winrate, so
+// "the rank average" is honestly 50 for any agent, not something that needs faking.
 export const agentStats = [
   // Duelists
   { name: 'Phoenix', games: 0, wr: 0 },
-  { name: 'Jett', games: 14, wr: 64 },
-  { name: 'Reyna', games: 9, wr: 56 },
+  { name: 'Jett', games: 14, wr: 64, rankAvgWr: 50 },
+  { name: 'Reyna', games: 9, wr: 56, rankAvgWr: 50 },
   { name: 'Raze', games: 0, wr: 0 },
   { name: 'Yoru', games: 0, wr: 0 },
   { name: 'Neon', games: 0, wr: 0 },
@@ -111,14 +115,14 @@ export const agentStats = [
   { name: 'Waylay', games: 0, wr: 0 },
   // Controllers
   { name: 'Brimstone', games: 0, wr: 0 },
-  { name: 'Omen', games: 5, wr: 40 },
+  { name: 'Omen', games: 5, wr: 40, rankAvgWr: 50 },
   { name: 'Viper', games: 0, wr: 0 },
   { name: 'Astra', games: 0, wr: 0 },
   { name: 'Harbor', games: 0, wr: 0 },
   { name: 'Clove', games: 0, wr: 0 },
   { name: 'Miks', games: 0, wr: 0 },
   // Initiators
-  { name: 'Sova', games: 6, wr: 50 },
+  { name: 'Sova', games: 6, wr: 50, rankAvgWr: 50 },
   { name: 'Breach', games: 0, wr: 0 },
   { name: 'Skye', games: 0, wr: 0 },
   { name: 'KAY/O', games: 0, wr: 0 },
@@ -127,8 +131,8 @@ export const agentStats = [
   { name: 'Tejo', games: 0, wr: 0 },
   // Sentinels
   { name: 'Sage', games: 0, wr: 0 },
-  { name: 'Cypher', games: 3, wr: 33 },
-  { name: 'Killjoy', games: 4, wr: 75 },
+  { name: 'Cypher', games: 3, wr: 33, rankAvgWr: 50 },
+  { name: 'Killjoy', games: 4, wr: 75, rankAvgWr: 50 },
   { name: 'Chamber', games: 0, wr: 0 },
   { name: 'Deadlock', games: 0, wr: 0 },
   { name: 'Vyse', games: 0, wr: 0 },
@@ -434,7 +438,7 @@ export const acts = [
 
 // Shared by the global Mode + Period filter (App.jsx) so every tab that filters
 // recentGames applies the exact same window definition.
-export const PERIOD_MAX_DAYS = { '7d': 6, '30d': 29, all: Infinity };
+export const PERIOD_MAX_DAYS = { today: 0, '7d': 6, '30d': 29, all: Infinity };
 
 export function filterGames(games, { mode, period, act }) {
   return games.filter((g) => {
@@ -461,7 +465,12 @@ export function computeAgentStats(games) {
     byAgent.set(g.agent, entry);
   }
   return Array.from(byAgent.values())
-    .map((a) => ({ name: a.name, games: a.games, wr: a.games ? Math.round((a.wins / a.games) * 100) : null }))
+    .map((a) => ({
+      name: a.name,
+      games: a.games,
+      wr: a.games ? Math.round((a.wins / a.games) * 100) : null,
+      rankAvgWr: a.games ? agentStats.find((s) => s.name === a.name)?.rankAvgWr : undefined,
+    }))
     .sort((a, b) => b.games - a.games);
 }
 

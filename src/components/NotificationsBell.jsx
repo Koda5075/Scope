@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { Bell, X, Snowflake } from 'lucide-react';
-import { alertsFeed, getActivityStreak } from '../data/mockData.js';
+import { Bell, X, Snowflake, Zap } from 'lucide-react';
+import { alertsFeed, getActivityStreak, recentGames } from '../data/mockData.js';
 import { useClickOutside } from '../hooks/useClickOutside.js';
 
 // Only fires once there's truly nothing left cushioning the streak — a real, checkable
@@ -10,6 +10,26 @@ function buildStreakFreezeAlert() {
   const { streak, freezesRemaining } = getActivityStreak();
   if (streak <= 0 || freezesRemaining > 0) return null;
   return { id: 'streak-freeze-warning', icon: Snowflake, tone: 'warn', messageKey: 'alertMsgNoFreezesLeft', params: { n: streak }, daysAgo: 0, read: false };
+}
+
+// One step earlier than the "exhausted" warning above — exactly 1 freeze left, so the
+// next missed day still gets forgiven but the one after that doesn't. Mutually
+// exclusive with buildStreakFreezeAlert (freezesRemaining is either 0 or 1, never both).
+function buildFreezeImminentAlert() {
+  const { streak, freezesRemaining } = getActivityStreak();
+  if (streak <= 0 || freezesRemaining !== 1) return null;
+  return { id: 'streak-freeze-imminent', icon: Snowflake, tone: 'info', messageKey: 'alertMsgFreezeImminent', params: { n: streak }, daysAgo: 0, read: false };
+}
+
+// Real derived check against the actual game log — today's latest game beating every
+// prior game's ACS — not a fabricated "congrats" with no basis. recentGames is
+// most-recent-first (same convention the rest of the app relies on).
+function buildNewRecordAlert() {
+  const [latest, ...rest] = recentGames;
+  if (!latest || latest.daysAgo !== 0 || rest.length === 0) return null;
+  const priorBestAcs = Math.max(...rest.map((g) => g.acs));
+  if (latest.acs <= priorBestAcs) return null;
+  return { id: 'new-acs-record', icon: Zap, tone: 'success', messageKey: 'alertMsgNewRecord', params: { stat: 'ACS', value: latest.acs }, daysAgo: 0, read: false };
 }
 
 function fmt(template, vars = {}) {
@@ -27,8 +47,8 @@ const TONE_COLOR = {
 export default function NotificationsBell({ t, onManage, dndEnabled }) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState(() => {
-    const freezeAlert = buildStreakFreezeAlert();
-    return freezeAlert ? [freezeAlert, ...alertsFeed] : alertsFeed;
+    const extra = [buildStreakFreezeAlert(), buildFreezeImminentAlert(), buildNewRecordAlert()].filter(Boolean);
+    return [...extra, ...alertsFeed];
   });
   // Do Not Disturb (Settings > Notifications) mutes the badge without hiding the feed
   // itself — alerts still land and are readable once opened, they just stop announcing

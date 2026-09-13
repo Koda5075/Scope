@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, Share2, Check } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { badgeDefs, getBadgeProgress, isBadgeUnlocked } from '../../data/mockData.js';
+import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const FILTERS = ['all', 'unlocked', 'inProgress', 'locked'];
 const FILTER_LABEL_KEY = { all: 'All', unlocked: 'Unlocked', inProgress: 'InProgress', locked: 'Locked' };
@@ -28,9 +29,26 @@ function isFullyUnlocked(b) {
 
 const SORTS = ['default', 'recent'];
 
-export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = true }) {
+export default function BadgesTab({ t, accent, nickname, isPremium, badges = badgeDefs, showAds = true }) {
   const [filter, setFilter] = useState('all');
   const [sortBy, setSortBy] = useState('default');
+  const [sharedId, setSharedId] = useState(null);
+
+  async function handleShareBadge(b, info, progress) {
+    const blob = await renderShareCard({
+      accent,
+      rank: info.label,
+      playerName: `${nickname?.trim() || 'KAITO'}#EUW1`,
+      stats: progress
+        ? [{ label: t.tierNext.replace(':', ''), value: `${progress.value}/${progress.nextThreshold ?? progress.value}` }]
+        : [{ label: t.badgeUnlockedLabel, value: b.daysAgo === 0 ? t.alertToday : `${b.daysAgo}${t.daysAgoSuffix}` }],
+      footerText: info.sub,
+    });
+    downloadBlob(blob, `scope-badge-${b.id}.png`);
+    await copyBlobToClipboard(blob);
+    setSharedId(b.id);
+    setTimeout(() => setSharedId(null), 1800);
+  }
   const unlockedCount = badges.filter(isFullyUnlocked).length;
   const filteredBadges = badges.filter((b) => {
     if (filter === 'unlocked') return isFullyUnlocked(b);
@@ -179,6 +197,16 @@ export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = 
                   </span>
                 ) : null}
               </div>
+
+              {unlocked && !isHiddenSecret && accent && (
+                <button
+                  onClick={() => handleShareBadge(b, info, progress)}
+                  className="mt-2 flex items-center gap-1 text-[10px] font-body text-neutral-500 hover:text-accent transition-colors"
+                >
+                  {sharedId === b.id ? <Check size={11} className="text-accent" /> : <Share2 size={11} />}
+                  {sharedId === b.id ? t.shareDownloaded : t.share}
+                </button>
+              )}
             </Card>
           );
         })}

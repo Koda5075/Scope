@@ -28,6 +28,7 @@ function SeeAllButton({ onClick, t }) {
 }
 
 function AgentRow({ a, t, isLastPlayed }) {
+  const vsRankAvg = a.rankAvgWr !== undefined && a.wr !== null ? a.wr - a.rankAvgWr : null;
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <span className="font-display text-sm text-white flex items-center gap-2 sm:w-32 sm:shrink-0 min-w-0">
@@ -47,6 +48,11 @@ function AgentRow({ a, t, isLastPlayed }) {
           <span className="font-mono text-xs text-accent w-10 text-right">{a.wr !== null ? `${a.wr}%` : '—'}</span>
           <InfoTip text={a.games > 0 && a.games < 5 ? t.lowSampleTooltip : t.tipAgentMapWinRate} />
         </span>
+        {vsRankAvg !== null && (
+          <span className={`hidden md:inline font-mono text-[10px] ${vsRankAvg >= 0 ? 'text-accent' : 'text-red-500'}`} title={t.rankAvg}>
+            {vsRankAvg > 0 ? '+' : ''}{vsRankAvg} {t.wrShort} {t.rankAvg}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ import {
   rrHistory, badgeDefs, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, getStreaks,
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
   computeFirstBloods, computeClutchRecord, performanceScore, computeSideWinrates, ACT_DAYS_REMAINING,
-  activityCalendar, getActivityStreak,
+  activityCalendar, getActivityStreak, recentGames,
 } from '../../data/mockData.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
@@ -72,6 +72,25 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
   const todayEntry = activityCalendar[activityCalendar.length - 1];
   const activityStreak = getActivityStreak();
   const showNoGameTodayReminder = todayEntry?.games === 0 && activityStreak.streak > 0;
+
+  // "vs yesterday" is a fixed calendar comparison (today's games vs yesterday's), not
+  // affected by the global Mode/Period filter — same reasoning as the no-game-today
+  // reminder above, which also reads straight off daysAgo rather than filteredGames.
+  const todaysGames = recentGames.filter((g) => g.daysAgo === 0);
+  const yesterdaysGames = recentGames.filter((g) => g.daysAgo === 1);
+  const vsYesterdayAcs = todaysGames.length && yesterdaysGames.length
+    ? computeAverageAcs(todaysGames) - computeAverageAcs(yesterdaysGames)
+    : null;
+  const vsYesterdayKda = todaysGames.length && yesterdaysGames.length
+    ? Math.round((computeAggregateKDA(todaysGames) - computeAggregateKDA(yesterdaysGames)) * 100) / 100
+    : null;
+
+  // A "standout" match is today's most recent game beating every other game's ACS —
+  // same real derived check the notifications bell uses for its new-record alert, just
+  // surfaced here as a share prompt instead of a bell entry.
+  const latestGame = recentGames[0];
+  const isStandoutMatch = latestGame?.daysAgo === 0 && recentGames.length > 1
+    && latestGame.acs > Math.max(...recentGames.slice(1).map((g) => g.acs));
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
@@ -233,6 +252,25 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
           </span>
         </div>
       )}
+      {isStandoutMatch && (
+        <div className="mb-4 flex items-center justify-between gap-3 flex-wrap px-3 py-2.5 border border-accent bg-accent/5">
+          <div className="flex items-center gap-2.5">
+            <Sparkles size={14} className="text-accent shrink-0" />
+            <div>
+              <div className="text-xs font-body text-neutral-200">{t.standoutMatchTitle}</div>
+              <div className="text-[11px] font-body text-neutral-500">{t.standoutMatchDesc}</div>
+            </div>
+          </div>
+          <button
+            onClick={handleShare}
+            disabled={sharing}
+            className="shrink-0 flex items-center gap-1 text-[11px] font-display uppercase tracking-wide text-accent hover:opacity-80 transition-opacity disabled:opacity-50"
+          >
+            {shared ? <Check size={12} /> : <Share2 size={12} />}
+            {shared ? t.shareDownloaded : t.share}
+          </button>
+        </div>
+      )}
       {isPremium && (
         <Card className="mb-4">
           <div className="flex items-start gap-3">
@@ -345,6 +383,19 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
               <div className="text-[10px] text-neutral-600 font-mono mt-0.5">{t.bestStreak}: {streaks.bestWinStreak}{t.winShort}</div>
             </div>
           </div>
+          {vsYesterdayAcs !== null && (
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-neutral-900">
+              <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body shrink-0">{t.vsYesterdayTitle}</span>
+              <span className="flex items-center gap-1.5 text-xs font-mono">
+                <span className="text-neutral-500">{t.statACS}</span>
+                <span className={vsYesterdayAcs >= 0 ? 'text-accent' : 'text-red-500'}>{vsYesterdayAcs > 0 ? '+' : ''}{vsYesterdayAcs}</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-mono">
+                <span className="text-neutral-500">{t.statKDA}</span>
+                <span className={vsYesterdayKda >= 0 ? 'text-accent' : 'text-red-500'}>{vsYesterdayKda > 0 ? '+' : ''}{vsYesterdayKda}</span>
+              </span>
+            </div>
+          )}
           {sideWinrates && (
             <div className="flex items-center gap-4 mt-3 pt-3 border-t border-neutral-900">
               <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body shrink-0">{t.sideWinrateLabel}</span>

@@ -68,6 +68,7 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod, acts, a
         value={period}
         onChange={setPeriod}
         options={[
+          { value: 'today', label: t.periodToday },
           { value: '7d', label: t.period7 },
           { value: '30d', label: t.period30 },
           { value: 'act', label: t.periodAct },
