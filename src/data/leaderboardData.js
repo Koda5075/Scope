@@ -1,3 +1,5 @@
+import { getAllAgentNames } from './valorantAssets.js';
+
 // Regional leaderboard — mock data for now, shaped to match Riot's
 // `/val/ranked/v1/leaderboards/by-act/{actId}?region={region}` response closely enough
 // that swapping this generator for a real fetch (once the production key is approved)
@@ -79,6 +81,7 @@ export function getLeaderboard(region) {
     // safely under each band's per-step spacing so rank stays monotonic with RR.
     const span = Math.max(band.count - 1, 1);
     const rr = Math.round(band.rrHi - (band.rrHi - band.rrLo) * (posInBand / span) - seededValue(seed) * 12);
+    const agentPool = getAllAgentNames();
     return {
       puuid: `lb-${region}-${rank}`,
       gameName: shuffledNames[i],
@@ -86,6 +89,10 @@ export function getLeaderboard(region) {
       leaderboardRank: rank,
       rankedRating: Math.max(0, rr),
       competitiveTier: band.name,
+      // Illustrative "main agent" for the leaderboard's agent sub-filter — no real
+      // per-player agent data exists yet, same seeded-but-deterministic treatment as
+      // every other field here (stable across re-renders, varies row to row).
+      mainAgent: agentPool[Math.floor(seededValue(seed + 5) * agentPool.length)],
     };
   });
 

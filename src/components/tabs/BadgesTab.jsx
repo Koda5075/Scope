@@ -26,15 +26,28 @@ function isFullyUnlocked(b) {
   return isBadgeUnlocked(b) && !isInProgress(b);
 }
 
+const SORTS = ['default', 'recent'];
+
 export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = true }) {
   const [filter, setFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('default');
   const unlockedCount = badges.filter(isFullyUnlocked).length;
-  const visibleBadges = badges.filter((b) => {
+  const filteredBadges = badges.filter((b) => {
     if (filter === 'unlocked') return isFullyUnlocked(b);
     if (filter === 'inProgress') return isInProgress(b);
     if (filter === 'locked') return !isBadgeUnlocked(b);
     return true;
   });
+  // "Most recent" only has a real date to sort by for single-state badges (they carry
+  // `daysAgo`); tiered badges have no unlock timestamp in the mock dataset, so they sort
+  // after every dated badge rather than getting a fabricated date. Locked badges (no
+  // date at all, dated or not) sort last. Ties keep the array's original relative order
+  // (a plain numeric sort is already stable in every engine this ships to).
+  const sortRank = (b) => {
+    if (!isBadgeUnlocked(b)) return Infinity;
+    return b.daysAgo ?? Number.MAX_SAFE_INTEGER;
+  };
+  const visibleBadges = sortBy === 'recent' ? [...filteredBadges].sort((a, b) => sortRank(a) - sortRank(b)) : filteredBadges;
 
   return (
     <div className="flex flex-col gap-3">
@@ -43,7 +56,7 @@ export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = 
           <span className="font-display text-sm tracking-wide uppercase text-neutral-300">
             {unlockedCount}/{badges.length} {t.badgesUnlockedLabel}
           </span>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {FILTERS.map((f) => (
               <button
                 key={f}
@@ -55,6 +68,20 @@ export default function BadgesTab({ t, isPremium, badges = badgeDefs, showAds = 
                 }`}
               >
                 {t[`badgesFilter${FILTER_LABEL_KEY[f]}`]}
+              </button>
+            ))}
+            <span className="w-px bg-neutral-800 mx-1" />
+            {SORTS.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSortBy(s)}
+                className={`px-2 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                  sortBy === s
+                    ? 'border-accent text-accent bg-accent/5'
+                    : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                }`}
+              >
+                {t[`badgesSort${s === 'default' ? 'Default' : 'Recent'}`]}
               </button>
             ))}
           </div>

@@ -3,7 +3,7 @@ import { Trophy, Search } from 'lucide-react';
 import Card from '../Card.jsx';
 import { LEADERBOARD_REGIONS, getLeaderboard } from '../../data/leaderboardData.js';
 import { otherPlayers } from '../../data/mockData.js';
-import { getRankIcon, optimizeImg } from '../../data/valorantAssets.js';
+import { getRankIcon, optimizeImg, getAgentIcon, getAllAgentNames } from '../../data/valorantAssets.js';
 import { fetchValLeaderboard } from '../../lib/riotLive.js';
 import { navigate, playerPath } from '../../lib/route.js';
 
@@ -32,6 +32,7 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
   const [region, setRegion] = useState('eu');
   const [scopeOnly, setScopeOnly] = useState(false);
   const [nameFilter, setNameFilter] = useState('');
+  const [agentFilter, setAgentFilter] = useState('all');
   // Mock rows render instantly; the val-leaderboard proxy swaps in real rows if a Riot
   // key is configured server-side, otherwise the mock stays. `live` tracks which is shown.
   const [allRows, setAllRows] = useState(() => getLeaderboard(region));
@@ -56,10 +57,12 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
   const rows = scopeOnly ? scopeRows : allRows;
   const query = nameFilter.trim().toLowerCase();
   const matchesQuery = (p) => !query || `${p.gameName}#${p.tagLine}`.toLowerCase().includes(query);
-  // A name search flattens the podium into the regular list — searching for a specific
-  // player shouldn't depend on whether they happen to be in the top 3 or not.
-  const podium = scopeOnly || query ? [] : rows.slice(0, 3);
-  const rest = (scopeOnly || query ? rows : rows.slice(3)).filter(matchesQuery);
+  const matchesAgent = (p) => agentFilter === 'all' || p.mainAgent === agentFilter;
+  // A name or agent search flattens the podium into the regular list — searching for a
+  // specific player/agent shouldn't depend on whether they happen to be in the top 3.
+  const narrowed = scopeOnly || query || agentFilter !== 'all';
+  const podium = narrowed ? [] : rows.slice(0, 3);
+  const rest = (narrowed ? rows : rows.slice(3)).filter((p) => matchesQuery(p) && matchesAgent(p));
 
   // Every leaderboard row links to that player's profile page — the page synthesises a
   // dataset for any Riot ID, so this isn't limited to known Scope members any more
@@ -113,15 +116,28 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
           </div>
         )}
 
-        <div className="relative mb-3 max-w-xs">
-          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600" />
-          <input
-            value={nameFilter}
-            onChange={(e) => setNameFilter(e.target.value)}
-            placeholder={t.leaderboardSearchPlaceholder}
-            aria-label={t.leaderboardSearchPlaceholder}
-            className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-8 pr-3 py-1.5 text-xs font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
-          />
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <div className="relative max-w-xs flex-1 min-w-[180px]">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600" />
+            <input
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              placeholder={t.leaderboardSearchPlaceholder}
+              aria-label={t.leaderboardSearchPlaceholder}
+              className="w-full bg-neutral-950 border border-neutral-800 focus:border-accent outline-none pl-8 pr-3 py-1.5 text-xs font-body text-neutral-200 placeholder:text-neutral-600 transition-colors"
+            />
+          </div>
+          <select
+            value={agentFilter}
+            onChange={(e) => setAgentFilter(e.target.value)}
+            aria-label={t.leaderboardAgentFilterLabel}
+            className="bg-neutral-950 border border-neutral-800 focus:border-accent outline-none px-2 py-1.5 text-xs font-body text-neutral-200 transition-colors"
+          >
+            <option value="all">{t.leaderboardAgentFilterAll}</option>
+            {getAllAgentNames().sort().map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -223,6 +239,9 @@ export default function LeaderboardTab({ t, highlightRiotId = null, publicOnly =
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="font-mono text-xs text-neutral-500 w-6 shrink-0 text-right">{p.leaderboardRank}</span>
                   {rankIcon && <img src={optimizeImg(rankIcon, 32)} alt="" loading="lazy" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />}
+                  {getAgentIcon(p.mainAgent) && (
+                    <img src={optimizeImg(getAgentIcon(p.mainAgent), 24)} alt={p.mainAgent} title={p.mainAgent} loading="lazy" className="val-icon w-5 h-5 rounded-full object-cover shrink-0 hidden sm:block" />
+                  )}
                   <span className={`font-body text-sm truncate ${matched ? 'text-accent' : 'text-neutral-300'}`}>
                     {p.gameName}<span className="text-neutral-600">#{p.tagLine}</span>
                   </span>

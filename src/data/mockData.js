@@ -1,4 +1,4 @@
-import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock, Footprints, Star } from 'lucide-react';
+import { Users, Flame, TrendingUp, Swords, Target, Trophy, RotateCcw, Moon, Sunrise, Hourglass, HeartHandshake, Crosshair, Compass, Shuffle, Zap, ShieldAlert, Award, CalendarClock, Footprints, Star, Gem } from 'lucide-react';
 import { getAllAgentNames } from './valorantAssets.js';
 
 // `s` is a plain session index (1-based) rather than a pre-formatted "S1" string, so the
@@ -48,6 +48,11 @@ export const badgeDefs = [
   // invented, so this one's already past its first tier rather than starting at 0.
   { id: 'explorer', icon: Compass, tiers: [4, 7, 10, 13], value: 8, secret: true },
   { id: 'versatile', icon: Shuffle, tiers: [3, 6, 10, 15], value: 7 },
+  // Distinct from the Vandal/Phantom "favorite" star on WeaponRow (a per-match rifle
+  // preference) — mastery on a specialist weapon that takes real practice to run well.
+  // value mirrors weaponStats' Operator kills (37) so it's never a second, drifting copy
+  // of the same number.
+  { id: 'weaponMastery', icon: Gem, tiers: [10, 25, 50, 100], value: 37 },
 ];
 
 // Returns null for single-state badges (no `tiers`/`value`). Otherwise the current tier

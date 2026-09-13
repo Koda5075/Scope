@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X, CalendarClock } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X, CalendarClock, RefreshCw, AlertCircle } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
@@ -21,6 +21,7 @@ import {
   rrHistory, badgeDefs, getMatchScoreboard, isBadgeUnlocked, getBadgeProgress, getStreaks,
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
   computeFirstBloods, computeClutchRecord, performanceScore, computeSideWinrates, ACT_DAYS_REMAINING,
+  activityCalendar, getActivityStreak,
 } from '../../data/mockData.js';
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
@@ -31,6 +32,8 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
   const [statsCopied, setStatsCopied] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshed, setRefreshed] = useState(false);
 
   // Shown once, ever — first thing a brand-new account sees on Overview, separate from
   // the onboarding tour (which walks through the UI; this just says hello).
@@ -48,7 +51,27 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
 
   // Last game recorded — same "relative time, not a baked-in clock" reasoning as
   // PlayerHeader's account-level lastSession, just for the most recent match specifically.
-  const [lastGameMinutesAgo] = useState(() => 3 + Math.floor(Math.random() * 40));
+  const [lastGameMinutesAgo, setLastGameMinutesAgo] = useState(() => 3 + Math.floor(Math.random() * 40));
+
+  // No live backend to actually re-fetch from — this is an honest "everything you see
+  // is still current" affordance rather than a fake network call: a brief spinner, then
+  // the last-game timer nudges back down like a fresh check-in would show.
+  function handleRefresh() {
+    setRefreshing(true);
+    setTimeout(() => {
+      setLastGameMinutesAgo(1 + Math.floor(Math.random() * 4));
+      setRefreshing(false);
+      setRefreshed(true);
+      setTimeout(() => setRefreshed(false), 1500);
+    }, 500);
+  }
+
+  // Only worth surfacing when there's an active daily streak actually at stake — a
+  // player with no streak yet has nothing to lose by not having played today, so the
+  // reminder would just be noise for them.
+  const todayEntry = activityCalendar[activityCalendar.length - 1];
+  const activityStreak = getActivityStreak();
+  const showNoGameTodayReminder = todayEntry?.games === 0 && activityStreak.streak > 0;
 
   const wins = filteredGames.filter((g) => g.result === 'win').length;
   const losses = filteredGames.length - wins;
@@ -202,6 +225,14 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
         <CalendarClock size={12} className="shrink-0" />
         {t.alertMsgActEnding.replace('{days}', ACT_DAYS_REMAINING)}
       </div>
+      {showNoGameTodayReminder && (
+        <div className="mb-4 flex items-center gap-2.5 px-3 py-2.5 border border-neutral-800 bg-neutral-950">
+          <AlertCircle size={14} className="text-accent shrink-0" />
+          <span className="text-xs font-body text-neutral-300">
+            {t.noGameTodayReminder.replace('{n}', activityStreak.streak)}
+          </span>
+        </div>
+      )}
       {isPremium && (
         <Card className="mb-4">
           <div className="flex items-start gap-3">
@@ -261,6 +292,14 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
           <div className="flex items-center justify-between mb-1.5 flex-wrap gap-y-1">
             <span className="font-display text-sm tracking-wide uppercase text-neutral-300 block">{t.sessionSummary}</span>
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors disabled:opacity-50"
+              >
+                {refreshed ? <Check size={12} className="text-accent" /> : <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />}
+                {refreshed ? t.refreshedLabel : t.refreshButton}
+              </button>
               <button
                 onClick={handleCopyStatsText}
                 className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors"

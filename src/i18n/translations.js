@@ -433,6 +433,7 @@ export const T = {
       rivalSlayer: { label: 'Rival Slayer', sub: 'Wins vs favorited rivals' },
       explorer: { label: 'Explorer', sub: 'Played every map in the current pool' },
       versatile: { label: 'Versatile', sub: 'Agents played with solid rounds' },
+      weaponMastery: { label: 'Sharpshooter', sub: 'Kills with the Operator' },
     },
     timeSlots: {
       weekdayMorning: 'Weekday mornings',
@@ -518,6 +519,12 @@ export const T = {
         ],
       },
     },
+    rivalsTitle: 'RIVALS', markRival: 'Mark as rival', removeRival: 'Remove rival',
+    agentRoleAll: 'All', agentRoleDuelist: 'Duelist', agentRoleController: 'Controller', agentRoleInitiator: 'Initiator', agentRoleSentinel: 'Sentinel',
+    leaderboardAgentFilterLabel: 'Filter by main agent', leaderboardAgentFilterAll: 'All agents',
+    refreshButton: 'Refresh', refreshedLabel: 'Up to date',
+    noGameTodayReminder: "You haven't played today yet — your {n}-day streak is on the line.",
+    badgesSortDefault: 'Default', badgesSortRecent: 'Most recent',
   },
   fr: {
     lastSession: 'Dernière session : il y a {n} min',
@@ -953,6 +960,7 @@ export const T = {
       rivalSlayer: { label: 'Tueur de Rivaux', sub: 'Victoires contre un rival favori' },
       explorer: { label: 'Explorateur', sub: 'Toutes les cartes du pool actuel jouées' },
       versatile: { label: 'Polyvalent', sub: 'Agents joués avec de bons rounds' },
+      weaponMastery: { label: 'Tireur d’élite', sub: 'Éliminations à l’Operator' },
     },
     timeSlots: {
       weekdayMorning: 'Semaine, matin',
@@ -1038,6 +1046,12 @@ export const T = {
         ],
       },
     },
+    rivalsTitle: 'RIVAUX', markRival: 'Marquer comme rival', removeRival: 'Retirer le rival',
+    agentRoleAll: 'Tous', agentRoleDuelist: 'Duelliste', agentRoleController: 'Contrôleur', agentRoleInitiator: 'Initiateur', agentRoleSentinel: 'Sentinelle',
+    leaderboardAgentFilterLabel: 'Filtrer par agent principal', leaderboardAgentFilterAll: 'Tous les agents',
+    refreshButton: 'Actualiser', refreshedLabel: 'À jour',
+    noGameTodayReminder: "Tu n'as pas encore joué aujourd'hui — ta série de {n} jours est en jeu.",
+    badgesSortDefault: 'Par défaut', badgesSortRecent: 'Plus récents',
   },
   de: {
     lastSession: 'Letzte Sitzung: vor {n} Min.',
@@ -1473,6 +1487,7 @@ export const T = {
       rivalSlayer: { label: 'Rivalen-Bezwinger', sub: 'Siege gegen einen favorisierten Rivalen' },
       explorer: { label: 'Entdecker', sub: 'Alle Karten des aktuellen Pools gespielt' },
       versatile: { label: 'Vielseitig', sub: 'Agenten mit soliden Runden gespielt' },
+      weaponMastery: { label: 'Scharfschütze', sub: 'Kills mit dem Operator' },
     },
     timeSlots: {
       weekdayMorning: 'Wochentags morgens',
@@ -1558,6 +1573,12 @@ export const T = {
         ],
       },
     },
+    rivalsTitle: 'RIVALEN', markRival: 'Als Rivale markieren', removeRival: 'Rivale entfernen',
+    agentRoleAll: 'Alle', agentRoleDuelist: 'Duelist', agentRoleController: 'Controller', agentRoleInitiator: 'Initiator', agentRoleSentinel: 'Wächter',
+    leaderboardAgentFilterLabel: 'Nach Hauptagent filtern', leaderboardAgentFilterAll: 'Alle Agenten',
+    refreshButton: 'Aktualisieren', refreshedLabel: 'Aktuell',
+    noGameTodayReminder: 'Du hast heute noch nicht gespielt — deine {n}-Tage-Serie steht auf dem Spiel.',
+    badgesSortDefault: 'Standard', badgesSortRecent: 'Neueste',
   },
   es: {
     lastSession: 'Última sesión: hace {n} min',
@@ -1993,6 +2014,7 @@ export const T = {
       rivalSlayer: { label: 'Verdugo de Rivales', sub: 'Victorias contra un rival favorito' },
       explorer: { label: 'Explorador', sub: 'Todos los mapas del pool actual jugados' },
       versatile: { label: 'Versátil', sub: 'Agentes jugados con buenas rondas' },
+      weaponMastery: { label: 'Francotirador', sub: 'Bajas con el Operator' },
     },
     timeSlots: {
       weekdayMorning: 'Mañanas entre semana',
@@ -2078,6 +2100,12 @@ export const T = {
         ],
       },
     },
+    rivalsTitle: 'RIVALES', markRival: 'Marcar como rival', removeRival: 'Quitar rival',
+    agentRoleAll: 'Todos', agentRoleDuelist: 'Duelista', agentRoleController: 'Controlador', agentRoleInitiator: 'Iniciador', agentRoleSentinel: 'Centinela',
+    leaderboardAgentFilterLabel: 'Filtrar por agente principal', leaderboardAgentFilterAll: 'Todos los agentes',
+    refreshButton: 'Actualizar', refreshedLabel: 'Actualizado',
+    noGameTodayReminder: 'Todavía no has jugado hoy — tu racha de {n} días está en juego.',
+    badgesSortDefault: 'Por defecto', badgesSortRecent: 'Más recientes',
   },
   it: {
     lastSession: 'Ultima sessione: {n} min fa',
@@ -2513,6 +2541,7 @@ export const T = {
       rivalSlayer: { label: 'Distruttore di Rivali', sub: 'Vittorie contro un rivale preferito' },
       explorer: { label: 'Esploratore', sub: 'Tutte le mappe del pool attuale giocate' },
       versatile: { label: 'Versatile', sub: 'Agenti giocati con round solidi' },
+      weaponMastery: { label: 'Tiratore Scelto', sub: 'Uccisioni con l’Operator' },
     },
     timeSlots: {
       weekdayMorning: 'Mattine infrasettimanali',
@@ -2598,6 +2627,12 @@ export const T = {
         ],
       },
     },
+    rivalsTitle: 'RIVALI', markRival: 'Segna come rivale', removeRival: 'Rimuovi rivale',
+    agentRoleAll: 'Tutti', agentRoleDuelist: 'Duellante', agentRoleController: 'Controller', agentRoleInitiator: 'Iniziatore', agentRoleSentinel: 'Sentinella',
+    leaderboardAgentFilterLabel: 'Filtra per agente principale', leaderboardAgentFilterAll: 'Tutti gli agenti',
+    refreshButton: 'Aggiorna', refreshedLabel: 'Aggiornato',
+    noGameTodayReminder: 'Non hai ancora giocato oggi — la tua serie di {n} giorni è a rischio.',
+    badgesSortDefault: 'Predefinito', badgesSortRecent: 'Più recenti',
   },
   pt: {
     lastSession: 'Última sessão: há {n} min',
@@ -3033,6 +3068,7 @@ export const T = {
       rivalSlayer: { label: 'Algoz dos Rivais', sub: 'Vitórias contra um rival favorito' },
       explorer: { label: 'Explorador', sub: 'Todos os mapas do pool atual jogados' },
       versatile: { label: 'Versátil', sub: 'Agentes jogados com bons rounds' },
+      weaponMastery: { label: 'Atirador de Elite', sub: 'Eliminações com a Operator' },
     },
     timeSlots: {
       weekdayMorning: 'Manhãs de semana',
@@ -3118,6 +3154,12 @@ export const T = {
         ],
       },
     },
+    rivalsTitle: 'RIVAIS', markRival: 'Marcar como rival', removeRival: 'Remover rival',
+    agentRoleAll: 'Todos', agentRoleDuelist: 'Duelista', agentRoleController: 'Controlador', agentRoleInitiator: 'Iniciador', agentRoleSentinel: 'Sentinela',
+    leaderboardAgentFilterLabel: 'Filtrar por agente principal', leaderboardAgentFilterAll: 'Todos os agentes',
+    refreshButton: 'Atualizar', refreshedLabel: 'Atualizado',
+    noGameTodayReminder: 'Ainda não jogaste hoje — a tua sequência de {n} dias está em risco.',
+    badgesSortDefault: 'Padrão', badgesSortRecent: 'Mais recentes',
   },
 };
 

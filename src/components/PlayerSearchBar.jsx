@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, Star, X, Lock, UserPlus, Clock } from 'lucide-react';
+import { Search, Star, X, Lock, UserPlus, Clock, Crosshair } from 'lucide-react';
 import { otherPlayers } from '../data/mockData.js';
 import { parseRiotId } from '../lib/riotId.js';
 import { navigate, playerPath } from '../lib/route.js';
@@ -16,7 +16,7 @@ function loadRecent() {
   }
 }
 
-export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, incognitoSearch = false }) {
+export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, rivalIds = [], onToggleRival, incognitoSearch = false }) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [inviteCopied, setInviteCopied] = useState(false);
@@ -24,6 +24,11 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, inco
   const [focused, setFocused] = useState(false);
 
   const favorites = otherPlayers.filter((p) => favoriteIds.includes(p.puuid));
+  // Distinct from favorites: someone you keep tracking because you keep facing them
+  // (or losing to them), not because you like them — a player can be both, either, or
+  // neither. Rendered as its own row, same shape as favorites, so the two never blend
+  // into one ambiguous "saved players" list.
+  const rivals = otherPlayers.filter((p) => rivalIds.includes(p.puuid));
 
   // As-you-type matches against the players Scope already knows (connected + public).
   // Not a real directory — that needs the Riot API — but it makes known IDs findable
@@ -154,6 +159,18 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, inco
                 >
                   {t.searchCompareInline}
                 </button>
+                {onToggleRival && (
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => onToggleRival(p.puuid)}
+                    aria-label={rivalIds.includes(p.puuid) ? t.removeRival : t.markRival}
+                    title={rivalIds.includes(p.puuid) ? t.removeRival : t.markRival}
+                    className={`shrink-0 ml-2 transition-colors ${rivalIds.includes(p.puuid) ? 'text-red-500' : 'text-neutral-700 hover:text-red-500'}`}
+                  >
+                    <Crosshair size={12} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -245,6 +262,31 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, inco
                 className="text-neutral-700 hover:text-accent transition-colors"
                 aria-label={t.removeFavorite}
                 title={t.removeFavorite}
+              >
+                <X size={10} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {rivals.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mt-3">
+          <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body">{t.rivalsTitle}</span>
+          {rivals.map((p) => (
+            <div
+              key={p.puuid}
+              className="group flex items-center gap-1.5 border border-neutral-800 hover:border-red-500 pl-2.5 pr-1.5 py-1 text-xs font-body text-neutral-300 transition-colors"
+            >
+              <button onClick={() => openPlayer(p)} className="flex items-center gap-1.5">
+                <Crosshair size={10} className="text-red-500" />
+                {p.name}
+              </button>
+              <button
+                onClick={() => onToggleRival?.(p.puuid)}
+                className="text-neutral-700 hover:text-red-500 transition-colors"
+                aria-label={t.removeRival}
+                title={t.removeRival}
               >
                 <X size={10} />
               </button>

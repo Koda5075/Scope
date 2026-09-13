@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, ArrowUpRight, ArrowDownRight, Copy, Check } from 'lucide-react';
+import { Search, ArrowUpRight, ArrowDownRight, Copy, Check, Share2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import AdSlot from '../AdSlot.jsx';
 import {
@@ -7,6 +7,7 @@ import {
   computeAverageAcs, computeAggregateKDA, computeAverageAccuracy, computeAverageHeadshots,
 } from '../../data/mockData.js';
 import { parseRiotId } from '../../lib/riotId.js';
+import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const MEDAL = ['#F2C94C', '#C0C4C9', '#CD7F32'];
 
@@ -75,13 +76,15 @@ function loadCompareHistory() {
   }
 }
 
-export default function CompareTab({ t, isPremium, filteredGames, nickname }) {
+export default function CompareTab({ t, accent, isPremium, filteredGames, nickname }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
   const [error, setError] = useState(null);
   const [boardMetric, setBoardMetric] = useState('acs');
   const [linkCopied, setLinkCopied] = useState(false);
   const [history, setHistory] = useState(loadCompareHistory);
+  const [sharing, setSharing] = useState(false);
+  const [shared, setShared] = useState(false);
 
   function pushHistory(riotId) {
     setHistory((prev) => {
@@ -112,6 +115,32 @@ export default function CompareTab({ t, isPremium, filteredGames, nickname }) {
     if (match) {
       setPlayer(match);
       setError(null);
+    }
+  }
+
+  async function handleShareComparison() {
+    if (!player) return;
+    setSharing(true);
+    try {
+      const you = {
+        acs: filteredAcs ?? myStats.acs,
+        kda: filteredKda ?? myStats.kda,
+        accuracy: filteredAccuracy ?? myStats.accuracy,
+        headshots: filteredHeadshots ?? myStats.headshots,
+      };
+      const blob = await renderShareCard({
+        accent,
+        rank: `${t.you} ${t.compareVs} ${player.name}#${player.tag}`,
+        playerName: `${nickname?.trim() || 'KAITO'}#EUW1`,
+        stats: COMPARE_METRICS.map((m) => ({ label: t[m.labelKey], value: you[m.key] })),
+        footerText: t.sampleData,
+      });
+      downloadBlob(blob, `scope-compare-${player.name}.png`);
+      await copyBlobToClipboard(blob);
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
+    } finally {
+      setSharing(false);
     }
   }
 
@@ -224,8 +253,18 @@ export default function CompareTab({ t, isPremium, filteredGames, nickname }) {
 
         {player && (
           <div>
-            <div className="text-xs font-display uppercase text-neutral-400 mb-3">
-              <span className="text-accent">{t.you}</span> {t.compareVs} {player.name}#{player.tag}
+            <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
+              <div className="text-xs font-display uppercase text-neutral-400">
+                <span className="text-accent">{t.you}</span> {t.compareVs} {player.name}#{player.tag}
+              </div>
+              <button
+                onClick={handleShareComparison}
+                disabled={sharing}
+                className="flex items-center gap-1 text-[11px] font-body text-neutral-500 hover:text-accent transition-colors disabled:opacity-50"
+              >
+                {shared ? <Check size={12} className="text-accent" /> : <Share2 size={12} />}
+                {shared ? t.shareDownloaded : t.share}
+              </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {COMPARE_METRICS.map((m) => (

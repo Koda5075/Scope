@@ -104,6 +104,11 @@ export default function ScopeDashboard() {
   const [showSettings, setShowSettings] = useState(false);
   const [settingsSection, setSettingsSection] = useState('appearance');
   const [favoriteIds, setFavoriteIds] = useState(() => loadStored('scope-favorites', ['p2'], JSON.parse));
+  // "Rival" is a second, independent tag alongside "favorite" — a player worth tracking
+  // specifically because you keep meeting/losing to them, not because you like them.
+  // Same storage/toggle shape as favoriteIds, deliberately kept as a separate list rather
+  // than a flag on favoriteIds so a player can be neither, either, or both.
+  const [rivalIds, setRivalIds] = useState(() => loadStored('scope-rivals', [], JSON.parse));
   const [publicVisible, setPublicVisible] = useState(() => loadStored('scope-public-visible', true, (v) => v === 'true'));
   const [avatarUrl, setAvatarUrl] = useState(() => loadStored('scope-avatar', null));
   const [bannerUrl, setBannerUrl] = useState(() => loadStored('scope-banner', null));
@@ -155,6 +160,10 @@ export default function ScopeDashboard() {
     setFavoriteIds((ids) => (ids.includes(puuid) ? ids.filter((id) => id !== puuid) : [...ids, puuid]));
   }
 
+  function toggleRival(puuid) {
+    setRivalIds((ids) => (ids.includes(puuid) ? ids.filter((id) => id !== puuid) : [...ids, puuid]));
+  }
+
   // Mock deletion — no real backend/account exists yet, so this just wipes every
   // scope-* key this app has ever written (listed explicitly rather than
   // localStorage.clear(), which would also nuke anything unrelated sharing the origin)
@@ -169,7 +178,7 @@ export default function ScopeDashboard() {
         'scope-invite-card-dismissed', 'scope-onboarding-seen', 'scope-session-goal',
         'scope-large-text', 'scope-high-contrast', 'scope-nickname', 'scope-dnd', 'scope-incognito-search',
         'scope-welcome-seen', 'scope-compare-history', 'scope-custom-milestones', 'scope-recent-searches',
-        'scope-referral-code',
+        'scope-referral-code', 'scope-rivals',
       ].forEach((key) => localStorage.removeItem(key));
       sessionStorage.removeItem('scope-promo-dismissed');
     } catch (e) { /* ignore */ }
@@ -180,6 +189,7 @@ export default function ScopeDashboard() {
     setThemeMode('dark');
     setCustomAccent(null);
     setFavoriteIds(['p2']);
+    setRivalIds([]);
     setPublicVisible(true);
     setAvatarUrl(null);
     setBannerUrl(null);
@@ -238,6 +248,7 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-lang', lang);
       localStorage.setItem('scope-theme', theme);
       localStorage.setItem('scope-favorites', JSON.stringify(favoriteIds));
+      localStorage.setItem('scope-rivals', JSON.stringify(rivalIds));
       localStorage.setItem('scope-public-visible', String(publicVisible));
       if (avatarUrl) localStorage.setItem('scope-avatar', avatarUrl);
       else localStorage.removeItem('scope-avatar');
@@ -259,7 +270,7 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-incognito-search', String(incognitoSearch));
       localStorage.setItem('scope-referral-code', referralCode);
     } catch (e) { /* ignore */ }
-  }, [lang, theme, themeMode, customAccent, favoriteIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium, largeText, highContrast, nickname, dndEnabled, incognitoSearch, referralCode]);
+  }, [lang, theme, themeMode, customAccent, favoriteIds, rivalIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium, largeText, highContrast, nickname, dndEnabled, incognitoSearch, referralCode]);
 
   // Large-text (Settings > Accessibility) changes the root font-size directly, since
   // Tailwind's text-xs/sm/etc. utilities are all rem-based against the <html> element —
@@ -536,6 +547,8 @@ export default function ScopeDashboard() {
               t={t}
               favoriteIds={favoriteIds}
               onToggleFavorite={toggleFavorite}
+              rivalIds={rivalIds}
+              onToggleRival={toggleRival}
               incognitoSearch={incognitoSearch}
             />
 
@@ -557,7 +570,7 @@ export default function ScopeDashboard() {
             {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} setReferralCode={setReferralCode} nickname={nickname} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
-            {tab === 'compare' && <CompareTab t={t} isPremium={isPremium} filteredGames={filteredGames} nickname={nickname} />}
+            {tab === 'compare' && <CompareTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} nickname={nickname} />}
             {tab === 'leaderboard' && <LeaderboardTab t={t} />}
             {tab === 'badges' && <BadgesTab t={t} isPremium={isPremium} />}
             {tab === 'progress' && <ProgressTab t={t} isPremium={isPremium} />}

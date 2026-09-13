@@ -4,7 +4,9 @@ import Card from '../Card.jsx';
 import Modal from '../Modal.jsx';
 import AdSlot from '../AdSlot.jsx';
 import { weaponStats, computeAgentStats, computeMapStats, WEAPON_CATEGORIES, roundBreakdown } from '../../data/mockData.js';
-import { getAgentIcon, getMapImage, getWeaponIcon, getAllAgentNames, optimizeImg } from '../../data/valorantAssets.js';
+import { getAgentIcon, getMapImage, getWeaponIcon, getAllAgentNames, optimizeImg, getAgentRole } from '../../data/valorantAssets.js';
+
+const AGENT_ROLE_FILTERS = ['all', 'duelist', 'controller', 'initiator', 'sentinel'];
 import { gamesLabel } from '../../i18n/translations.js';
 import InfoTip from '../InfoTip.jsx';
 
@@ -142,6 +144,7 @@ export default function AgentsTab({
 }) {
   const [openModal, setOpenModal] = useState(null); // 'agents' | 'maps' | 'weapons' | null
   const [weaponCategory, setWeaponCategory] = useState('all');
+  const [agentRole, setAgentRole] = useState('all');
 
   // Agent/map performance is recomputed from whatever the global Mode + Period filter
   // currently selects; weaponStats has no per-match weapon breakdown in the mock
@@ -234,10 +237,27 @@ export default function AgentsTab({
       )}
 
       {openModal === 'agents' && (
-        <Modal onClose={() => setOpenModal(null)} closeLabel={t.close}>
-          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-4 block">{t.agentPerf}</span>
+        <Modal onClose={() => { setOpenModal(null); setAgentRole('all'); }} closeLabel={t.close}>
+          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.agentPerf}</span>
+          <div className="flex flex-wrap gap-1 mb-4">
+            {AGENT_ROLE_FILTERS.map((role) => (
+              <button
+                key={role}
+                onClick={() => setAgentRole(role)}
+                className={`px-2 py-1 text-[10px] font-display uppercase tracking-wide border transition-colors ${
+                  agentRole === role
+                    ? 'border-accent text-accent bg-accent/5'
+                    : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                }`}
+              >
+                {t[`agentRole${role.charAt(0).toUpperCase()}${role.slice(1)}`]}
+              </button>
+            ))}
+          </div>
           <div className="flex flex-col gap-4">
-            {agentStats.map((a) => <AgentRow key={a.name} a={a} t={t} />)}
+            {agentStats.filter((a) => agentRole === 'all' || getAgentRole(a.name) === agentRole).map((a) => (
+              <AgentRow key={a.name} a={a} t={t} />
+            ))}
           </div>
         </Modal>
       )}

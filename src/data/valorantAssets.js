@@ -39,6 +39,21 @@ const AGENT_ICONS = {
   Veto: 'https://media.valorant-api.com/agents/92eeef5d-43b5-1d4a-8d03-b3927a09034b/displayicon.png',
 };
 
+// Agent role groups — mirrors the game's own class system, in the same grouping
+// mockData.js's agentStats already lists them under (Duelists/Controllers/Initiators/
+// Sentinels comments), just made machine-readable here for the Agents & Maps role
+// filter instead of staying a comment nobody can query.
+export const AGENT_ROLES = {
+  duelist: ['Phoenix', 'Jett', 'Reyna', 'Raze', 'Yoru', 'Neon', 'Iso', 'Waylay'],
+  controller: ['Brimstone', 'Omen', 'Viper', 'Astra', 'Harbor', 'Clove', 'Miks'],
+  initiator: ['Sova', 'Breach', 'Skye', 'KAY/O', 'Fade', 'Gekko', 'Tejo'],
+  sentinel: ['Sage', 'Cypher', 'Killjoy', 'Chamber', 'Deadlock', 'Vyse', 'Veto'],
+};
+
+export function getAgentRole(name) {
+  return Object.keys(AGENT_ROLES).find((role) => AGENT_ROLES[role].includes(name)) ?? null;
+}
+
 // Official VALORANT "Player Card" cosmetics (wide art) — the Scope+ profile-banner
 // gallery. Distinct from MAP_IMAGES: player cards are the game's actual in-client
 // profile-banner cosmetic, so they're the thematically correct "official" option here,
