@@ -149,7 +149,10 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, riva
                   <span className="text-xs font-body text-neutral-200 truncate">
                     {p.name}<span className="text-neutral-600">#{p.tag}</span>
                   </span>
-                  <span className="text-[10px] font-body text-neutral-600 shrink-0">{p.rank}</span>
+                  <span className="text-[10px] font-body text-neutral-600 shrink-0 text-right leading-tight">
+                    {p.rank}
+                    <span className="block text-neutral-700">ACS {p.acs} · {p.kda.toFixed(2)} KDA</span>
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -253,13 +256,14 @@ export default function PlayerSearchBar({ t, favoriteIds, onToggleFavorite, riva
               key={p.puuid}
               className="group flex items-center gap-1.5 border border-neutral-800 hover:border-accent pl-2.5 pr-1.5 py-1 text-xs font-body text-neutral-300 transition-colors"
             >
-              <button
-                onClick={() => openPlayer(p)}
-                className="flex items-center gap-1.5"
-                title={p.friendSinceDaysAgo !== undefined ? t.friendSinceLabel.replace('{n}', p.friendSinceDaysAgo) : undefined}
-              >
+              <button onClick={() => openPlayer(p)} className="flex items-center gap-1.5">
                 <Star size={10} className="text-accent" fill="currentColor" />
                 {p.name}
+                {p.friendSinceDaysAgo !== undefined && (
+                  <span className="text-neutral-600 font-normal">
+                    · {t.friendSinceLabel.replace('{n}', p.friendSinceDaysAgo)}
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => onToggleFavorite(p.puuid)}

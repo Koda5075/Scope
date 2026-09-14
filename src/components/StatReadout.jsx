@@ -2,9 +2,28 @@ import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import Card from './Card.jsx';
 import InfoTip from './InfoTip.jsx';
 
+// Tiny dependency-free trend line — a handful of points doesn't warrant a full Recharts
+// ResponsiveContainer per tile. Oldest-to-newest, left-to-right.
+function Sparkline({ points, accent }) {
+  if (!points || points.length < 2) return null;
+  const w = 56, h = 18, pad = 2;
+  const min = Math.min(...points), max = Math.max(...points);
+  const range = max - min || 1;
+  const step = (w - pad * 2) / (points.length - 1);
+  const path = points
+    .map((v, i) => `${i === 0 ? 'M' : 'L'} ${pad + i * step} ${h - pad - ((v - min) / range) * (h - pad * 2)}`)
+    .join(' ');
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0" aria-hidden="true">
+      <path d={path} fill="none" stroke={accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+    </svg>
+  );
+}
+
 // `delta` is recent-vs-earlier change for this stat (higher is better for all of them),
 // null when there aren't enough games to split. `deltaTip` explains what it compares.
-export default function StatReadout({ label, value, unit, Icon, tip, delta = null, deltaTip }) {
+// `points` is an optional oldest-to-newest series (last few games) for a mini trend line.
+export default function StatReadout({ label, value, unit, Icon, tip, delta = null, deltaTip, points, accent = '#39FF88' }) {
   const showDelta = delta !== null && delta !== undefined && Math.abs(delta) >= 0.01;
   const up = delta > 0;
   return (
@@ -16,18 +35,21 @@ export default function StatReadout({ label, value, unit, Icon, tip, delta = nul
         </span>
         <Icon size={14} className="text-accent shrink-0" />
       </div>
-      <div className="flex items-baseline gap-1.5">
-        <span className="font-display text-2xl font-bold text-white">{value}</span>
-        {unit && <span className="font-mono text-xs text-neutral-500">{unit}</span>}
-        {showDelta && (
-          <span
-            title={deltaTip}
-            className={`flex items-center gap-0.5 text-[10px] font-mono ${up ? 'text-accent' : 'text-neutral-500'}`}
-          >
-            {up ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
-            {up ? '+' : ''}{delta}
-          </span>
-        )}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-display text-2xl font-bold text-white">{value}</span>
+          {unit && <span className="font-mono text-xs text-neutral-500">{unit}</span>}
+          {showDelta && (
+            <span
+              title={deltaTip}
+              className={`flex items-center gap-0.5 text-[10px] font-mono ${up ? 'text-accent' : 'text-neutral-500'}`}
+            >
+              {up ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+              {up ? '+' : ''}{delta}
+            </span>
+          )}
+        </div>
+        <Sparkline points={points} accent={accent} />
       </div>
     </Card>
   );

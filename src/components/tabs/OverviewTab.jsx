@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X, CalendarClock, RefreshCw, AlertCircle } from 'lucide-react';
+import { Swords, Crosshair, Target, Zap, Skull, Flame, Share2, Check, Sparkles, Copy, X, CalendarClock, RefreshCw, AlertCircle, ArrowUp, ArrowDown, Settings2 } from 'lucide-react';
 import Card from '../Card.jsx';
 import StatReadout from '../StatReadout.jsx';
 import ActivityCalendar from '../ActivityCalendar.jsx';
@@ -26,6 +26,19 @@ import {
 import { renderShareCard, downloadBlob, copyBlobToClipboard } from '../../lib/shareImage.js';
 
 const WELCOME_SEEN_KEY = 'scope-welcome-seen';
+const WIDGET_ORDER_KEY = 'scope-overview-widget-order';
+const DEFAULT_WIDGET_ORDER = ['calendar', 'invite', 'goal', 'badges'];
+
+function loadWidgetOrder() {
+  try {
+    const v = JSON.parse(localStorage.getItem(WIDGET_ORDER_KEY) ?? 'null');
+    // Guard against a stale saved order missing/adding ids if the widget set ever changes.
+    if (Array.isArray(v) && v.length === DEFAULT_WIDGET_ORDER.length && DEFAULT_WIDGET_ORDER.every((id) => v.includes(id))) {
+      return v;
+    }
+  } catch { /* ignore */ }
+  return DEFAULT_WIDGET_ORDER;
+}
 
 export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode, nickname, daysSinceLastVisit }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
@@ -34,6 +47,20 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
   const [statsCopied, setStatsCopied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshed, setRefreshed] = useState(false);
+  const [widgetOrder, setWidgetOrder] = useState(loadWidgetOrder);
+  const [customizing, setCustomizing] = useState(false);
+
+  function moveWidget(id, dir) {
+    setWidgetOrder((prev) => {
+      const i = prev.indexOf(id);
+      const j = i + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j], next[i]];
+      try { localStorage.setItem(WIDGET_ORDER_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }
 
   // Shown once, ever — first thing a brand-new account sees on Overview, separate from
   // the onboarding tour (which walks through the UI; this just says hello).
@@ -144,6 +171,30 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
   const accuracyDelta = statDelta(computeAverageAccuracy);
   const headshotsDelta = statDelta(computeAverageHeadshots);
   const acsDelta = statDelta(computeAverageAcs);
+
+  // Mini trend line per stat card — last 5 games under the current filter, reversed to
+  // oldest-first so the line reads left-to-right like a timeline. Real per-match values,
+  // not a smoothed/invented curve.
+  const trendGames = [...filteredGames].slice(0, 5).reverse();
+  const gameKda = (g) => {
+    const [k, d, a] = g.kda.split('/').map(Number);
+    return Math.round((d > 0 ? (k + a) / d : k + a) * 100) / 100;
+  };
+  const kdaPoints = trendGames.map(gameKda);
+  const accuracyPoints = trendGames.map((g) => g.accuracy);
+  const headshotsPoints = trendGames.map((g) => g.hs);
+  const acsPoints = trendGames.map((g) => g.acs);
+
+  // "vs same period last month" — the current filter's window compared to the equal-length
+  // window immediately before it, 28-35 days back depending on the active period, so it's
+  // a real prior-month slice of recentGames rather than a fabricated number.
+  const periodSpanDays = filteredGames.length ? Math.max(...filteredGames.map((g) => g.daysAgo ?? 0)) + 1 : 0;
+  const lastMonthGames = periodSpanDays
+    ? recentGames.filter((g) => (g.daysAgo ?? 0) >= 28 && (g.daysAgo ?? 0) < 28 + periodSpanDays)
+    : [];
+  const vsLastMonthAcs = lastMonthGames.length && filteredGames.length
+    ? Math.round(computeAverageAcs(filteredGames) - computeAverageAcs(lastMonthGames))
+    : null;
 
   // Same delta signs already driving each StatReadout's own up/down arrow, just
   // grouped into one "what's going well vs what needs attention" glance above the
@@ -409,6 +460,15 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
               </span>
             </div>
           )}
+          {vsLastMonthAcs !== null && (
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-neutral-900">
+              <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body shrink-0">{t.vsLastMonthTitle}</span>
+              <span className="flex items-center gap-1.5 text-xs font-mono">
+                <span className="text-neutral-500">{t.statACS}</span>
+                <span className={vsLastMonthAcs >= 0 ? 'text-accent' : 'text-red-500'}>{vsLastMonthAcs > 0 ? '+' : ''}{vsLastMonthAcs}</span>
+              </span>
+            </div>
+          )}
           {sideWinrates && (
             <div className="flex items-center gap-4 mt-3 pt-3 border-t border-neutral-900">
               <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-600 font-body shrink-0">{t.sideWinrateLabel}</span>
@@ -446,48 +506,88 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
           </div>
         )}
         <div className="grid grid-cols-2 gap-3">
-          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} tip={t.tipKDA} delta={kdaDelta} deltaTip={t.statTrendTip} />
-          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} tip={t.tipAccuracy} delta={accuracyDelta} deltaTip={t.statTrendTip} />
-          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} tip={t.tipHeadshots} delta={headshotsDelta} deltaTip={t.statTrendTip} />
-          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} tip={t.tipACS} delta={acsDelta} deltaTip={t.statTrendTip} />
+          <StatReadout label={t.statKDA} value={avgKda ?? '—'} Icon={Swords} tip={t.tipKDA} delta={kdaDelta} deltaTip={t.statTrendTip} points={kdaPoints} accent={accent} />
+          <StatReadout label={t.statAccuracy} value={avgAccuracy ?? '—'} unit={avgAccuracy !== null ? '%' : undefined} Icon={Crosshair} tip={t.tipAccuracy} delta={accuracyDelta} deltaTip={t.statTrendTip} points={accuracyPoints} accent={accent} />
+          <StatReadout label={t.statHeadshots} value={avgHeadshots ?? '—'} unit={avgHeadshots !== null ? '%' : undefined} Icon={Target} tip={t.tipHeadshots} delta={headshotsDelta} deltaTip={t.statTrendTip} points={headshotsPoints} accent={accent} />
+          <StatReadout label={t.statACS} value={avgAcs ?? '—'} Icon={Zap} tip={t.tipACS} delta={acsDelta} deltaTip={t.statTrendTip} points={acsPoints} accent={accent} />
           <StatReadout label={t.statFirstBloods} value={firstBloods} Icon={Skull} tip={t.tipFirstBloods} />
           <StatReadout label={t.statClutches} value={clutches.won} unit={`/${clutches.played}`} Icon={Flame} tip={t.tipClutches} />
         </div>
 
-        <Card>
-          <ActivityCalendar t={t} />
-        </Card>
+        <button
+          onClick={() => setCustomizing((v) => !v)}
+          className={`self-end flex items-center gap-1.5 text-[11px] font-body transition-colors ${customizing ? 'text-accent' : 'text-neutral-500 hover:text-accent'}`}
+        >
+          <Settings2 size={12} />
+          {customizing ? t.doneCustomizing : t.customizeLayout}
+        </button>
 
-        <InviteFriendsCard t={t} customCode={referralCode} setCustomCode={setReferralCode} nickname={nickname} />
-
-        <SessionGoal t={t} />
-
-        <Card>
-          <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recentBadges}</span>
-          <div className="flex flex-col gap-2">
-            {badgeDefs.filter(isBadgeUnlocked).slice(0, 3).map((b) => {
-              const Icon = b.icon;
-              const info = t.badges[b.id];
-              const progress = getBadgeProgress(b);
-              return (
-                <div key={b.id} className="sc-badge px-3 py-2 flex items-center justify-between gap-2.5">
-                  <span className="flex items-center gap-2.5 min-w-0">
-                    <Icon size={14} className="text-accent shrink-0" />
-                    <span className="text-xs font-body text-neutral-300 truncate">{info.label}</span>
-                  </span>
-                  {progress && (
-                    <span
-                      className="font-display text-[9px] font-bold uppercase tracking-wide px-1 py-0.5 shrink-0"
-                      style={{ color: '#0A0A0A', background: progress.tierColor }}
-                    >
-                      {t[progress.tierNameKey]}
-                    </span>
-                  )}
+        {widgetOrder.map((id, i) => {
+          const shell = (children) => (
+            <div key={id} className="relative">
+              {customizing && (
+                <div className="absolute -right-1 -top-1 z-10 flex flex-col border border-neutral-800 bg-neutral-950">
+                  <button
+                    onClick={() => moveWidget(id, -1)}
+                    disabled={i === 0}
+                    aria-label={t.moveWidgetUp}
+                    className="p-1 text-neutral-500 hover:text-accent disabled:opacity-30 disabled:hover:text-neutral-500 transition-colors"
+                  >
+                    <ArrowUp size={11} />
+                  </button>
+                  <button
+                    onClick={() => moveWidget(id, 1)}
+                    disabled={i === widgetOrder.length - 1}
+                    aria-label={t.moveWidgetDown}
+                    className="p-1 text-neutral-500 hover:text-accent disabled:opacity-30 disabled:hover:text-neutral-500 transition-colors"
+                  >
+                    <ArrowDown size={11} />
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-        </Card>
+              )}
+              <div className={customizing ? 'outline outline-1 outline-dashed outline-neutral-700' : ''}>{children}</div>
+            </div>
+          );
+
+          if (id === 'calendar') {
+            return shell(<Card><ActivityCalendar t={t} /></Card>);
+          }
+          if (id === 'invite') {
+            return shell(<InviteFriendsCard t={t} customCode={referralCode} setCustomCode={setReferralCode} nickname={nickname} />);
+          }
+          if (id === 'goal') {
+            return shell(<SessionGoal t={t} />);
+          }
+          // 'badges'
+          return shell(
+            <Card>
+              <span className="font-display text-sm tracking-wide uppercase text-neutral-300 mb-3 block">{t.recentBadges}</span>
+              <div className="flex flex-col gap-2">
+                {badgeDefs.filter(isBadgeUnlocked).slice(0, 3).map((b) => {
+                  const Icon = b.icon;
+                  const info = t.badges[b.id];
+                  const progress = getBadgeProgress(b);
+                  return (
+                    <div key={b.id} className="sc-badge px-3 py-2 flex items-center justify-between gap-2.5">
+                      <span className="flex items-center gap-2.5 min-w-0">
+                        <Icon size={14} className="text-accent shrink-0" />
+                        <span className="text-xs font-body text-neutral-300 truncate">{info.label}</span>
+                      </span>
+                      {progress && (
+                        <span
+                          className="font-display text-[9px] font-bold uppercase tracking-wide px-1 py-0.5 shrink-0"
+                          style={{ color: '#0A0A0A', background: progress.tierColor }}
+                        >
+                          {t[progress.tierNameKey]}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          );
+        })}
 
         <AdSlot t={t} isPremium={isPremium} variant="rectangle" />
       </div>

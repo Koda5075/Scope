@@ -59,6 +59,7 @@ function AgentRow({ a, t, isLastPlayed }) {
 }
 
 function MapRow({ m, t }) {
+  const vsRankAvg = m.rankAvgWr !== undefined && m.wr !== null ? m.wr - m.rankAvgWr : null;
   return (
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
       {getMapImage(m.name) && (
@@ -93,6 +94,11 @@ function MapRow({ m, t }) {
             <span className="font-mono text-xs text-accent w-10 text-right">{m.wr !== null ? `${m.wr}%` : '—'}</span>
             <InfoTip text={m.games > 0 && m.games < 5 ? t.lowSampleTooltip : t.tipAgentMapWinRate} />
           </span>
+          {vsRankAvg !== null && (
+            <span className={`hidden md:inline font-mono text-[10px] shrink-0 ${vsRankAvg >= 0 ? 'text-accent' : 'text-red-500'}`} title={t.rankAvg}>
+              {vsRankAvg > 0 ? '+' : ''}{vsRankAvg} {t.wrShort} {t.rankAvg}
+            </span>
+          )}
         </div>
         {m.atkWr !== undefined && m.defWr !== undefined && (
           <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-3 mt-1.5">

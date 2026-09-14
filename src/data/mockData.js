@@ -511,6 +511,7 @@ export function computeMapStats(games) {
         name: m.name,
         games: m.games,
         wr,
+        rankAvgWr: m.games ? 50 : undefined,
         atkWr: m.games ? staticDef?.atkWr ?? wr : undefined,
         defWr: m.games ? staticDef?.defWr ?? wr : undefined,
         bestAgent: m.games ? staticDef?.bestAgent : undefined,
