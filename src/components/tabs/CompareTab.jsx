@@ -55,6 +55,28 @@ function VersusRow({ label, you, them, themLabel, youLabel = 'You', bare = false
   return bare ? body : <div className="border border-neutral-800 bg-neutral-950 px-3 py-3">{body}</div>;
 }
 
+// Same look as VersusRow but for 3+ entries side by side instead of a fixed you/them
+// pair — used once a second opponent is added. `entries` is [{ label, value, isYou }].
+function MultiVersusRow({ metricLabel, entries }) {
+  const max = Math.max(...entries.map((e) => e.value), 1);
+  return (
+    <div className="border border-neutral-800 bg-neutral-950 px-3 py-3">
+      <div className="text-[11px] text-neutral-400 font-body mb-2">{metricLabel}</div>
+      <div className="flex flex-col gap-1.5">
+        {entries.map((e) => (
+          <div key={e.label} className="flex items-center gap-2">
+            <span className={`text-[10px] font-body w-24 shrink-0 leading-tight truncate ${e.isYou ? 'text-accent' : 'text-neutral-500'}`}>{e.label}</span>
+            <div className="flex-1 sc-track h-2.5 overflow-hidden">
+              <div className={e.isYou ? 'sc-fill h-full' : 'sc-fill-muted h-full'} style={{ width: `${(e.value / max) * 100}%` }} />
+            </div>
+            <span className={`font-mono text-xs w-12 text-right shrink-0 ${e.isYou ? 'text-white' : 'text-neutral-400'}`}>{e.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const COMPARE_METRICS = [
   { key: 'kda', labelKey: 'statKDA' },
   { key: 'acs', labelKey: 'statACS' },
@@ -84,6 +106,9 @@ function loadCompareHistory() {
 export default function CompareTab({ t, accent, isPremium, filteredGames, nickname }) {
   const [query, setQuery] = useState('');
   const [player, setPlayer] = useState(() => otherPlayers.find((p) => p.puuid === 'p2') ?? null);
+  const [player2, setPlayer2] = useState(null);
+  const [query2, setQuery2] = useState('');
+  const [error2, setError2] = useState(null);
   const [error, setError] = useState(null);
   const [boardMetric, setBoardMetric] = useState('acs');
   const [linkCopied, setLinkCopied] = useState(false);
@@ -120,6 +145,8 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
     if (match) {
       setPlayer(match);
       setError(null);
+      setPlayer2(null);
+      setError2(null);
     }
   }
 
@@ -146,6 +173,8 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
       headshots: computeAverageHeadshots(dataset.games) ?? 0,
     });
     setError(null);
+    setPlayer2(null);
+    setError2(null);
   }
 
   async function handleShareComparison() {
@@ -238,11 +267,39 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
       setPlayer(match);
       setError(null);
       setQuery('');
+      setPlayer2(null);
+      setError2(null);
       pushHistory(`${match.name}#${match.tag}`);
     } else if (match && match.connected) {
       setError('private');
     } else {
       setError('not_found');
+    }
+  }
+
+  // Second opponent slot — same lookup rules as the primary search (connected + public
+  // only), kept as its own small inline form rather than reusing `query`/`error` so
+  // adding a 3rd player never clobbers the primary comparison mid-edit.
+  function handleSearch2(e) {
+    e.preventDefault();
+    const parsed = parseRiotId(query2);
+    if (!parsed) {
+      setError2('invalid');
+      return;
+    }
+    const match = otherPlayers.find(
+      (p) => p.name.toLowerCase() === parsed.name.toLowerCase() && p.tag.toLowerCase() === parsed.tag.toLowerCase()
+    );
+    if (match && match.connected && match.isPublic && match.puuid !== player?.puuid) {
+      setPlayer2(match);
+      setError2(null);
+      setQuery2('');
+    } else if (match && match.puuid === player?.puuid) {
+      setError2('duplicate');
+    } else if (match && match.connected) {
+      setError2('private');
+    } else {
+      setError2('not_found');
     }
   }
 
@@ -311,6 +368,7 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
             <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
               <div className="text-xs font-display uppercase text-neutral-400">
                 <span className="text-accent">{t.you}</span> {t.compareVs} {player.name}#{player.tag}
+                {player2 && <> {t.compareVs} {player2.name}#{player2.tag}</>}
               </div>
               <button
                 onClick={handleShareComparison}
@@ -321,23 +379,69 @@ export default function CompareTab({ t, accent, isPremium, filteredGames, nickna
                 {shared ? t.shareDownloaded : t.share}
               </button>
             </div>
-            {headToHead && (
+            {headToHead && !player2 && (
               <div className="text-[11px] font-body text-neutral-500 mb-3">
                 {fmt(t.headToHeadRecord, { wins: headToHead.wins, losses: headToHead.losses, total: headToHead.total })}
               </div>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {COMPARE_METRICS.map((m) => (
-                <VersusRow
-                  key={m.key}
-                  label={t[m.labelKey]}
-                  you={you[m.key]}
-                  them={player[m.key]}
-                  youLabel={t.you}
-                  themLabel={player.name}
+
+            {player2 ? (
+              <div className="flex flex-col gap-3.5 mb-3.5">
+                {COMPARE_METRICS.map((m) => (
+                  <MultiVersusRow
+                    key={m.key}
+                    metricLabel={t[m.labelKey]}
+                    entries={[
+                      { label: t.you, value: you[m.key], isYou: true },
+                      { label: `${player.name}#${player.tag}`, value: player[m.key] },
+                      { label: `${player2.name}#${player2.tag}`, value: player2[m.key] },
+                    ]}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-3.5">
+                {COMPARE_METRICS.map((m) => (
+                  <VersusRow
+                    key={m.key}
+                    label={t[m.labelKey]}
+                    you={you[m.key]}
+                    them={player[m.key]}
+                    youLabel={t.you}
+                    themLabel={player.name}
+                  />
+                ))}
+              </div>
+            )}
+
+            {player2 ? (
+              <button
+                onClick={() => { setPlayer2(null); setError2(null); }}
+                className="text-[11px] font-body text-neutral-500 hover:text-accent transition-colors"
+              >
+                {t.compareRemoveThird.replace('{name}', player2.name)}
+              </button>
+            ) : (
+              <form onSubmit={handleSearch2} className="flex items-center gap-2">
+                <input
+                  value={query2}
+                  onChange={(e) => { setQuery2(e.target.value); setError2(null); }}
+                  placeholder={t.compareAddThirdPlaceholder}
+                  aria-label={t.compareAddThirdPlaceholder}
+                  className="flex-1 min-w-0 bg-neutral-950 border border-neutral-800 focus:border-accent outline-none px-2.5 py-1.5 text-xs font-body text-neutral-300 placeholder:text-neutral-600 transition-colors"
                 />
-              ))}
-            </div>
+                <button
+                  type="submit"
+                  className="shrink-0 border border-neutral-800 hover:border-accent px-2.5 py-1.5 text-[11px] font-body text-neutral-400 hover:text-accent transition-colors"
+                >
+                  {t.compareAddThirdButton}
+                </button>
+              </form>
+            )}
+            {error2 === 'invalid' && <div className="text-xs font-body text-neutral-500 mt-2">{t.searchInvalidFormat}</div>}
+            {error2 === 'private' && <div className="text-xs font-body text-neutral-500 mt-2">{t.searchPrivateDesc}</div>}
+            {error2 === 'not_found' && <div className="text-xs font-body text-neutral-500 mt-2">{t.searchNotOnScopeDesc}</div>}
+            {error2 === 'duplicate' && <div className="text-xs font-body text-neutral-500 mt-2">{t.compareDuplicatePlayer}</div>}
           </div>
         )}
       </Card>
