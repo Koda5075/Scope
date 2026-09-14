@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scope vs les autres trackers</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root { --accent: #FFC300; }
+    * { box-sizing: border-box; }
+
+    body {
+      background: #000;
+      color: #e5e5e5;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+      line-height: 1.7;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .brand-logo { width: 36px; height: 36px; object-fit: contain; }
+    .brand-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #fff; }
+    .brand-rule { height: 2px; width: 44px; background: var(--accent); margin-top: 4px; }
+
+    .back {
+      display: inline-block; margin-bottom: 20px; color: #737373; text-decoration: none;
+      font-size: 13px; transition: color 0.15s ease;
+    }
+    .back:hover { color: var(--accent); }
+
+    h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #fff; font-size: 30px; margin: 0 0 8px; letter-spacing: 0.01em; }
+    .sub { color: #737373; font-size: 13px; margin-bottom: 32px; }
+
+    h2 {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #fff; font-size: 20px;
+      margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #262626;
+    }
+    p { color: #d4d4d4; font-size: 14.5px; }
+
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 13.5px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #1f1f1f; vertical-align: top; }
+    th { color: #737373; font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; font-size: 11px; }
+    td { color: #d4d4d4; }
+    td.you { color: #fff; }
+    td.you strong { color: var(--accent); }
+
+    .note {
+      background: #0F0F0F; border: 1px solid #262626; border-left: 3px solid var(--accent);
+      padding: 16px 20px; margin: 20px 0; font-size: 13.5px; color: #a3a3a3;
+    }
+    a.link { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a href="/" class="back">&larr; Retour à Scope</a>
+  <div class="brand">
+    <img src="/logo.png" alt="" class="brand-logo" />
+    <div>
+      <div class="brand-name">SCOPE</div>
+      <div class="brand-rule"></div>
+    </div>
+  </div>
+
+  <h1>Scope face aux autres trackers</h1>
+  <p class="sub">Ce que Scope fait différemment, sans prétendre être le seul outil valable.</p>
+
+  <h2>La différence d'approche</h2>
+  <p>
+    La plupart des trackers VALORANT existants sont d'abord des relevés de compteurs : KDA, précision,
+    winrate, classement — des chiffres exacts, présentés tels quels. Scope part du même socle de données,
+    mais essaie d'aller un cran plus loin : repérer ce qui mérite ton attention en premier (un round
+    d'éco qui plombe ton winrate, un agent jamais essayé, une carte où tu es systématiquement en dessous
+    de la moyenne de ton rang) plutôt que de te laisser interpréter un mur de chiffres seul.
+  </p>
+
+  <h2>Comparaison honnête</h2>
+  <table>
+    <tr><th>Critère</th><th>Trackers classiques</th><th>Scope</th></tr>
+    <tr>
+      <td>Chiffres bruts (KDA, ACS, précision, winrate)</td>
+      <td>Oui, en détail</td>
+      <td class="you">Oui — même base</td>
+    </tr>
+    <tr>
+      <td>Lecture guidée ("sur quoi progresser")</td>
+      <td>Rarement, ou en option payante avancée</td>
+      <td class="you">Au cœur du produit, dès la version gratuite</td>
+    </tr>
+    <tr>
+      <td>Comparaison directe avec un autre joueur</td>
+      <td>Souvent limitée à un profil à la fois</td>
+      <td class="you">Comparaison, historique face-à-face, partage en image</td>
+    </tr>
+    <tr>
+      <td>Suivi de progression dans le temps</td>
+      <td>Variable selon l'outil</td>
+      <td class="you">Timeline dédiée (rang, records, séries, jalons perso)</td>
+    </tr>
+    <tr>
+      <td>Statut du produit</td>
+      <td>Généralement branché sur de vraies parties depuis longtemps</td>
+      <td class="you"><strong>Actuellement en mode démonstration</strong> — voir ci-dessous</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    Honnêteté d'abord : l'accès à l'API officielle VALORANT est encore en cours de validation auprès de
+    Riot Games. Tant que ce n'est pas accordé, Scope tourne avec des données d'exemple, pas tes vraies
+    parties — voir la <a class="link" href="/faq.html">FAQ</a> pour le détail. Un tracker déjà branché sur
+    l'API réelle a un avantage concret sur ce point précis aujourd'hui ; ça ne resterait pas vrai une fois
+    l'accès Scope accordé, mais ce serait malhonnête de ne pas le dire maintenant.
+  </div>
+
+  <h2>Contact</h2>
+  <p>
+    Une question sur cette comparaison ou une suggestion ? Le bouton de retour flottant présent sur tout
+    le site permet d'écrire directement, ou par mail à
+    <a class="link" href="mailto:contact@scopestats.com">contact@scopestats.com</a>.
+  </p>
+</body>
+</html>

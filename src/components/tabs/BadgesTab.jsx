@@ -200,7 +200,14 @@ export default function BadgesTab({ t, accent, nickname, isPremium, badges = bad
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-neutral-500 font-body">{isHiddenSecret ? t.badgeSecretSub : info.sub}</div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="text-[11px] text-neutral-500 font-body">{isHiddenSecret ? t.badgeSecretSub : info.sub}</div>
+                    {b.seasonal && (
+                      <span className="font-display text-[8px] uppercase tracking-wide text-accent border border-accent/40 px-1 shrink-0">
+                        {t.badgeSeasonalTag}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

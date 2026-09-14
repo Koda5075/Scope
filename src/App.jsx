@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { T } from './i18n/translations.js';
 import { THEMES, resolveAccent, deriveDim, isValidHex } from './data/themes.js';
-import { peakRank as mockPeakRank, peakRr as mockPeakRr, acts, filterGames, recentGames } from './data/mockData.js';
+import { peakRank as mockPeakRank, peakRr as mockPeakRr, acts, filterGames, recentGames, computeAverageAcs } from './data/mockData.js';
 import TopBar from './components/TopBar.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import LandingView from './components/LandingView.jsx';
@@ -111,10 +111,16 @@ export default function ScopeDashboard() {
   const [rivalIds, setRivalIds] = useState(() => loadStored('scope-rivals', [], JSON.parse));
   // Computed once at mount, before the "last visit" timestamp below gets overwritten —
   // an honest "here's where you left off" read rather than a fabricated "here's what
-  // changed" (that would need snapshotting past state we don't actually keep).
+  // changed". A real ACS snapshot IS now kept (`scope-last-visit-acs`, written alongside
+  // the timestamp below) specifically so this diff is genuine, not invented.
   const [daysSinceLastVisit] = useState(() => {
     const last = loadStored('scope-last-visit', null, (v) => Number(v) || null);
     return last ? Math.floor((Date.now() - last) / 86400000) : null;
+  });
+  const [visitAcsDelta] = useState(() => {
+    const prevAcs = loadStored('scope-last-visit-acs', null, (v) => Number(v) || null);
+    const currentAcs = computeAverageAcs(recentGames);
+    return prevAcs !== null && currentAcs !== null ? currentAcs - prevAcs : null;
   });
   const [publicVisible, setPublicVisible] = useState(() => loadStored('scope-public-visible', true, (v) => v === 'true'));
   const [avatarUrl, setAvatarUrl] = useState(() => loadStored('scope-avatar', null));
@@ -277,6 +283,8 @@ export default function ScopeDashboard() {
       localStorage.setItem('scope-incognito-search', String(incognitoSearch));
       localStorage.setItem('scope-referral-code', referralCode);
       localStorage.setItem('scope-last-visit', String(Date.now()));
+      const currentAcs = computeAverageAcs(recentGames);
+      if (currentAcs !== null) localStorage.setItem('scope-last-visit-acs', String(currentAcs));
     } catch (e) { /* ignore */ }
   }, [lang, theme, themeMode, customAccent, favoriteIds, rivalIds, publicVisible, avatarUrl, bannerUrl, titleId, bannerSpray, bannerFocus, loggedIn, isPremium, largeText, highContrast, nickname, dndEnabled, incognitoSearch, referralCode]);
 
@@ -575,7 +583,7 @@ export default function ScopeDashboard() {
 
             {tab !== 'premium' && <PromoBanner t={t} onSeePlans={() => setShowPlansModal(true)} isPremium={isPremium} />}
 
-            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} setReferralCode={setReferralCode} nickname={nickname} daysSinceLastVisit={daysSinceLastVisit} />}
+            {tab === 'overview' && <OverviewTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} referralCode={referralCode} setReferralCode={setReferralCode} nickname={nickname} daysSinceLastVisit={daysSinceLastVisit} visitAcsDelta={visitAcsDelta} />}
             {tab === 'agents' && <AgentsTab t={t} isPremium={isPremium} filteredGames={filteredGames} />}
             {tab === 'economy' && <EconomyTab t={t} isPremium={isPremium} />}
             {tab === 'compare' && <CompareTab t={t} accent={accent} isPremium={isPremium} filteredGames={filteredGames} nickname={nickname} />}

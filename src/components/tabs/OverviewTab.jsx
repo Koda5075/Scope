@@ -40,7 +40,7 @@ function loadWidgetOrder() {
   return DEFAULT_WIDGET_ORDER;
 }
 
-export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode, nickname, daysSinceLastVisit }) {
+export default function OverviewTab({ t, accent, isPremium, filteredGames, referralCode, setReferralCode, nickname, daysSinceLastVisit, visitAcsDelta = null }) {
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [sharing, setSharing] = useState(false);
   const [shared, setShared] = useState(false);
@@ -299,6 +299,15 @@ export default function OverviewTab({ t, accent, isPremium, filteredGames, refer
                 {t.welcomeBackTitle.replace('{n}', daysSinceLastVisit)}
               </span>
               <p className="text-xs font-body text-neutral-400 leading-relaxed">{t.welcomeBackDesc}</p>
+              {visitAcsDelta !== null && Math.abs(visitAcsDelta) >= 1 && (
+                <p className="text-xs font-mono mt-1">
+                  <span className="text-neutral-500">{t.statACS}</span>{' '}
+                  <span className={visitAcsDelta > 0 ? 'text-accent' : 'text-red-500'}>
+                    {visitAcsDelta > 0 ? '+' : ''}{visitAcsDelta}
+                  </span>{' '}
+                  <span className="text-neutral-600">{t.sinceLastVisitSuffix}</span>
+                </p>
+              )}
             </div>
           </div>
         </Card>

@@ -53,6 +53,11 @@ export const badgeDefs = [
   // value mirrors weaponStats' Operator kills (37) so it's never a second, drifting copy
   // of the same number.
   { id: 'weaponMastery', icon: Gem, tiers: [10, 25, 50, 100], value: 37 },
+  // Act-limited: only shown while the current Act is live (see `seasonal` flag below),
+  // unlike every other badge which stays in the roster forever once unlocked. daysAgo=3
+  // keeps it inside the current Act's window (ACT_DAYS_REMAINING=6 of a ~60-day Act, so
+  // day 54+ is safely "this Act").
+  { id: 'actMomentum', icon: CalendarClock, unlocked: true, daysAgo: 3, seasonal: true },
 ];
 
 // Returns null for single-state badges (no `tiers`/`value`). Otherwise the current tier

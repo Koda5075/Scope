@@ -9,6 +9,7 @@ export default function Footer({ t, lang }) {
           <a href={`/legal.html?lang=${lang}#confidentialite`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.privacy}</a>
           <a href="/faq.html" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.faqLink}</a>
           <a href="/about.html" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.aboutLink}</a>
+          <a href="/compare.html" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.compareTrackersLink}</a>
         </div>
         <ServerStatusBadge t={t} />
         <div>{t.sampleData}</div>
