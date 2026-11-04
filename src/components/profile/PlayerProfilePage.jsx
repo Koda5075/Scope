@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Info } from 'lucide-react';
 import { otherPlayers, acts, filterGames } from '../../data/mockData.js';
 import { getPlayerDataset } from '../../data/playerProfileData.js';
+import DemoBanner from '../DemoBanner.jsx';
 import FilterBar from '../FilterBar.jsx';
 import AgentsTab from '../tabs/AgentsTab.jsx';
 import EconomyTab from '../tabs/EconomyTab.jsx';
@@ -103,6 +104,7 @@ export default function PlayerProfilePage({ riotId, t, lang, loggedIn, isPremium
 
   return (
     <div>
+      <DemoBanner t={t} />
       <ProfilePlayerHeader
         identity={identity}
         t={t}

@@ -5,6 +5,7 @@ import { peakRank as mockPeakRank, peakRr as mockPeakRr, acts, filterGames, rece
 import TopBar from './components/TopBar.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import LandingView from './components/LandingView.jsx';
+import DemoBanner from './components/DemoBanner.jsx';
 import PlayerHeader from './components/PlayerHeader.jsx';
 import { visibleCosmetics } from './data/cosmeticUnlocks.js';
 import PlayerSearchBar from './components/PlayerSearchBar.jsx';
@@ -544,6 +545,7 @@ export default function ScopeDashboard() {
           <LandingView t={t} setLoggedIn={setLoggedIn} filteredGames={filteredGames} />
         ) : (
           <>
+            <DemoBanner t={t} />
             <PlayerHeader
               t={t}
               lang={lang}
