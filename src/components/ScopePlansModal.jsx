@@ -4,6 +4,9 @@ import Modal from './Modal.jsx';
 import { getSupabase } from '../lib/supabaseClient.js';
 import { scopePlusPlans, scopePlusFeatureKeys } from '../data/mockData.js';
 
+// Scope+ isn't on sale until Riot approves the app — flip to true to re-enable checkout.
+const CHECKOUT_ENABLED = false;
+
 function fmt(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
 }
@@ -18,6 +21,7 @@ export default function ScopePlansModal({ onClose, t }) {
   // App.jsx). The "Simulate Scope+ (demo)" toggle in settings still does the old
   // direct flip, for previewing the premium UI without a test payment each time.
   async function handleChoose(planId) {
+    if (!CHECKOUT_ENABLED) return;
     setError(null);
     setLoadingPlan(planId);
     try {
@@ -76,14 +80,16 @@ export default function ScopePlansModal({ onClose, t }) {
             )}
             <button
               onClick={() => handleChoose(plan.id)}
-              disabled={loadingPlan !== null}
-              className="w-full mt-2 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center"
+              disabled={!CHECKOUT_ENABLED || loadingPlan !== null}
+              className="w-full mt-2 bg-accent text-black font-display font-bold uppercase text-xs tracking-wide px-4 py-2.5 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              {loadingPlan === plan.id ? <Loader2 size={14} className="animate-spin" /> : t.plansChoose}
+              {loadingPlan === plan.id ? <Loader2 size={14} className="animate-spin" /> : CHECKOUT_ENABLED ? t.plansChoose : t.plansComingSoon}
             </button>
           </div>
         ))}
       </div>
+
+      {!CHECKOUT_ENABLED && <p className="text-xs text-neutral-400 font-body -mt-3 mb-5">{t.plansNotOnSale}</p>}
 
       {error && <p className="text-xs text-red-500 font-body mb-4">{error}</p>}
 
@@ -98,7 +104,7 @@ export default function ScopePlansModal({ onClose, t }) {
         </div>
       </div>
 
-      <p className="text-[10px] text-neutral-600 font-body mt-4 leading-relaxed">{t.plansDisclaimer}</p>
+      {CHECKOUT_ENABLED && <p className="text-[10px] text-neutral-600 font-body mt-4 leading-relaxed">{t.plansDisclaimer}</p>}
     </Modal>
   );
 }

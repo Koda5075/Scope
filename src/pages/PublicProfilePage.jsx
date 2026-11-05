@@ -4,6 +4,7 @@ import Card from '../components/Card.jsx';
 import StatReadout from '../components/StatReadout.jsx';
 import Footer from '../components/Footer.jsx';
 import Avatar from '../components/Avatar.jsx';
+import DemoBanner from '../components/DemoBanner.jsx';
 import { T } from '../i18n/translations.js';
 import { THEMES } from '../data/themes.js';
 import { myStats, peakRank, badgeDefs } from '../data/mockData.js';
@@ -66,6 +67,7 @@ export default function PublicProfilePage({ slug }) {
       `}</style>
 
       <div className="max-w-2xl mx-auto px-5 py-10">
+        <DemoBanner t={t} />
         <div className="flex items-center gap-3 mb-8">
           <img src="/logo.png" alt="Scope" className="w-9 h-9 object-contain" />
           <span className="font-display text-2xl font-bold tracking-wide text-white">SCOPE</span>

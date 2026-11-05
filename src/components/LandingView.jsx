@@ -1,4 +1,5 @@
 import { LogIn } from 'lucide-react';
+import DemoBanner from './DemoBanner.jsx';
 import LeaderboardTab from './tabs/LeaderboardTab.jsx';
 
 // Logged-out landing. Crawlers and first-time visitors hit this instead of the full
@@ -8,6 +9,8 @@ import LeaderboardTab from './tabs/LeaderboardTab.jsx';
 // (see LeaderboardTab), so nothing here is gated.
 export default function LandingView({ t, setLoggedIn, filteredGames }) {
   return (
+    <>
+    <DemoBanner t={t} />
     <div className="flex flex-col gap-5">
       <div className="text-center pt-8 pb-2 px-4">
         {/* The one page <h1> in the logged-out state. sr-only span keeps the
@@ -45,5 +48,6 @@ export default function LandingView({ t, setLoggedIn, filteredGames }) {
         />
       </div>
     </div>
+    </>
   );
 }
