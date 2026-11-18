@@ -118,6 +118,7 @@ export const agentStats = [
   { name: 'Neon', games: 0, wr: 0 },
   { name: 'Iso', games: 0, wr: 0 },
   { name: 'Waylay', games: 0, wr: 0 },
+  { name: 'Hush', games: 0, wr: 0 },
   // Controllers
   { name: 'Brimstone', games: 0, wr: 0 },
   { name: 'Omen', games: 5, wr: 40, rankAvgWr: 50 },
@@ -178,7 +179,9 @@ export const mapStats = [
 // read; don't treat it as a permanent truth. Not wired into any filter yet — once the
 // production Riot API is connected, the Act/Episode filter (`acts` below) should pull
 // the real, live rotation instead of this constant.
-export const CURRENT_COMPETITIVE_MAP_POOL = ['Ascent', 'Haven', 'Split', 'Sunset', 'Abyss', 'Lotus', 'Summit'];
+// Mis à jour le 18/11/2026 d'après le patch 13.08 (13/10/2026) : Bind et Corrode entrent,
+// Ascent et Split sortent de la file Compétition.
+export const CURRENT_COMPETITIVE_MAP_POOL = ['Bind', 'Corrode', 'Haven', 'Sunset', 'Abyss', 'Lotus', 'Summit'];
 
 // Round-type and clutch breakdown — Scope+. Pistol/eco-force winrates and clutch
 // success rate by man-disadvantage situation, instead of just the flat clutch count
@@ -287,6 +290,7 @@ export const weaponStats = [
   { name: 'Frenzy', accuracy: 22, kills: 2, category: 'sidearm' },
   { name: 'Ghost', accuracy: 22, kills: 18, category: 'sidearm' },
   { name: 'Sheriff', accuracy: 28, kills: 33, category: 'sidearm' },
+  { name: 'Bandit', accuracy: 0, kills: 0, category: 'sidearm' },
   // SMGs
   { name: 'Stinger', accuracy: 20, kills: 7, category: 'smg' },
   { name: 'Spectre', accuracy: 19, kills: 41, category: 'smg' },
@@ -298,6 +302,7 @@ export const weaponStats = [
   { name: 'Guardian', accuracy: 33, kills: 22, category: 'rifle' },
   { name: 'Phantom', accuracy: 21, kills: 88, category: 'rifle' },
   { name: 'Vandal', accuracy: 24, kills: 142, favorite: true, category: 'rifle' },
+  { name: 'Warden', accuracy: 0, kills: 0, category: 'rifle' },
   // Sniper rifles
   { name: 'Marshal', accuracy: 45, kills: 12, category: 'sniper' },
   { name: 'Outlaw', accuracy: 44, kills: 5, category: 'sniper' },
@@ -452,9 +457,11 @@ export function getStreaks(games = recentGames) {
 export const ACT_DAYS_REMAINING = 6;
 
 export const acts = [
-  { id: 'e9a3', label: 'Episode 9 — Act III', minDaysAgo: 0, maxDaysAgo: 29, current: true },
-  { id: 'e9a2', label: 'Episode 9 — Act II', minDaysAgo: 30, maxDaysAgo: 59 },
-  { id: 'e9a1', label: 'Episode 9 — Act I', minDaysAgo: 60, maxDaysAgo: 89 },
+  // Saison V26 (actes officiels : IV 24/06-19/08, V 19/08-14/10, VI 14/10/2026-06/01/2027).
+  // Fenêtres en jours relatives à la démo, calées sur la durée réelle des actes au 18/11/2026.
+  { id: 'v26a6', label: 'V26 — Act VI', minDaysAgo: 0, maxDaysAgo: 35, current: true },
+  { id: 'v26a5', label: 'V26 — Act V', minDaysAgo: 36, maxDaysAgo: 91 },
+  { id: 'v26a4', label: 'V26 — Act IV', minDaysAgo: 92, maxDaysAgo: 147 },
 ];
 
 // Shared by the global Mode + Period filter (App.jsx) so every tab that filters
