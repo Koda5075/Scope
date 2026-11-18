@@ -454,7 +454,11 @@ export function getStreaks(games = recentGames) {
 
 // Shared by the act-ending alert and the always-visible Overview countdown widget so
 // the two can't drift apart into quoting different numbers for the same thing.
-export const ACT_DAYS_REMAINING = 6;
+// Acte en cours : V26 Acte VI, du 14/10/2026 au 06/01/2027 (dates du client 13.10).
+// Calculé depuis la vraie date de fin pour que l'alerte reste juste ; à mettre à jour
+// à chaque nouvel acte (ou à remplacer par l'acte renvoyé par val-content-v1).
+export const CURRENT_ACT_END = '2027-01-06T00:00:00Z';
+export const ACT_DAYS_REMAINING = Math.max(1, Math.ceil((Date.parse(CURRENT_ACT_END) - Date.now()) / 86400000));
 
 export const acts = [
   // Saison V26 (actes officiels : IV 24/06-19/08, V 19/08-14/10, VI 14/10/2026-06/01/2027).
