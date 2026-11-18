@@ -126,7 +126,7 @@ function PlayerDetail({ p, t }) {
 }
 
 export default function GameScoreboard({ match, t }) {
-  const modeLabel = { competitive: t.modeCompetitive, unrated: t.modeUnrated, deathmatch: t.modeDeathmatch }[match.mode];
+  const modeLabel = { competitive: t.modeCompetitive, premier: t.modePremier, unrated: t.modeUnrated, deathmatch: t.modeDeathmatch }[match.mode];
   const mapImage = getMapImage(match.map);
   const you = match.you;
   const dt = match.dateTime;
