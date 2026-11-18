@@ -2,6 +2,8 @@ import { LogIn } from 'lucide-react';
 import DemoBanner from './DemoBanner.jsx';
 import LeaderboardTab from './tabs/LeaderboardTab.jsx';
 
+const WAITLIST_URL = 'https://tally.so/r/QoRyNY';
+
 // Logged-out landing. Crawlers and first-time visitors hit this instead of the full
 // dashboard, so it carries the page <h1> and shows something real — the public
 // regional leaderboard — above a sign-in call to action. No router: App just renders
@@ -31,6 +33,15 @@ export default function LandingView({ t, setLoggedIn, filteredGames }) {
         >
           <LogIn size={16} /> {t.loginBtn}
         </button>
+        <p className="text-xs font-body text-neutral-400 max-w-sm mt-2">{t.waitlistLine}</p>
+        <a
+          href={WAITLIST_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="border border-neutral-700 text-white font-display font-bold uppercase text-xs tracking-wide px-5 py-2.5 hover:border-accent hover:text-accent transition-colors"
+        >
+          {t.waitlistBtn}
+        </a>
         <p className="text-[11px] text-neutral-600 font-body max-w-xs leading-relaxed">{t.loginConsent}</p>
         <p className="text-[10px] text-neutral-700 font-body italic">{t.loginDemo}</p>
       </div>
