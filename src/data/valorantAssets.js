@@ -37,6 +37,7 @@ const AGENT_ICONS = {
   Waylay: 'https://media.valorant-api.com/agents/df1cb487-4902-002e-5c17-d28e83e78588/displayicon.png',
   Miks: 'https://media.valorant-api.com/agents/7c8a4701-4de6-9355-b254-e09bc2a34b72/displayicon.png',
   Veto: 'https://media.valorant-api.com/agents/92eeef5d-43b5-1d4a-8d03-b3927a09034b/displayicon.png',
+  Hush: 'https://media.valorant-api.com/agents/ddd5a15c-4fbe-42fa-3789-11a55ca5ee04/displayicon.png',
 };
 
 // Agent role groups — mirrors the game's own class system, in the same grouping
@@ -44,7 +45,7 @@ const AGENT_ICONS = {
 // Sentinels comments), just made machine-readable here for the Agents & Maps role
 // filter instead of staying a comment nobody can query.
 export const AGENT_ROLES = {
-  duelist: ['Phoenix', 'Jett', 'Reyna', 'Raze', 'Yoru', 'Neon', 'Iso', 'Waylay'],
+  duelist: ['Phoenix', 'Jett', 'Reyna', 'Raze', 'Yoru', 'Neon', 'Iso', 'Waylay', 'Hush'],
   controller: ['Brimstone', 'Omen', 'Viper', 'Astra', 'Harbor', 'Clove', 'Miks'],
   initiator: ['Sova', 'Breach', 'Skye', 'KAY/O', 'Fade', 'Gekko', 'Tejo'],
   sentinel: ['Sage', 'Cypher', 'Killjoy', 'Chamber', 'Deadlock', 'Vyse', 'Veto'],
@@ -132,6 +133,8 @@ const WEAPON_ICONS = {
   Ares: 'https://media.valorant-api.com/weapons/55d8a0f4-4274-ca67-fe2c-06ab45efdf58/displayicon.png',
   Odin: 'https://media.valorant-api.com/weapons/63e6c2b6-4a8e-869c-3d4c-e38355226584/displayicon.png',
   Melee: 'https://media.valorant-api.com/weapons/2f59173c-4bed-b6c3-2191-dea9b58be9c7/displayicon.png',
+  Warden: 'https://media.valorant-api.com/weapons/8db0a1bf-4a50-832a-4566-faaaa6d250ca/displayicon.png',
+  Bandit: 'https://media.valorant-api.com/weapons/410b2e0b-4ceb-1321-1727-20858f7f3477/displayicon.png',
 };
 
 // Keyed by "TIER RANK" upper-cased (e.g. "DIAMOND 2") — current episode's icon set.
