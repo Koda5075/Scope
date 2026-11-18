@@ -33,7 +33,10 @@ export default function LandingView({ t, setLoggedIn, filteredGames }) {
         >
           <LogIn size={16} /> {t.loginBtn}
         </button>
-        <p className="text-xs font-body text-neutral-400 max-w-sm mt-2">{t.waitlistLine}</p>
+        <p className="text-[11px] text-neutral-600 font-body max-w-xs leading-relaxed">{t.loginConsent}</p>
+        <p className="text-[10px] text-neutral-700 font-body italic">{t.loginDemo}</p>
+        <div className="w-full max-w-xs border-t border-neutral-800 my-2" />
+        <p className="text-xs font-body text-neutral-400 max-w-sm">{t.waitlistLine}</p>
         <a
           href={WAITLIST_URL}
           target="_blank"
@@ -42,8 +45,6 @@ export default function LandingView({ t, setLoggedIn, filteredGames }) {
         >
           {t.waitlistBtn}
         </a>
-        <p className="text-[11px] text-neutral-600 font-body max-w-xs leading-relaxed">{t.loginConsent}</p>
-        <p className="text-[10px] text-neutral-700 font-body italic">{t.loginDemo}</p>
       </div>
 
       <div>
