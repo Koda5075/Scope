@@ -14,7 +14,7 @@ import ProfileOverview from './ProfileOverview.jsx';
 import ProfileCompare from './ProfileCompare.jsx';
 
 const PROFILE_TABS = ['overview', 'agents', 'economy', 'compare', 'leaderboard', 'badges', 'progress'];
-const MODES = ['all', 'competitive', 'unrated', 'deathmatch', 'spikerush', 'escalation', 'teamdeathmatch', 'swiftplay'];
+const MODES = ['all', 'competitive', 'premier', 'unrated', 'deathmatch', 'spikerush', 'escalation', 'teamdeathmatch', 'swiftplay'];
 const PERIODS = ['7d', '30d', 'act', 'all'];
 const DEFAULT_TITLE = 'Scope — VALORANT Stats Tracker';
 const DEFAULT_ACT = () => acts.find((a) => a.current)?.id ?? acts[0].id;
