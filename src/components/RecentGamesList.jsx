@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import KDAStat from './KDAStat.jsx';
 import { getAgentIcon, getMapImage, optimizeImg } from '../data/valorantAssets.js';
 
-const MODE_LABEL_KEY = { competitive: 'modeCompetitive', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
+const MODE_LABEL_KEY = { competitive: 'modeCompetitive', premier: 'modePremier', unrated: 'modeUnrated', deathmatch: 'modeDeathmatch' };
 const PAGE = 8;
 
 // The recent-games list, shared by the owner's Overview tab and the public profile page
