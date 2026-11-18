@@ -148,7 +148,7 @@ export default function ScopeDashboard() {
   const urlFilterParams = new URLSearchParams(window.location.search);
   const [filterMode, setFilterMode] = useState(() => {
     const m = urlFilterParams.get('mode');
-    return ['all', 'competitive', 'unrated', 'deathmatch', 'spikerush', 'escalation', 'teamdeathmatch', 'swiftplay'].includes(m) ? m : 'all';
+    return ['all', 'competitive', 'premier', 'unrated', 'deathmatch', 'spikerush', 'escalation', 'teamdeathmatch', 'swiftplay'].includes(m) ? m : 'all';
   });
   const [filterPeriod, setFilterPeriod] = useState(() => {
     const p = urlFilterParams.get('period');

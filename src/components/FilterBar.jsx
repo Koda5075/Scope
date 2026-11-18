@@ -55,6 +55,7 @@ export default function FilterBar({ t, mode, setMode, period, setPeriod, acts, a
         options={[
           { value: 'all', label: t.modeAll },
           { value: 'competitive', label: t.modeCompetitive },
+          { value: 'premier', label: t.modePremier },
           { value: 'unrated', label: t.modeUnrated },
           { value: 'deathmatch', label: t.modeDeathmatch },
           { value: 'spikerush', label: t.modeSpikeRush },
