@@ -211,7 +211,7 @@ export default function ProgressTab({
                 <div className="sc-badge px-3 py-2.5 flex items-center gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <span className="font-display text-sm text-white truncate">{m.custom ? m.title : t[m.titleKey]}</span>
+                      <span className="font-display text-sm text-white leading-tight min-w-0 sm:truncate">{m.custom ? m.title : t[m.titleKey]}</span>
                       <span className="text-[10px] text-neutral-600 font-mono shrink-0">
                         {m.daysAgo === 0 ? t.alertToday : `${m.daysAgo}${t.daysAgoSuffix}`}
                       </span>

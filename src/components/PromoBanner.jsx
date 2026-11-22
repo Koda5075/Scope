@@ -33,9 +33,9 @@ export default function PromoBanner({ t, onSeePlans, isPremium = false }) {
     >
       <div className="flex items-center gap-3 min-w-0">
         <Sparkles size={15} className="text-accent shrink-0" />
-        <span className="text-xs font-body text-neutral-200 truncate">{t.promoBannerText}</span>
+        <span className="text-xs font-body text-neutral-200 leading-snug sm:truncate">{t.promoBannerText}</span>
       </div>
-      <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
         <button onClick={onSeePlans} className="text-[11px] font-display font-bold uppercase tracking-wide text-accent hover:underline">
           {t.seePlans}
         </button>

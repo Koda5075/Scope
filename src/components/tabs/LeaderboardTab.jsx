@@ -255,8 +255,8 @@ export default function LeaderboardTab({ t, accent, nickname, highlightRiotId = 
                   {p.leaderboardRank}
                 </span>
                 {rankIcon && <img src={optimizeImg(rankIcon, 44)} alt="" loading="lazy" className="val-icon w-11 h-11 rounded-full object-cover" />}
-                <span className={`font-body text-xs truncate w-full ${matched ? 'text-accent' : 'text-neutral-200'}`}>
-                  {p.gameName}<span className="text-neutral-600">#{p.tagLine}</span>
+                <span className={`font-body text-xs leading-tight w-full [overflow-wrap:anywhere] ${matched ? 'text-accent' : 'text-neutral-200'}`}>
+                  {p.gameName}<span className="block sm:inline text-neutral-600">#{p.tagLine}</span>
                 </span>
                 <span className="font-mono text-xs text-white">{rankedRating} RR</span>
                 <span className="text-[9px] font-body text-neutral-500">{competitiveTier}</span>
@@ -285,7 +285,7 @@ export default function LeaderboardTab({ t, accent, nickname, highlightRiotId = 
                     : 'border-neutral-800 bg-neutral-950 hover:border-neutral-600'
                 }`}
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                   <span className="font-mono text-xs text-neutral-500 w-6 shrink-0 text-right">{p.leaderboardRank}</span>
                   {rankIcon && <img src={optimizeImg(rankIcon, 32)} alt="" loading="lazy" className="val-icon w-7 h-7 rounded-full object-cover shrink-0" />}
                   {getAgentIcon(p.mainAgent) && (
@@ -301,7 +301,7 @@ export default function LeaderboardTab({ t, accent, nickname, highlightRiotId = 
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="hidden sm:block text-[11px] font-body text-neutral-500">{competitiveTier}</span>
                   <span className="font-mono text-xs text-white w-12 text-right">{rankedRating} RR</span>
-                  <span className={`text-[11px] font-body whitespace-nowrap transition-colors ${
+                  <span className={`hidden sm:inline text-[11px] font-body whitespace-nowrap transition-colors ${
                     matched ? 'text-accent' : 'text-neutral-600 group-hover:text-accent'
                   }`}>{t.leaderboardViewProfile}</span>
                 </div>

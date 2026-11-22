@@ -20,11 +20,11 @@ export default function FeedbackButton({ t }) {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-40">
+    <div className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-40">
       {open && (
         <form
           onSubmit={handleSend}
-          className="absolute bottom-12 right-0 w-72 bg-[#0F0F0F] border border-neutral-800 p-4 shadow-2xl flex flex-col gap-3"
+          className="absolute bottom-12 right-0 w-[min(18rem,calc(100vw_-_1.5rem))] bg-[#0F0F0F] border border-neutral-800 p-4 shadow-2xl flex flex-col gap-3"
         >
           <div className="flex items-center justify-between">
             <span className="font-display text-xs tracking-wide uppercase text-neutral-300">{t.feedbackModalTitle}</span>
@@ -53,7 +53,7 @@ export default function FeedbackButton({ t }) {
         onClick={() => setOpen((s) => !s)}
         aria-label={t.feedbackButtonAria}
         title={t.feedbackButtonAria}
-        className="w-11 h-11 flex items-center justify-center bg-accent text-black shadow-lg hover:opacity-90 transition-opacity rounded-full"
+        className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center bg-accent text-black shadow-lg hover:opacity-90 transition-opacity rounded-full"
       >
         <MessageSquarePlus size={18} />
       </button>

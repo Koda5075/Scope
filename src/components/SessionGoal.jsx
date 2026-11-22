@@ -72,7 +72,7 @@ export default function SessionGoal({ t }) {
         </div>
         <p className="text-[11px] text-neutral-500 font-body mb-3">{t.sessionGoalDesc}</p>
         <form onSubmit={handleSet} className="flex flex-col gap-3">
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
             {GOAL_TYPES.map((g) => {
               const active = draftType === g.key;
               return (
@@ -88,7 +88,7 @@ export default function SessionGoal({ t }) {
                   }`}
                 >
                   <g.Icon size={12} className="shrink-0" />
-                  <span className="truncate">{t[g.labelKey]}</span>
+                  <span className="text-left leading-tight">{t[g.labelKey]}</span>
                 </button>
               );
             })}
