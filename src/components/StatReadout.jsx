@@ -33,7 +33,7 @@ export default function StatReadout({ label, value, unit, Icon, tip, delta = nul
           {label}
           {tip && <InfoTip text={tip} />}
         </span>
-        <Icon size={14} className="text-accent shrink-0" />
+        <Icon size={14} className="hidden sm:block text-accent shrink-0" />
       </div>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-baseline gap-1.5">
