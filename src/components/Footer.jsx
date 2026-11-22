@@ -2,9 +2,9 @@ import ServerStatusBadge from './ServerStatusBadge.jsx';
 
 export default function Footer({ t, lang }) {
   return (
-    <footer className="mt-10">
+    <footer className="mt-10 pb-16 sm:pb-0">
       <div className="flex flex-col items-center gap-3 text-[11px] text-neutral-700 font-body">
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 px-2">
           <a href={`/legal.html?lang=${lang}#cgu`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.cgu}</a>
           <a href={`/legal.html?lang=${lang}#confidentialite`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.privacy}</a>
           <a href="/faq.html" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{t.faqLink}</a>
