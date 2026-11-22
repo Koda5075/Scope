@@ -54,7 +54,7 @@ export default function ProfileOverview({ dataset, games, t, accent }) {
             </div>
             <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={dataset.rrHistory} margin={{ top: 5, right: 5, left: -8, bottom: 0 }}>
+                <AreaChart data={dataset.rrHistory} margin={{ top: 5, right: 24, left: -8, bottom: 0 }}>
                   <defs>
                     <linearGradient id="rrGradProfile" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={accent} stopOpacity={0.3} />
