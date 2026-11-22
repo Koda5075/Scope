@@ -29,7 +29,7 @@ function PlayerDetail({ p, t }) {
           the full viewport, so the `sm:` breakpoint (viewport-width-based) would switch to
           6 columns long before the modal is actually wide enough, squeezing labels like
           "PREMIÈRES MORTS" + icon + info tip into ~80px and making them overlap. */}
-      <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
         <StatReadout label={t.statACS} value={p.acs} Icon={Zap} tip={t.tipACS} />
         <StatReadout label={t.statHeadshots} value={p.headshotPct} unit="%" Icon={Target} tip={t.tipHeadshots} />
         <StatReadout label={t.statAccuracy} value={p.accuracyPct} unit="%" Icon={Crosshair} tip={t.tipAccuracy} />
@@ -180,8 +180,8 @@ export default function GameScoreboard({ match, t }) {
               {/* The name links to the player's profile; the agent + stats area toggles
                   the expanded per-player detail (nesting a button inside a button is
                   invalid HTML, so the row is a div with two separate controls). */}
-              <div className="w-full flex items-center justify-between gap-2 px-3 py-2">
-                <div className="flex items-center gap-3 min-w-0">
+              <div className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-2 gap-y-1.5 px-3 py-2">
+                <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${p.team === you?.team ? 'bg-accent' : 'bg-neutral-600'}`} />
                   <button
                     type="button"
@@ -205,7 +205,7 @@ export default function GameScoreboard({ match, t }) {
                   type="button"
                   onClick={() => setExpandedName(isExpanded ? null : p.name)}
                   aria-expanded={isExpanded}
-                  className="flex items-center gap-3 shrink-0"
+                  className="flex items-center gap-3 shrink-0 ml-auto"
                 >
                   <KDAStat kills={p.kills} deaths={p.deaths} assists={p.assists} tone={p.isYou ? 'you' : 'default'} showDiff />
                   <span className="flex flex-col items-end w-11 shrink-0">
