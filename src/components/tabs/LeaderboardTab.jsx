@@ -295,7 +295,7 @@ export default function LeaderboardTab({ t, accent, nickname, highlightRiotId = 
                     {p.gameName}<span className="text-neutral-600">#{p.tagLine}</span>
                   </span>
                   {matched && (
-                    <span className="text-[9px] tracking-wide uppercase text-accent border border-accent px-1.5 py-0.5 shrink-0">{t.leaderboardOnScope}</span>
+                    <span className="hidden sm:inline text-[9px] tracking-wide uppercase text-accent border border-accent px-1.5 py-0.5 shrink-0">{t.leaderboardOnScope}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-3 shrink-0">

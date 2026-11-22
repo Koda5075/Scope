@@ -95,7 +95,7 @@ export default function NotificationsBell({ t, onManage, dndEnabled }) {
       </button>
 
       {open && (
-        <div className="settings-panel absolute right-0 top-11 w-[min(20rem,calc(100vw_-_4rem))] max-h-[70vh] overflow-y-auto p-4 z-10">
+        <div className="settings-panel fixed left-4 right-4 top-20 sm:absolute sm:left-auto sm:right-0 sm:top-11 sm:w-80 max-h-[70vh] overflow-y-auto p-4 z-10">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 font-body">{t.alertsCenterTitle}</span>
             {alerts.length > 0 && (
